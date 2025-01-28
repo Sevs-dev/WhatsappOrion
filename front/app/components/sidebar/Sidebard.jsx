@@ -24,9 +24,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
   return (
     <div
-      className={`flex flex-col h-screen bg-gray-800/90 text-white transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-20' : 'w-64'
-      } shadow-lg`}
+      className={`flex flex-col h-screen bg-gray-800/90 text-white transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
+        } shadow-lg`}
     >
       {/* Sidebar Header */}
       <div className="flex justify-end p-4">
@@ -54,10 +53,10 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
       {/* Sidebar Menu */}
       <div className="flex flex-col flex-grow p-4 space-y-2">
-        <div className="flex items-center p-2 hover:bg-gray-700/50 rounded-lg transition-colors duration-200">
+        <Link href="/dashboard/home" className="flex items-center p-2 hover:bg-gray-700/50 rounded-lg transition-colors duration-200">
           <HomeIcon className="mr-2" />
           {!isCollapsed && <span>Inicio</span>}
-        </div>
+        </Link>
 
         <hr className="border-gray-700 my-2" />
 
@@ -75,7 +74,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           {!isCollapsed && <span>Gestor de flujos</span>}
         </Link>
 
-        <Link href="/ConfigDatos" className="flex items-center p-2 hover:bg-gray-700/50 rounded-lg transition-colors duration-200">
+        <Link href="/dashboard/configDatos" className="flex items-center p-2 hover:bg-gray-700/50 rounded-lg transition-colors duration-200">
           <SettingsIcon className="mr-2" />
           {!isCollapsed && <span>Configuración</span>}
         </Link>

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Importa useRouter
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';  // Importa motion
 import Toast from '../toastr/toast';
 import '../toastr/toast.css';
+import Loader from '../loader/Loader';
 
 function Login() {
   const [email, setEmail] = useState('admin@logismart.com.co');
@@ -14,13 +16,13 @@ function Login() {
     type: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
 
-  const router = useRouter(); // Usa useRouter para redirigir
+  const router = useRouter();
 
   const showToast = (type, message) => {
     setToast({ show: true, type, message });
 
-    // Ocultar el toast después de 3 segundos
     setTimeout(() => {
       setToast({ show: false, type: '', message: '' });
     }, 3000);
@@ -29,6 +31,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const response = await fetch('http://localhost:8000/api/login', {
@@ -42,21 +45,16 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // Guarda el token en localStorage
         localStorage.setItem('token', data.autorización.token);
-
-        // Muestra un toast de éxito
         showToast('success', 'Inicio de sesión correcto.');
-
-        // Redirige al usuario a la ruta /dashboard
-        router.push('/dashboard/gestorClientes');
+        router.push('/dashboard/home');
       } else {
-        // Muestra un toast de error
         showToast('failure', 'Error de inicio de sesión.');
       }
     } catch (err) {
-      // Muestra un toast de error
       showToast('failure', 'Error al conectar con el servidor.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,8 +63,14 @@ function Login() {
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: "url('/PharexFondo.png')" }}
     >
-      {/* Contenedor estilo cristal */}
-      <div className="bg-white bg-opacity-20 backdrop-blur-md rounded-xl shadow-2xl border border-white border-opacity-20 p-8 w-full max-w-sm">
+      {loading && <Loader />}
+
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white bg-opacity-20 backdrop-blur-md rounded-xl shadow-2xl border border-[#3f3f3f] border-opacity-20 p-8 w-full max-w-sm"
+      >
         <form onSubmit={handleSubmit} className="space-y-6">
           <h2 className="text-3xl font-bold text-center text-black mb-6">Iniciar Sesión</h2>
 
@@ -85,7 +89,7 @@ function Login() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-white border-opacity-30 rounded-lg bg-white bg-opacity-20 text-[#363636] placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
+              className="w-full p-3 border border-[#3f3f3f] border-opacity-30 rounded-lg bg-white bg-opacity-20 text-[#363636] placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
               placeholder="Ingresa tu correo"
               required
             />
@@ -100,7 +104,7 @@ function Login() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-white border-opacity-30 rounded-lg bg-white bg-opacity-20 text-[#363636] placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
+              className="w-full p-3 border border-[#3f3f3f] border-opacity-30 rounded-lg bg-white bg-opacity-20 text-[#363636] placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
               placeholder="Ingresa tu contraseña"
               required
             />
@@ -108,12 +112,11 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-white bg-opacity-20 text-black py-3 rounded-lg hover:bg-opacity-30 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+            className="w-full bg-white bg-opacity-20 border-[#000000] text-black py-3 rounded-lg hover:bg-opacity-30 hover:scale-105 transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-[#a8c5e6] focus:ring-opacity-50 shadow-md hover:shadow-lg"
           >
             Iniciar Sesión
           </button>
 
-          {/* Enlace de "Olvidé mi contraseña" (opcional) */}
           <div className="mt-6 text-center">
             <a
               href="#"
@@ -123,15 +126,9 @@ function Login() {
             </a>
           </div>
         </form>
-      </div>
+      </motion.div>
 
-      {/* Toast */}
-      {toast.show && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-        />
-      )}
+      {toast.show && <Toast type={toast.type} message={toast.message} />}
     </div>
   );
 }

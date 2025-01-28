@@ -1,22 +1,30 @@
-import React, { useEffect } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import HistoricoConfig from './HistoricoConfig';
 import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import ModalVerificacionUsuario from './ModalVerificacionUsuario';
+import Loader from '../loader/Loader';
 
 const ConfigDatos = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar si el token existe en localStorage
     const token = localStorage.getItem('token');
-    setError("Estás autenticado.");
-
     if (!token) {
-      // Si no hay token, redirigir al login
-      navigate('/login');
-      setError("No estás autenticado.");
+      router.push('/login');
+    } else {
+      // Simula una validación del token (puedes agregar lógica adicional aquí)
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000); // Simula un tiempo de carga de 1 segundo
     }
-  }, [navigate]);
+  }, [router]);
+
+  if (loading) {
+    return <Loader />; // Muestra el componente Loader mientras se valida el token
+  }
 
   return (
     <div>
