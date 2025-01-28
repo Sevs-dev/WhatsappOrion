@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Cambia la importación aquí
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -11,29 +11,30 @@ import Avatar from '@mui/material/Avatar';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
-  const router = useRouter();
+  const router = useRouter(); // Ahora usa el useRouter correcto
 
   const handleLogout = () => {
+    // Eliminar el token y otros datos del localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
+
+    // Redirigir al usuario a la página de inicio de sesión
     router.push('/login');
   };
 
   return (
     <div
-      className={`flex flex-col justify-between p-4 h-full transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-72'
-      } rounded-r-lg bg-gray-800/50 text-white`}
-      style={{
-        backgroundImage: 'url("https://via.placeholder.com/800x600")', // Cambia esta URL por la imagen que desees usar
-        backgroundSize: 'cover', // Hace que la imagen cubra todo el sidebar
-        backgroundPosition: 'center', // Centra la imagen de fondo
-      }}
+      className={`flex flex-col h-screen bg-gray-800/90 text-white transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
+        } shadow-lg`}
     >
       {/* Sidebar Header */}
-      <div className="sidebar-header mb-4">
-        <IconButton onClick={toggleSidebar}>
-          <MenuIcon style={{ color: '#fff' }} />
+      <div className="flex justify-end p-4">
+        <IconButton
+          onClick={toggleSidebar}
+          aria-label="Toggle Sidebar"
+          className="hover:bg-gray-700/50 rounded-full"
+        >
+          <MenuIcon className="text-white" />
         </IconButton>
       </div>
 
@@ -42,18 +43,17 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         <img
           src="https://via.placeholder.com/50x50"
           alt={isCollapsed ? 'Logo colapsado' : 'Logo'}
-          className={`transition-all duration-300 ${
-            isCollapsed ? 'w-10 h-10' : 'w-12 h-12'
-          }`}
+          className={`transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'
+            }`}
         />
       </div>
 
       {/* Sidebar Menu */}
       <div className="sidebar-menu flex-1">
-        <div className="menu-item flex items-center space-x-3 py-2">
+        <Link href="/dashboard/home" className="menu-link flex items-center space-x-3 py-2">>
           <HomeIcon className="icon text-white" />
           {!isCollapsed && <span>Inicio</span>}
-        </div>
+        </Link>
 
         <hr className="divider my-2 border-t border-gray-500" />
 
@@ -71,7 +71,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           {!isCollapsed && <span>Gestor de flujos</span>}
         </Link>
 
-        <Link href="/ConfigDatos" className="menu-link flex items-center space-x-3 py-2">
+        <Link href="/dashboard/configDatos" className="menu-link flex items-center space-x-3 py-2">
           <SettingsIcon className="icon text-white" />
           {!isCollapsed && <span>Configuración</span>}
         </Link>
@@ -103,8 +103,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             {!isCollapsed && <span>Cerrar sesión</span>}
           </button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

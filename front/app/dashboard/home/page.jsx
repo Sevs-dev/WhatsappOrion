@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import FlujoVentana from '../../components/GestorFlujos/FlujoVentana'
+import Home from '../../components/home/Home';
 import Loader from '../../components/loader/Loader';
 
 export default function GestorClientesPage() {
@@ -24,5 +24,5 @@ export default function GestorClientesPage() {
         return <Loader />; // Show the Loader component while validating the token
     }
 
-  return <FlujoVentana />;
+    return <Home />;
 }

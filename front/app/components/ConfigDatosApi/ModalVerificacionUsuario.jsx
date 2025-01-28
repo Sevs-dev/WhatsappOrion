@@ -1,7 +1,6 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
-
+import React from 'react';
+import { useRouter } from 'next/navigation';
 
 const style = {
     position: 'absolute',
@@ -9,7 +8,6 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 460,
-
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -17,48 +15,52 @@ const style = {
 };
 
 const ModalVerificacionUsuario = () => {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const router = useRouter();
 
-const [open, setOpen] = React.useState(false);
-const handleOpen = () => setOpen(true);
-const handleClose = () => setOpen(false);
-const navigate = useNavigate();
-
-  return (
-    <div>
-        <button onClick={handleOpen} className='btn btn-primary'>Nueva Configuracion</button>
-        <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={style}>
-                <div className='modal-container'>
-                 
-                    <h1>Verificacion de Usuario</h1>
-                    
-
-                    <div className='options'>
-                        <label className='form-label-2'>Clave de usuario</label>
-                        <div className='input-group'>
-                            <input type="text" 
-                            className='form-control' 
-                            aria-describedby='basic-addon3 basic-addon4'
-                            placeholder='Escriba la clave del usuario'
-                            />
-                        </div>
-
-                        <div className='buttons'>
-                            <Button variant="contained" color='error'>Cerrar</Button>
-                            <Button variant="contained" color='success' onClick={() => navigate(`/NuevaConfig` )}>Guardar</Button>
+    return (
+        <div>
+            <Button onClick={handleOpen} variant="contained" color="primary">
+                Nueva Configuracion
+            </Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <div className='modal-container'>
+                        <Typography variant="h4" component="h1" gutterBottom>
+                            Verificacion de Usuario
+                        </Typography>
+                        <div className='options'>
+                            <Typography variant="body1" component="label" className='form-label-2'>
+                                Clave de usuario
+                            </Typography>
+                            <div className='input-group'>
+                                <input
+                                    type="text"
+                                    className='form-control'
+                                    placeholder='Escriba la clave del usuario'
+                                />
+                            </div>
+                            <div className='buttons'>
+                                <Button variant="contained" color='error' onClick={handleClose}>
+                                    Cerrar
+                                </Button>
+                                <Button variant="contained" color='success' onClick={() => router.push('/NuevaConfig')}>
+                                    Guardar
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </Box>
+                </Box>
+            </Modal>
+        </div>
+    );
+};
 
-        </Modal>
-    </div>
-  )
-}
-
-export default ModalVerificacionUsuario
+export default ModalVerificacionUsuario;

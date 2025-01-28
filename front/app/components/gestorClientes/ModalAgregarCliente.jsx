@@ -1,7 +1,10 @@
-import { Box, Button, Modal } from '@mui/material';
+"use client"; // Agrega esta línea en la parte superior del archivo
+
+import { Box, Button, Modal, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
-import Toast from '../toastr/toast';      
 
 const style = {
     position: 'absolute',
@@ -9,7 +12,9 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    borderRadius: 12,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
     p: 4,
 };
 

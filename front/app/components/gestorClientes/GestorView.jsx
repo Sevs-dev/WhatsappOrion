@@ -4,9 +4,6 @@ import ModalCrearCliente from './ModalAgregarCliente';
 import ListaClientes from './ListaClientes';
 
 const GestorClienteView = () => {
-
-
-
   return (
     <div>
       <div className='header'>
