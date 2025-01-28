@@ -1,0 +1,15 @@
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import ConfigData from '../../components/ConfigDatosApi/ConfigDatosView'
+
+export default function GestorClientesPage() {
+    const router = useRouter();
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+        }
+    }, [router]);
+    return <ConfigData />;
+}
