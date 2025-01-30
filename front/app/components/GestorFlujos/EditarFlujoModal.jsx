@@ -1,5 +1,4 @@
 "use client";
-
 import { Box, Button, IconButton, Modal, Tooltip, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,7 +13,6 @@ const style = {
     borderRadius: 12,
     p: 4,
 };
-
 const EditarFlujoModal = () => {
     const [open, setOpen] = useState(false);
     const [nombreFlujo, setNombreFlujo] = useState('');  // Estado para "Nombre Flujo"
@@ -34,12 +32,10 @@ const EditarFlujoModal = () => {
     const showToast = (type, message) => {
         console.log('Toast: ', type, message); // Agregado para depuración
         setToast({ show: true, type, message });
-
         setTimeout(() => {
             setToast({ show: false, type: '', message: '' });
         }, 3000); // Duración del toast
     };
-
     // Función para guardar los datos
     const handleSave = () => {
         console.log('Validando datos...'); // Agregado para depuración
@@ -132,7 +128,6 @@ const EditarFlujoModal = () => {
                     </div>
                 </Box>
             </Modal>
-
             {/* Aquí se muestra el toast si el estado de show es true */}
             {toast.show && (
                 <div

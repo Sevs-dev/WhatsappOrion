@@ -1,12 +1,12 @@
 'use client';
-
+ 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';  // Importa motion
 import Toast from '../toastr/toast';
 import '../toastr/toast.css';
 import Loader from '../loader/Loader';
-
+ 
 function Login() {
   const [email, setEmail] = useState('admin@logismart.com.co');
   const [password, setPassword] = useState('Logismart25*');
@@ -17,22 +17,22 @@ function Login() {
     message: '',
   });
   const [loading, setLoading] = useState(false);
-
+ 
   const router = useRouter();
-
+ 
   const showToast = (type, message) => {
     setToast({ show: true, type, message });
-
+ 
     setTimeout(() => {
       setToast({ show: false, type: '', message: '' });
     }, 3000);
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+ 
     try {
       const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
@@ -41,9 +41,9 @@ function Login() {
         },
         body: JSON.stringify({ email, password }),
       });
-
+ 
       const data = await response.json();
-
+ 
       if (response.ok) {
         localStorage.setItem('token', data.autorización.token);
         showToast('success', 'Inicio de sesión correcto.');
@@ -57,14 +57,14 @@ function Login() {
       setLoading(false);
     }
   };
-
+ 
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: "url('/PharexFondo.png')" }}
     >
       {loading && <Loader />}
-
+ 
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -73,13 +73,13 @@ function Login() {
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           <h2 className="text-3xl font-bold text-center text-black mb-6">Iniciar Sesión</h2>
-
+ 
           {error && (
             <p className="text-red-500 text-center bg-red-50 bg-opacity-80 p-2 rounded-lg">
               {error}
             </p>
           )}
-
+ 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
               Correo Electrónico
@@ -94,7 +94,7 @@ function Login() {
               required
             />
           </div>
-
+ 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
               Contraseña
@@ -109,14 +109,14 @@ function Login() {
               required
             />
           </div>
-
+ 
           <button
             type="submit"
             className="w-full bg-white bg-opacity-20 border-[#000000] text-black py-3 rounded-lg hover:bg-opacity-30 hover:scale-105 transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-[#a8c5e6] focus:ring-opacity-50 shadow-md hover:shadow-lg"
           >
             Iniciar Sesión
           </button>
-
+ 
           <div className="mt-6 text-center">
             <a
               href="#"
@@ -127,10 +127,10 @@ function Login() {
           </div>
         </form>
       </motion.div>
-
+ 
       {toast.show && <Toast type={toast.type} message={toast.message} />}
     </div>
   );
 }
-
+ 
 export default Login;

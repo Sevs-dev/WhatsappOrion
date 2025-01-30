@@ -10,7 +10,7 @@ const GestorFlujoView = () => {
             <CrearFlujoModal/>
         </div>
         <div className='content'>
-            <ListaFlujos/> 
+            <ListaFlujos/>
         </div>
     </div>
   )

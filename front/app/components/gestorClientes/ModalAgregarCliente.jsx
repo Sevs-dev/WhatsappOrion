@@ -11,9 +11,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    borderRadius: 12,
     p: 4,
 };
 
@@ -144,7 +142,7 @@ const ModalCrearCliente = () => {
                             <h1>Agregar cliente</h1>
                         </div>
                         <div className='options'>
-                            <label className='form-label-2'>Codigo Cliente</label>
+                            <label >Codigo Cliente</label>
                             <div className='input-group'>
                                 <input
                                     type="text"
@@ -175,7 +173,6 @@ const ModalCrearCliente = () => {
                             <label className="form-label-2">Estado</label>
                             <div className="input-group">
                                 <select
-                                    className="form-select"
                                     name="estado"
                                     value={formData.estado}
                                     onChange={handleChange}

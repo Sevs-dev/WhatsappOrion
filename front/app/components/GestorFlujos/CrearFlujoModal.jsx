@@ -1,9 +1,9 @@
 "use client"; // Mark this component as a Client Component
-
+ 
 import { Box, Button, Modal, Typography } from '@mui/material';
 import React from 'react';
 import { useRouter } from 'next/navigation'; // Correct import for App Router
-
+ 
 const style = {
     position: 'absolute',
     top: '50%',
@@ -13,13 +13,13 @@ const style = {
     borderRadius: 12,
     p: 4,
   };
-
+ 
 const CrearFlujoModal = () => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const router = useRouter();
-
+ 
     return (
         <>
             <button onClick={handleOpen} className='btn btn-primary'>Crear Flujo</button>
@@ -34,17 +34,17 @@ const CrearFlujoModal = () => {
                         <p>
                             <h1>Crear Flujo</h1>
                         </p>
-
+ 
                         <div className='options'>
                             <label className='form-label-2'>Nombre Flujo</label>
                             <div className='input-group'>
-                                <input type="text" 
-                                className='form-control' 
+                                <input type="text"
+                                className='form-control'
                                 aria-describedby='basic-addon3 basic-addon4'
                                 placeholder='Escriba la clave del usuario'
                                 />
                             </div>
-
+ 
                             <label className='form-label-2'>Cliente</label>
                             <div className='input-group'>
                                 <select className="form-select" aria-label="Default select example">
@@ -53,7 +53,7 @@ const CrearFlujoModal = () => {
                                     <option value="2">Opcion 2</option>
                                 </select>
                             </div>
-
+ 
                             <label className='form-label-2'>Estado</label>
                             <div className='input-group'>
                                 <select className="form-select" aria-label="Default select example">
@@ -62,7 +62,7 @@ const CrearFlujoModal = () => {
                                     <option value="2">Inactivo</option>
                                 </select>
                             </div>
-
+ 
                             <div className='buttons'>
                                 <Button variant="contained" color='error' onClick={handleClose}>Cerrar</Button>
                                 <Button variant="contained" color='success' onClick={() => router.push('/dashboard/nuevaConfiguracion')}>Guardar</Button>
@@ -74,5 +74,5 @@ const CrearFlujoModal = () => {
         </>
     );
 };
-
+ 
 export default CrearFlujoModal;

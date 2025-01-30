@@ -86,14 +86,13 @@ const FormularioEdicion = () => {
 
   return (
     <div className="content">
-      <div className="form-2">
-        <div className="form-content-2">
+      <div >
+        <div >
           <div className="options">
-            <label className="form-label-2">ID</label>
+            <label >ID</label>
             <div className="input-group">
               <input
                 type="text"
-                className="form-control"
                 value={formData.id_mensaje_whatsapp || 'No disponible'}
                 disabled
               />
@@ -101,11 +100,10 @@ const FormularioEdicion = () => {
           </div>
 
           <div className="options">
-            <label className="form-label-2">ID Cliente WhatsApp</label>
+            <label >ID Cliente WhatsApp</label>
             <div className="input-group">
               <input
                 type="text"
-                className="form-control"
                 value={formData.id_cliente_whatsapp || ''}
                 onChange={handleChange('id_cliente_whatsapp')}
                 disabled
@@ -114,11 +112,10 @@ const FormularioEdicion = () => {
           </div>
 
           <div className="options">
-            <label className="form-label-2">Título</label>
+            <label >Título</label>
             <div className="input-group">
               <input
                 type="text"
-                className="form-control"
                 value={formData.titulo}
                 onChange={handleChange('titulo')}
               />
@@ -126,10 +123,9 @@ const FormularioEdicion = () => {
           </div>
 
           <div className="options">
-            <label className="form-label-2">Descripción</label>
+            <label >Descripción</label>
             <div className="input-group">
               <textarea
-                className="form-control"
                 value={formData.descripcion}
                 onChange={handleChange('descripcion')}
               ></textarea>
@@ -140,20 +136,18 @@ const FormularioEdicion = () => {
             <div className="input-group">
               <input
                 type="checkbox"
-                className="form-check-input"
                 checked={formData.checkboxChecked}
                 onChange={handleCheckboxChange}
               />
-              <label className="form-label-2">La notificación tendrá URL</label>
+              <label>La notificación tendrá URL</label>
             </div>
           </div>
 
           {formData.checkboxChecked && (
             <div className="options">
-              <label className="form-label-2">URL</label>
+              <label >URL</label>
               <div className="input-group">
                 <select
-                  className="form-select"
                   value={formData.url}
                   onChange={handleChange('url')}
                 >
@@ -168,7 +162,6 @@ const FormularioEdicion = () => {
           <div className="options">
             <label className="form-label-2">Estado</label>
             <select
-              className="form-select"
               value={formData.estado}
               onChange={handleChange('estado')}
             >
