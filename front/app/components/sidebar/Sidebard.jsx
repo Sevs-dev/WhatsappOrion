@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { IconButton } from '@mui/material';
@@ -11,29 +11,37 @@ import Avatar from '@mui/material/Avatar';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
+  const [userName, setUserName] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName); // Guarda el valor del nombre de usuario en el estado
+    }
+  }, []);
+  
 
   const handleLogout = () => {
     // Eliminar el token y otros datos del localStorage
     localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-
-    // Redirigir al usuario a la página de inicio de sesión
-    router.push('/login');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userData'); // Agregar esto si también guardas 'userData' en el localStorage
+    
+    setUser(null);  // Limpiar el estado del usuario
+    router.push('/login');  // Redirigir al login
   };
 
   return (
     <div
-      className={`flex flex-col h-screen bg-gray-800/40 backdrop-blur-md shadow-lg rounded-r-xl text-white transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-20' : 'w-64'
-      }`}
-      
+      className={`flex flex-col h-screen bg-gray-800/40 backdrop-blur-md shadow-lg rounded-r-xl text-white transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}
     >
       {/* Sidebar Header */}
       <div className="flex justify-end p-4">
         <IconButton
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
+          aria-expanded={!isCollapsed}
           className="hover:bg-[rgba(26,82,118,0.9)] rounded-full transition-all"
         >
           <MenuIcon className="text-white" />
@@ -95,25 +103,27 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         <div className="user-info flex items-center space-x-4 py-4 px-4">
           <Avatar
             alt="User"
-            src="https://via.placeholder.com/50"
+            src={userName?.avatarUrl || "https://via.placeholder.com/50"}
             className={`transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'}`}
           />
-          {!isCollapsed && (
+          {!isCollapsed && userName ? (
             <div>
-              <p className="user-name text-sm font-medium">Joe Doe</p>
+              <p className="user-name text-sm font-medium">{userName || 'Usuario no encontrado'}</p>
               <p className="user-role text-xs text-gray-400">Ingeniero de software</p>
             </div>
+          ) : (
+            <p className="text-xs text-gray-400">Cargando...</p>
           )}
         </div>
 
         {/* Logout Button */}
         <div className="mt-6 w-full">
-            <button
+          <button
             onClick={handleLogout}
-             className="menu-link flex items-center space-x-4 py-3 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
-               >
-          <LogoutIcon className="mr-6" />
-           {!isCollapsed && <span>Cerrar sesión</span>}
+            className="menu-link flex items-center space-x-4 py-3 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
+          >
+            <LogoutIcon className="mr-6" />
+            {!isCollapsed && <span>Cerrar sesión</span>}
           </button>
         </div>
       </div>

@@ -9,16 +9,17 @@ import ListaNotificaciones from "./ListaNotificacion";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
 
-const ListaClientes = () => {
+const ListaClientes = ({ refresh }) => {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [refreshData, setRefreshData] = useState(false);
+
 
     useEffect(() => {
         const fetchMensajes = async () => {
             try {
                 const response = await ClientApiService.getAllClients();
-                // Si la respuesta de la API tiene la propiedad 'data' que es el array
                 setData(response.data || response); // Ajusta según la estructura de la respuesta
             } catch (err) {
                 console.error("Error fetching clients:", err);
@@ -28,7 +29,7 @@ const ListaClientes = () => {
         };
 
         fetchMensajes();
-    }, []);
+    }, [refreshData]); // El useEffect se ejecuta cada vez que 'refresh' cambie
 
     // Configuración de las columnas de la tabla
     const columns = useMemo(
@@ -74,7 +75,10 @@ const ListaClientes = () => {
                 Cell: ({ row }) => (
                     <div>
                         {/* Pasando el id del cliente correctamente al ModalAgregarNotificacion */}
-                        <ModalAgregarNotificacion id={row.original.id} />
+                        <ModalAgregarNotificacion 
+                            id={row.original.id} 
+                            onSuccess={() => setRefreshData(prev => !prev)} // Cambia el estado de refresh
+                        />
                     </div>
                 ),
             },

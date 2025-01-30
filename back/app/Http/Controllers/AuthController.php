@@ -15,17 +15,29 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
+
+        // Buscar el usuario por su correo
+        $usuario = User::where('email', $request->email)->first();
+
+        if (!$usuario) {
+            return response()->json([
+                'estado' => 'error',
+                'mensaje' => 'Correo electrónico no encontrado',
+            ], 404);
+        }
+
         $credenciales = $request->only('email', 'password');
 
+        // Intenta autenticar al usuario con las credenciales
         $token = Auth::attempt($credenciales);
+
         if (!$token) {
             return response()->json([
                 'estado' => 'error',
-                'mensaje' => 'No autorizado',
+                'mensaje' => 'Contraseña incorrecta',
             ], 401);
         }
 
-        $usuario = Auth::user();
         return response()->json([
             'estado' => 'éxito',
             'usuario' => $usuario,
@@ -35,6 +47,7 @@ class AuthController extends Controller
             ]
         ]);
     }
+
 
     public function register(Request $request)
     {
