@@ -24,12 +24,12 @@ const ModalAgregarNotificacion = ({ id }) => {
     });
 
     const handleOpen = () => {
-        console.log("Abriendo modal");
+        // console.log("Abriendo modal");
         setOpen(true);
     };
 
     const handleClose = () => {
-        console.log("Cerrando modal");
+        // console.log("Cerrando modal");
         setOpen(false);
     };
 
@@ -48,7 +48,7 @@ const ModalAgregarNotificacion = ({ id }) => {
 
     // Obtener detalles del cliente cuando el id cambia
     useEffect(() => {
-        console.log('ID:', id); // Verificar si el id tiene un valor
+        // console.log('ID:', id); // Verificar si el id tiene un valor
         if (id) {
             ClientApiService.getClientById(id)
                 .then((response) => {

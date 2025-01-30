@@ -15,7 +15,7 @@ const style = {
     p: 4,
 };
 
-const ModalCrearCliente = () => {
+const ModalCrearCliente = ({ onClientCreated }) => {
     const [open, setOpen] = useState(false);
     const [toast, setToast] = useState({ show: false, type: '', message: '' });
     const [formData, setFormData] = useState({
@@ -116,6 +116,9 @@ const ModalCrearCliente = () => {
                 type: 'success',
                 message: `El cliente "${formData.nombre}" se ha creado con éxito.`,
             });
+            if (onClientCreated) {
+                onClientCreated(); // Actualiza la lista de clientes
+            }
         } catch (error) {
             console.error('Error creando cliente:', error);
             handleClose();
