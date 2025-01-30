@@ -46,13 +46,12 @@ const NuevaConfig = () => {
         </div>
 
         <div className='content'>
-            <div className='form-2'>
-                <div className='form-content-2'>
+            <div >
+                <div >
                     <div className="options">
-                        <label className="form-label-2">Token API</label>
+                        <label >Token API</label>
                         <div className='input-group'>
                             <textarea
-                                className='form-control'
                                 aria-label="With textarea"
                                 placeholder='Token de API'
                                 name="token_api"
@@ -64,10 +63,9 @@ const NuevaConfig = () => {
                     </div>
 
                     <div className="options">
-                        <label className="form-label-2">Numero Verificacion de funcionamiento</label>
+                        <label >Numero Verificacion de funcionamiento</label>
                         <div className='input-group'>
                             <input type="number" 
-                                className='form-control'
                                 aria-describedby='basic-addon3 basic-addon4'
                                 placeholder='+57'
                                 name="numero_verificacion"

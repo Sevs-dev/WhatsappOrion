@@ -1,5 +1,5 @@
 "use client"; // Mark this component as a Client Component
-
+ 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation'; // Use Next.js's useRouter
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
@@ -8,7 +8,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditarFlujoModal from './EditarFlujoModal';
 import BlockIcon from "@mui/icons-material/Block";
-
+ 
 // Example data
 const data = [
   {
@@ -30,15 +30,15 @@ const data = [
     fecha: '2023-10-03',
   },
 ];
-
+ 
 const ListaFlujos = () => {
   const router = useRouter(); // Use Next.js's useRouter instead of useNavigate
-
+ 
   // Define columns
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'id', 
+        accessorKey: 'id',
         header: 'ID',
         size: 150,
       },
@@ -48,7 +48,7 @@ const ListaFlujos = () => {
         size: 150,
       },
       {
-        accessorKey: 'nameCliente', 
+        accessorKey: 'nameCliente',
         header: 'Nombre del cliente',
         size: 200,
       },
@@ -67,12 +67,12 @@ const ListaFlujos = () => {
                 color="primary"
                 onClick={() => router.push(`/dashboard/flujo`)} // Use router.push for navigation
               >
-                <VisibilityIcon /> 
+                <VisibilityIcon />
               </IconButton>
             </Tooltip>
-
+ 
             <EditarFlujoModal />
-
+ 
             <Tooltip title="Deshabilitar">
               <IconButton color="primary">
                 <BlockIcon />
@@ -84,14 +84,14 @@ const ListaFlujos = () => {
     ],
     [router] // Add router to the dependency array
   );
-
+ 
   // Create the table instance
   const table = useMaterialReactTable({
     columns,
     data, // Data must be memoized or stable
   });
-
+ 
   return <MaterialReactTable table={table} />;
 };
-
+ 
 export default ListaFlujos;

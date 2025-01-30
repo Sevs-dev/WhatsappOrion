@@ -7,10 +7,8 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 460,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    width: 400,
+    borderRadius: 12,
     p: 4,
 };
 
@@ -22,9 +20,7 @@ const ModalVerificacionUsuario = () => {
 
     return (
         <div>
-            <Button onClick={handleOpen} variant="contained" color="primary">
-                Nueva Configuracion
-            </Button>
+            <button onClick={handleOpen} className='btn btn-primary'>Crear cliente</button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -37,13 +33,12 @@ const ModalVerificacionUsuario = () => {
                             Verificacion de Usuario
                         </Typography>
                         <div className='options'>
-                            <Typography variant="body1" component="label" className='form-label-2'>
+                            <Typography variant="body1" component="label" >
                                 Clave de usuario
                             </Typography>
                             <div className='input-group'>
                                 <input
                                     type="text"
-                                    className='form-control'
                                     placeholder='Escriba la clave del usuario'
                                 />
                             </div>

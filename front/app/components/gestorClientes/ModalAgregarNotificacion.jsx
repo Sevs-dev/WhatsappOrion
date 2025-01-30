@@ -117,11 +117,10 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                         <h1>Agregar Notificación</h1>
 
                         <div className="options">
-                            <label className="form-label-2">Título</label>
+                            <label >Título</label>
                             <div className="input-group">
                                 <input
                                     type="text"
-                                    className="form-control"
                                     name="titulo"
                                     value={formData.titulo}
                                     onChange={handleChange}
@@ -129,11 +128,10 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 />
                             </div>
 
-                            <label className="form-label-2">Descripción</label>
+                            <label >Descripción</label>
                             <div className="input-group">
                                 <input
                                     type="text"
-                                    className="form-control"
                                     name="descripcion"
                                     value={formData.descripcion}
                                     onChange={handleChange}
@@ -141,11 +139,10 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 />
                             </div>
 
-                            <label className="form-label-2">Código Cliente</label>
+                            <label >Código Cliente</label>
                             <div className="input-group">
                                 <input
                                     type="text"
-                                    className="form-control"
                                     name="id_cliente_whatsapp"
                                     value={formData.id_cliente_whatsapp}
                                     onChange={handleChange}
@@ -153,10 +150,9 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 />
                             </div>
 
-                            <label className="form-label-2">URL</label>
+                            <label >URL</label>
                             <div className="input-group">
                                 <select
-                                    className="form-select"
                                     name="url"
                                     value={formData.url}
                                     onChange={handleChange}
@@ -167,10 +163,9 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 </select>
                             </div>
 
-                            <label className="form-label-2">Estado</label>
+                            <label >Estado</label>
                             <div className="input-group">
                                 <select
-                                    className="form-select"
                                     name="estado"
                                     value={formData.estado}
                                     onChange={handleChange}

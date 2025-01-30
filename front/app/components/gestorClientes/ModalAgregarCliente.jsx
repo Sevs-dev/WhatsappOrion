@@ -3,18 +3,15 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
-
+import Toast from '../toastr/toast';
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    borderRadius: 12,
     p: 4,
 };
 
@@ -88,10 +85,9 @@ const ModalCrearCliente = () => {
                         </div>
 
                         <div className='options'>
-                            <label className='form-label-2'>Codigo Cliente</label>
+                            <label >Codigo Cliente</label>
                             <div className='input-group'>
                                 <input type="text" 
-                                    className='form-control' 
                                     aria-describedby='basic-addon3 basic-addon4'
                                     placeholder='Escriba el codigo'
                                     name='id_cliente_whatsapp'
@@ -100,10 +96,9 @@ const ModalCrearCliente = () => {
                                 />
                             </div>
 
-                            <label className='form-label-2'>Cliente</label>
+                            <label >Cliente</label>
                             <div className='input-group'>
                                 <select 
-                                    className="form-select" 
                                     aria-label="Default select example"
                                     name="nombre"
                                     value={formData.nombre}
@@ -115,10 +110,9 @@ const ModalCrearCliente = () => {
                                 </select>
                             </div>
 
-                            <label className="form-label-2">Estado</label>
+                            <label >Estado</label>
                             <div className="input-group">
                                 <select
-                                    className="form-select"
                                     name="estado"
                                     value={formData.estado} 
                                     onChange={handleChange} 
