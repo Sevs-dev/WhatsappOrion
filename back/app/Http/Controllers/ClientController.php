@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Cliente;
+use App\Models\ClientsWhatsapp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
+
     public function store(Request $request)
     {
         // Validar los datos
         $rules = [
-            'id_cliente_whatsapp' => 'required|string|max:255',
+            'codigo' => 'required|string|max:255',
             'nombre' => 'required|string|max:255',
             'estado' => 'required|integer'
         ];
@@ -24,15 +25,15 @@ class ClientController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $cliente = Cliente::create([
-            'id_cliente_whatsapp' => $request->id_cliente_whatsapp,
+        $cliente = ClientsWhatsapp::create([
+            'codigo' => $request->codigo,
             'nombre' => $request->nombre,
             'estado' => $request->estado,
-            'fecha' => Carbon::now(), 
+            'fecha' => Carbon::now(),
             'usuario' => 'admin'
         ]);
 
-        return response()->json(['message' => 'Cliente creado con éxito', 'data' => $cliente], 201);
+        return response()->json(['message' => 'ClientsWhatsapp creado con éxito', 'data' => $cliente], 201);
     }
 
     /**
@@ -42,7 +43,7 @@ class ClientController extends Controller
     {
         // Validar los datos
         $rules = [
-            'id_cliente_whatsapp' => 'required|string|max:255',
+            'codigo' => 'required|string|max:255',
             'nombre' => 'required|string|max:255',
             'estado' => 'required|integer'
         ];
@@ -53,16 +54,16 @@ class ClientController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $cliente = Cliente::findOrFail($id);
+        $cliente = ClientsWhatsapp::findOrFail($id);
         $cliente->update([
-            'id_cliente_whatsapp' => $request->id_cliente_whatsapp,
+            'codigo' => $request->codigo,
             'nombre' => $request->nombre,
             'estado' => $request->estado,
-            'fecha' => Carbon::now(), 
+            'fecha' => Carbon::now(),
             'usuario' => 'admin'
         ]);
 
-        return response()->json(['message' => 'Cliente actualizado con éxito', 'data' => $cliente]);
+        return response()->json(['message' => 'ClientsWhatsapp actualizado con éxito', 'data' => $cliente]);
     }
 
     /**
@@ -70,10 +71,10 @@ class ClientController extends Controller
      */
     public function delete($id)
     {
-        $cliente = Cliente::findOrFail($id);
+        $cliente = ClientsWhatsapp::findOrFail($id);
         $cliente->update(['estado' => 0]);
 
-        return response()->json(['message' => 'Cliente marcado como inactivo']);
+        return response()->json(['message' => 'ClientsWhatsapp marcado como inactivo']);
     }
 
     /**
@@ -81,9 +82,12 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::with('mensajes')->get();
-
-        return response()->json(['data' => $clientes]);
+        try {
+            $clients = ClientsWhatsapp::all();
+            return response()->json($clients, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -91,8 +95,25 @@ class ClientController extends Controller
      */
     public function consultById($id)
     {
-        $cliente = Cliente::with('mensajes')->findOrFail($id);
-
+        $cliente = ClientsWhatsapp::with('mensajes')->find($id);
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
+        }
         return response()->json(['data' => $cliente]);
+    }
+
+    //Estados
+    public function getStates()
+    {
+        $states = [
+            'activo',
+            'inactivo',
+            'pendiente',
+            'en_proceso',
+            'entregado',
+            'cancelado',
+        ];
+
+        return response()->json($states);
     }
 }

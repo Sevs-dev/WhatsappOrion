@@ -1,9 +1,8 @@
 import { Box, Button, IconButton, Modal, Tooltip } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Swal from 'sweetalert2';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
-
 import Toast from '../toastr/toast';
 
 const style = {
@@ -16,7 +15,7 @@ const style = {
     p: 4,
 };
 
-const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
+const ModalAgregarNotificacion = ({ id }) => {
     const [open, setOpen] = useState(false);
     const [toast, setToast] = useState({
         show: false,
@@ -24,18 +23,56 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
         message: '',
     });
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleOpen = () => {
+        console.log("Abriendo modal");
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        console.log("Cerrando modal");
+        setOpen(false);
+    };
 
     const [formData, setFormData] = useState({
         titulo: '',
         descripcion: '',
-        id_cliente_whatsapp: id_cliente_whatsapp || '',
+        id: id || '',
         id_url: '123',
         check_url: true,
         estado_flujo_activacion: false,
         estado: '',
+        codigo: '',
+        nombre: '',
+        usuario: '',
     });
+
+    // Obtener detalles del cliente cuando el id cambia
+    useEffect(() => {
+        console.log('ID:', id); // Verificar si el id tiene un valor
+        if (id) {
+            ClientApiService.getClientById(id)
+                .then((response) => {
+                    const clientData = response.data; // Acceder al campo 'data' que contiene los detalles
+                    setFormData((prevState) => ({
+                        ...prevState,
+                        nombre: clientData.nombre,
+                        codigo: clientData.codigo,
+                        estado: clientData.estado,
+                        usuario: clientData.usuario,
+                        id: id,
+                    }));
+                })
+                .catch((error) => {
+                    console.error('Error obteniendo detalles del cliente:', error);
+                    setToast({
+                        show: true,
+                        type: 'failure',
+                        message: 'Error al obtener los detalles del cliente.',
+                    });
+                    setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
+                });
+        }
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,7 +83,7 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
     };
 
     const handleSave = async () => {
-        if (!formData.titulo || !formData.descripcion || !formData.id_cliente_whatsapp) {
+        if (!formData.titulo || !formData.descripcion || !formData.id) {
             setToast({
                 show: true,
                 type: 'warning',
@@ -59,11 +96,14 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
         const payload = {
             titulo: formData.titulo,
             descripcion: formData.descripcion,
-            check_url: formData.check_url,
-            id_url: parseInt(formData.id_url, 10),
-            estado_flujo_activacion: formData.estado_flujo_activacion,
-            id_cliente_whatsapp: formData.id_cliente_whatsapp,
-            estado: parseInt(formData.estado, 10),
+            usuario: formData.usuario,
+            nombre: formData.nombre,
+            codigo: formData.codigo,
+            estado_flujo_activacion: formData.estado ?? false,
+            check_url: formData.check_url ?? false,
+            id_url: formData.id_url ? String(formData.id_url) : '',
+            id_cliente_whatsapp: formData.id,
+            fecha: new Date().toISOString(),
         };
 
         try {
@@ -73,13 +113,20 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                 type: 'success',
                 message: `La notificación "${formData.titulo}" se ha creado con éxito.`,
             });
+
+            // Reiniciar el formulario correctamente
             setFormData({
                 titulo: '',
                 descripcion: '',
+                estado_flujo_activacion: '',
+                usuario: '',
+                codigo: '',
+                nombre: '',
+                id_url: '',
+                check_url: false,
                 id_cliente_whatsapp: '',
-                url: '',
-                estado: '',
             });
+
             handleClose();
         } catch (error) {
             console.error('Error creando notificación:', error);
@@ -95,12 +142,7 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
 
     return (
         <>
-            {toast.show && (
-                <Toast
-                    type={toast.type}
-                    message={toast.message}
-                />
-            )}
+            {toast.show && <Toast type={toast.type} message={toast.message} />}
             <Tooltip title="Agregar Notificación">
                 <IconButton color="primary" onClick={handleOpen} className="btn btn-primary">
                     <AddCircleIcon />
@@ -141,13 +183,25 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 />
                             </div>
 
+                            <label className="form-label-2">Nombre del Cliente</label>
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="nombre"
+                                    value={formData.nombre}
+                                    onChange={handleChange}
+                                    disabled
+                                />
+                            </div>
+
                             <label className="form-label-2">Código Cliente</label>
                             <div className="input-group">
                                 <input
                                     type="text"
                                     className="form-control"
-                                    name="id_cliente_whatsapp"
-                                    value={formData.id_cliente_whatsapp}
+                                    name="codigo"
+                                    value={formData.codigo}
                                     onChange={handleChange}
                                     disabled
                                 />
@@ -177,7 +231,7 @@ const ModalAgregarNotificacion = ({ id_cliente_whatsapp }) => {
                                 >
                                     <option value="">Seleccionar</option>
                                     <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
+                                    <option value="0">Inactivo</option>
                                 </select>
                             </div>
 

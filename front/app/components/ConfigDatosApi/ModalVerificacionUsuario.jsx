@@ -51,7 +51,7 @@ const ModalVerificacionUsuario = () => {
                                 <Button variant="contained" color='error' onClick={handleClose}>
                                     Cerrar
                                 </Button>
-                                <Button variant="contained" color='success' onClick={() => router.push('/NuevaConfig')}>
+                                <Button variant="contained" color='success' onClick={() => router.push('/dashboard/nuevaConfiguracion')}>
                                     Guardar
                                 </Button>
                             </div>

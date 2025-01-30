@@ -47,7 +47,7 @@ const handleClose = () => setOpen(false);
                         
                         <div className='buttons'>
                             <Button variant="contained" color='error'>Cerrar</Button>
-                            <Button variant="contained" color='success' onClick={() => navigate(`/NuevaConfig` )}>Guardar</Button>
+                            <Button variant="contained" color='success' onClick={() => navigate(`/dashboard/nuevaConfiguracion` )}>Guardar</Button>
                         </div>
                     </div>
                 </div>

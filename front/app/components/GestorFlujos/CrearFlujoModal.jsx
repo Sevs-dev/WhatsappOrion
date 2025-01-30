@@ -65,7 +65,7 @@ const CrearFlujoModal = () => {
 
                             <div className='buttons'>
                                 <Button variant="contained" color='error' onClick={handleClose}>Cerrar</Button>
-                                <Button variant="contained" color='success' onClick={() => router.push('/NuevaConfig')}>Guardar</Button>
+                                <Button variant="contained" color='success' onClick={() => router.push('/dashboard/nuevaConfiguracion')}>Guardar</Button>
                             </div>
                         </div>
                     </div>

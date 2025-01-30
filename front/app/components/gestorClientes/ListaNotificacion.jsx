@@ -5,7 +5,7 @@ import {
 } from 'material-react-table';
 import { IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
 
 
@@ -13,7 +13,7 @@ const ListaNotificaciones = ({ id_cliente }) => {
 
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         const fetchNotificaciones = async () => {
@@ -71,7 +71,7 @@ const ListaNotificaciones = ({ id_cliente }) => {
                             <IconButton
                                 color='primary'
                                 onClick={() =>
-                                    navigate(`/EdicionMensaje`, {
+                                    router.push(`/EdicionMensaje`, {
                                         state: { ...row.original },
                                     })}
                             >

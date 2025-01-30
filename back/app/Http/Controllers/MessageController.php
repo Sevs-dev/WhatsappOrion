@@ -3,108 +3,128 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Mensaje;
 use Carbon\Carbon;
+use App\Models\MessageWhatsapp;
 use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
 {
+
+    // Método para almacenar un nuevo mensaje
     public function store(Request $request)
     {
-        // Validar los datos
+        $fecha = Carbon::parse($request->fecha)->format('Y-m-d H:i:s');
+
+        // Definir reglas de validación
         $rules = [
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'check_url' => 'nullable|boolean',
             'id_url' => 'nullable|integer',
             'estado_flujo_activacion' => 'required|boolean',
-            'id_cliente_whatsapp' => 'required|string'
         ];
 
+        // Validar los datos de la petición
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $mensaje = Mensaje::create([
+        // Convertir valores booleanos correctamente
+        $request->merge([
+            'check_url' => filter_var($request->check_url, FILTER_VALIDATE_BOOLEAN),
+            'estado_flujo_activacion' => filter_var($request->estado_flujo_activacion, FILTER_VALIDATE_BOOLEAN),
+        ]);
+
+        $mensaje = MessageWhatsapp::create([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
+            'nombre' => $request->nombre,
+            'usuario' => $request->usuario,
+            'codigo' => $request->codigo,
+            'estado_flujo_activacion' => $request->estado_flujo_activacion,
             'check_url' => $request->check_url,
             'id_url' => $request->id_url,
-            'estado_flujo_activacion' => $request->estado_flujo_activacion,
+            'fecha' => $fecha,
             'id_cliente_whatsapp' => $request->id_cliente_whatsapp,
-            'fecha' => Carbon::now(), 
-            'usuario' => 'admin'
         ]);
 
         return response()->json(['message' => 'Registro creado con éxito', 'data' => $mensaje], 201);
     }
 
-    /**
-     * Actualizar un registro existente.
-     */
+    // Método para actualizar un mensaje existente
     public function update(Request $request, $id)
     {
-        // Validar los datos
+        // Definir reglas de validación
         $rules = [
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'check_url' => 'nullable|boolean',
             'id_url' => 'nullable|integer',
             'estado_flujo_activacion' => 'required|boolean',
-            'id_cliente_whatsapp' => 'required|string'
         ];
 
+        // Validar los datos de la petición
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $mensaje = Mensaje::findOrFail($id);
+        // Buscar el mensaje en la base de datos
+        $mensaje = MessageWhatsapp::find($id);
+        if (!$mensaje) {
+            return response()->json(['error' => 'Mensaje no encontrado'], 404);
+        }
+
+        // Convertir valores booleanos correctamente
+        $request->merge([
+            'check_url' => filter_var($request->check_url, FILTER_VALIDATE_BOOLEAN),
+            'estado_flujo_activacion' => filter_var($request->estado_flujo_activacion, FILTER_VALIDATE_BOOLEAN),
+        ]);
+
+        // Actualizar los datos del mensaje
         $mensaje->update([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'check_url' => $request->check_url,
             'id_url' => $request->id_url,
             'estado_flujo_activacion' => $request->estado_flujo_activacion,
-            'id_cliente_whatsapp' => $request->id_cliente_whatsapp,
-            'fecha' => Carbon::now(), 
-            'usuario' => 'admin'
+            'usuario' => 'admin',
         ]);
 
         return response()->json(['message' => 'Registro actualizado con éxito', 'data' => $mensaje]);
     }
 
-    /**
-     * Eliminar un registro por su ID.
-     */
+    // Método para eliminar un mensaje
     public function delete($id)
     {
-        $mensaje = Mensaje::findOrFail($id);
-        $mensaje->delete();
+        // Buscar el mensaje en la base de datos
+        $mensaje = MessageWhatsapp::find($id);
+        if (!$mensaje) {
+            return response()->json(['error' => 'Mensaje no encontrado'], 404);
+        }
 
+        // Eliminar el mensaje
+        $mensaje->delete();
         return response()->json(['message' => 'Registro eliminado con éxito']);
     }
 
-    /**
-     * Consultar todos los registros filtrando por id_cliente_whatsapp.
-     */
-    public function index($id)
+    // Método para obtener todos los mensajes
+    public function index()
     {
-      
-        $mensajes = Mensaje::where('id_cliente_whatsapp', $id)->get();
-
+        $mensajes = MessageWhatsapp::all();
         return response()->json(['data' => $mensajes]);
     }
 
-    /**
-     * Consultar un registro por id_mensaje_whatsapp.
-     */
-    public function consultById($id)
+    // Método para obtener un mensaje específico por su ID
+    public function show($id)
     {
-        $mensaje = Mensaje::findOrFail($id);
+        $mensaje = MessageWhatsapp::find($id);
+        if (!$mensaje) {
+            return response()->json(['error' => 'Mensaje no encontrado'], 404);
+        }
 
         return response()->json(['data' => $mensaje]);
     }

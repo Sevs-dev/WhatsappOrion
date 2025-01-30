@@ -28,15 +28,16 @@ Route::prefix('config')->group(function () {
 Route::prefix('message')->group(function () {
     Route::post('/create', [MessageController::class, 'store']);
     Route::put('/update/{id}', [MessageController::class, 'update']);
-    Route::get('/delete/{id}', [MessageController::class, 'delete']);
-    Route::get('/list/{id}', [MessageController::class, 'index']);
-    Route::get('/search/{id}', [MessageController::class, 'consultById']);
+    Route::delete('/delete/{id}', [MessageController::class, 'delete']);
+    Route::get('/list', [MessageController::class, 'index']);
+    Route::get('/{id}', [MessageController::class, 'show']);
 });
 
 Route::prefix('client')->group(function () {
     Route::post('/create', [ClientController::class, 'store']);
     Route::put('/update/{id}', [ClientController::class, 'update']);
-    Route::get('/delete/{id}', [ClientController::class, 'delete']);
+    Route::delete('/delete/{id}', [ClientController::class, 'delete']);
     Route::get('/list', [ClientController::class, 'index']);
     Route::get('/search/{id}', [ClientController::class, 'consultById']);
+    Route::get('/states', [ClientController::class, 'getStates']);
 });

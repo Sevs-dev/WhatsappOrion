@@ -41,7 +41,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       {/* Sidebar Logo */}
       <div className="sidebar-logo mb-4">
         <img
-          src="https://via.placeholder.com/50x50"
+          src="/logo.png"
           alt={isCollapsed ? 'Logo colapsado' : 'Logo'}
           className={`transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'
             }`}
@@ -50,7 +50,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
       {/* Sidebar Menu */}
       <div className="sidebar-menu flex-1">
-        <Link href="/dashboard/home" className="menu-link flex items-center space-x-3 py-2">>
+        <Link href="/dashboard/home" className="menu-link flex items-center space-x-3 py-2">
           <HomeIcon className="icon text-white" />
           {!isCollapsed && <span>Inicio</span>}
         </Link>

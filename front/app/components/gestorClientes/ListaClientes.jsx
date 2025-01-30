@@ -1,28 +1,29 @@
-"use client"; // Agrega esta línea en la parte superior del archivo
-
+"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
     MaterialReactTable,
     useMaterialReactTable,
 } from "material-react-table";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Snackbar, Alert } from "@mui/material";
 import ListaNotificaciones from "./ListaNotificacion";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
-import axios from "axios";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
 
 const ListaClientes = () => {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
 
     useEffect(() => {
         const fetchMensajes = async () => {
             try {
                 const response = await ClientApiService.getAllClients();
-                setData(response.data);
+                // Si la respuesta de la API tiene la propiedad 'data' que es el array
+                setData(response.data || response); // Ajusta según la estructura de la respuesta
             } catch (err) {
                 console.error("Error fetching clients:", err);
                 setError("Hubo un problema al cargar los datos.");
+                setOpenSnackbar(true);
             }
         };
 
@@ -33,7 +34,7 @@ const ListaClientes = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: "id_cliente_whatsapp",
+                accessorKey: "codigo",
                 header: "Código Cliente",
                 size: 150,
             },
@@ -46,7 +47,16 @@ const ListaClientes = () => {
                 accessorKey: "estado",
                 header: "Estado",
                 size: 150,
-                Cell: ({ row }) => (row.original.estado === 1 ? "Activo" : "Inactivo"),
+                Cell: ({ row }) => {
+                    switch (row.original.estado) {
+                        case 1:
+                            return "Activo";
+                        case 0:
+                            return "Inactivo";
+                        default:
+                            return "Desconocido"; // En caso de un estado inesperado
+                    }
+                },
             },
             {
                 accessorKey: "fecha",
@@ -63,7 +73,8 @@ const ListaClientes = () => {
                 size: 150,
                 Cell: ({ row }) => (
                     <div>
-                        <ModalAgregarNotificacion id_cliente_whatsapp={row.original.id_cliente_whatsapp} />
+                        {/* Pasando el id del cliente correctamente al ModalAgregarNotificacion */}
+                        <ModalAgregarNotificacion id={row.original.id} />
                     </div>
                 ),
             },
@@ -86,7 +97,7 @@ const ListaClientes = () => {
         }),
         // Renderización condicional del panel de detalles
         renderDetailPanel: ({ row }) =>
-            row.original.id_cliente_whatsapp ? (
+            row.original.id ? (
                 <Box
                     sx={{
                         display: "grid",
@@ -95,14 +106,27 @@ const ListaClientes = () => {
                         width: "100%",
                     }}
                 >
-                    <ListaNotificaciones id_cliente={row.original.id_cliente_whatsapp} />
+                    <ListaNotificaciones id={row.original.id} />
                 </Box>
             ) : null,
     });
 
+    // Manejo de la visibilidad del Snackbar
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
     return (
         <div>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && (
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                >
+                    <Alert severity="error">{error}</Alert>
+                </Snackbar>
+            )}
             <MaterialReactTable table={table} />
         </div>
     );
