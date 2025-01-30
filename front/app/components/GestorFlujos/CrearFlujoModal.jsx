@@ -31,9 +31,9 @@ const CrearFlujoModal = () => {
             >
                 <Box sx={style}>
                     <div className='modal-container'>
-                        <p>
+                        <div>
                             <h1>Crear Flujo</h1>
-                        </p>
+                        </div>
  
                         <div className='options'>
                             <label className='form-label-2'>Nombre Flujo</label>

@@ -81,36 +81,27 @@
 /* Contenedor del modal */
 .modal-container {
     padding: 30px;
-    background-color: rgba(255, 255, 255, 0.4);
-    /* Fondo más opaco para un mejor contraste */
-    border-radius: 20px;
-    /* Bordes redondeados más suaves */
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
-    /* Sombra más difusa y sutil */
-    backdrop-filter: blur(15px);
-    /* Menos desenfoque para no perder tanto el fondo */
+    background-color: rgba(26, 82, 118, 0.4); /* Azul más transparente con un toque sutil */
+    border-radius: 20px; /* Bordes redondeados más suaves */
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1); /* Sombra más difusa y sutil */
+    backdrop-filter: blur(15px); /* Desenfoque para mantener el fondo visible */
     border: none;
-
+    max-width: 500px; /* Limita el ancho del modal */
+    margin: auto; /* Centra el modal */
 }
 
 /* Título del modal */
 .modal-container h1 {
-    font-size: 28px;
-    /* Un tamaño un poco más grande */
-    font-weight: 700;
-    /* Mayor peso para resaltar el título */
-    color: #333;
-    /* Color más oscuro para un mejor contraste */
-    margin-bottom: 20px;
-    /* Espaciado inferior cómodo */
-    text-align: center;
-    /* Centrado para mayor simetría */
+    font-size: 28px; /* Un tamaño un poco más grande */
+    font-weight: 700; /* Mayor peso para resaltar el título */
+    color: #fff; /* Color blanco para mejor contraste */
+    margin-bottom: 20px; /* Espaciado inferior cómodo */
+    text-align: center; /* Centrado para mayor simetría */
 }
 
 /* Estilo de botones */
 .buttons {
-    margin-top: 30px;
-    /* Más espacio para separar botones de la parte superior */
+    margin-top: 30px; /* Más espacio para separar botones de la parte superior */
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
@@ -118,61 +109,46 @@
 
 /* Estilo de los botones dentro de la sección */
 .buttons button {
-    border-radius: 10px;
-    /* Bordes más redondeados */
-    padding: 14px 30px;
-    /* Botones más grandes para mejor interacción */
-    font-size: 16px;
-    /* Tamaño cómodo para la lectura */
+    border-radius: 10px; /* Bordes más redondeados */
+    padding: 14px 30px; /* Botones más grandes para mejor interacción */
+    font-size: 16px; /* Tamaño cómodo para la lectura */
     font-weight: 600;
-    transition: all 0.3s ease;
-    /* Transición suave para los botones */
+    transition: all 0.3s ease; /* Transición suave para los botones */
     border: none;
-    color: #fff;
-    /* Texto blanco por defecto */
+    color: #fff; /* Texto blanco por defecto */
+    background-color: rgba(17, 49, 83, 0.8); /* Azul translúcido con un poco de saturación */
 }
 
 /* Hover en botones */
 .buttons button:hover {
-    background-color: rgba(26, 82, 118, 0.9);
-    /* Color al pasar el ratón */
-    transform: translateY(-2px);
-    /* Efecto de elevación */
+    background-color: rgba(26, 82, 118, 0.9);; /* Color al pasar el ratón */
+    transform: translateY(-2px); /* Efecto de elevación */
 }
 
 /* Estilo del input */
 input[type="text"],
 select {
-    border-radius: 10px;
-    /* Bordes redondeados para mayor uniformidad */
-    padding: 14px 18px;
-    /* Más espacio dentro de los inputs */
-    width: 100%;
-    /* Asegura que el input ocupe el 100% del ancho */
-    border: 1px solid #ddd;
-    /* Borde suave */
-    margin-bottom: 20px;
-    /* Espaciado más grande para mejor separación */
-    background-color: rgba(255, 255, 255, 0.6);
-    /* Fondo translúcido más claro */
+    border-radius: 10px; /* Bordes redondeados para mayor uniformidad */
+    padding: 14px 18px; /* Más espacio dentro de los inputs */
+    width: 100%; /* Asegura que el input ocupe el 100% del ancho */
+    border: 1px solid #ddd; /* Borde suave */
+    margin-bottom: 20px; /* Espaciado más grande para mejor separación */
+    background-color: rgba(255, 255, 255, 0.6); /* Fondo translúcido más claro */
 }
 
 /* Estilo del input en focus */
 input[type="text"]:focus,
 select:focus {
-    border-color: #007bff;
-    /* Borde azul al enfocar */
-    outline: none;
-    /* Eliminar el contorno predeterminado */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
-    /* Sombra suave azul */
+    border-color: #007bff; /* Borde azul al enfocar */
+    outline: none; /* Eliminar el contorno predeterminado */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4); /* Sombra suave azul */
 }
 
 /* Estilo del modal cuando el fondo es transparente */
 .MuiModal-root {
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Fondo oscuro y más opaco para dar contraste */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro y más opaco para dar contraste */
 }
+
 
 /* Media Queries */
 @media screen and (max-width: 1360px) {
