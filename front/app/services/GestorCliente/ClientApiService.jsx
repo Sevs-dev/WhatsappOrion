@@ -30,7 +30,7 @@ const ClientApiService = {
     // Obtener lista de clientes
     getAllClients: async () => {
         try {
-            const response = await apiClient.get('/client/info');
+            const response = await apiClient.get('/client/list'); //Cambie para obtener lista de clientes
             return response.data; // Retorna la respuesta del servidor
         } catch (error) {
             console.error('Error fetching clients:', error);

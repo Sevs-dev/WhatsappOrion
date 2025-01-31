@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const style = {
@@ -13,14 +13,33 @@ const style = {
 };
 
 const ModalVerificacionUsuario = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const [open, setOpen] = useState(false);
+    const [claveUsuario, setClaveUsuario] = useState(''); // Estado para el campo "Clave de usuario"
+    const [error, setError] = useState(false); // Estado para manejar errores de validación
     const router = useRouter();
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => {
+        setOpen(false);
+        setClaveUsuario(''); // Limpiar el campo al cerrar
+        setError(false); // Limpiar el error al cerrar
+    };
+
+    const handleGuardar = () => {
+        if (!claveUsuario) {
+            setError(true); // Mostrar error si el campo está vacío
+            return; // Detener la ejecución si falta el campo
+        }
+
+        // Si el campo está completo, redirigir
+        router.push('/dashboard/nuevaConfiguracion');
+    };
 
     return (
         <div>
-            <button onClick={handleOpen} className='btn btn-primary'>Crear cliente</button>
+            <button onClick={handleOpen} className="btn btn-primary">
+                Crear cliente
+            </button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -28,25 +47,35 @@ const ModalVerificacionUsuario = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <div className='modal-container'>
+                    <div className="modal-container">
                         <Typography variant="h4" component="h1" gutterBottom>
-                            Verificacion de Usuario
+                            Verificación de Usuario
                         </Typography>
-                        <div className='options'>
-                            <Typography variant="body1" component="label" >
+                        <div className="options">
+                            <Typography variant="body1" component="label">
                                 Clave de usuario
                             </Typography>
-                            <div className='input-group'>
+                            <div className="input-group">
                                 <input
                                     type="text"
-                                    placeholder='Escriba la clave del usuario'
+                                    placeholder="Escriba la clave del usuario"
+                                    value={claveUsuario}
+                                    onChange={(e) => {
+                                        setClaveUsuario(e.target.value);
+                                        setError(false); // Limpiar el error al escribir
+                                    }}
                                 />
+                                {error && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
-                            <div className='buttons'>
-                                <Button variant="contained" color='error' onClick={handleClose}>
+                            <div className="buttons">
+                                <Button variant="contained" color="error" onClick={handleClose}>
                                     Cerrar
                                 </Button>
-                                <Button variant="contained" color='success' onClick={() => router.push('/dashboard/nuevaConfiguracion')}>
+                                <Button variant="contained" color="success" onClick={handleGuardar}>
                                     Guardar
                                 </Button>
                             </div>

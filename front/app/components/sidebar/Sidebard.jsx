@@ -11,25 +11,28 @@ import Avatar from '@mui/material/Avatar';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
-  const [userName, setUserName] = useState(null);
+  const [userName, setUserName] = useState(""); // Inicializado como cadena vacía
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
+    const storedUserData = localStorage.getItem('userData');
     if (storedUserName) {
-      setUserName(storedUserName); // Guarda el valor del nombre de usuario en el estado
+      setUserName(storedUserName);
+    }
+    if (storedUserData) {
+      setUser(JSON.parse(storedUserData));
     }
   }, []);
-  
 
   const handleLogout = () => {
-    // Eliminar el token y otros datos del localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
-    localStorage.removeItem('userData'); // Agregar esto si también guardas 'userData' en el localStorage
-    
-    setUser(null);  // Limpiar el estado del usuario
-    router.push('/login');  // Redirigir al login
+    localStorage.removeItem('userData');
+    setUser(null);
+    setUserName("");
+    router.push('/login');
   };
 
   return (
@@ -106,13 +109,13 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             src={userName?.avatarUrl || "https://via.placeholder.com/50"}
             className={`transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'}`}
           />
-          {!isCollapsed && userName ? (
+          {!isCollapsed && (
             <div>
-              <p className="user-name text-sm font-medium">{userName || 'Usuario no encontrado'}</p>
+              <p className="user-name text-sm font-medium">
+                {userName || 'Invitado'} {/* Muestra "Invitado" si no hay nombre de usuario */}
+              </p>
               <p className="user-role text-xs text-gray-400">Ingeniero de software</p>
             </div>
-          ) : (
-            <p className="text-xs text-gray-400">Cargando...</p>
           )}
         </div>
 

@@ -128,7 +128,7 @@ const ModalCrearCliente = ({ onClientCreated }) => {
                 message: 'Hubo un problema al crear el cliente. Intenta nuevamente.',
             });
         } finally {
-            setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+            setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
         }
     };
 

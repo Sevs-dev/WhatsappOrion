@@ -1,7 +1,6 @@
 import { Box, Button, IconButton, Modal, Tooltip } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Swal from 'sweetalert2';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
 import Toast from '../toastr/toast';
 
@@ -10,7 +9,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     borderRadius: 12,
     p: 4,
 };
@@ -22,15 +21,15 @@ const ModalAgregarNotificacion = ({ id }) => {
         type: '',
         message: '',
     });
+    const [formErrors, setFormErrors] = useState({
+        titulo: false,
+        descripcion: false,
+    });
 
-    const handleOpen = () => {
-        // console.log("Abriendo modal");
-        setOpen(true);
-    };
-
+    const handleOpen = () => setOpen(true);
     const handleClose = () => {
-        // console.log("Cerrando modal");
         setOpen(false);
+        setFormErrors({ titulo: false, descripcion: false }); // Limpiar errores al cerrar
     };
 
     const [formData, setFormData] = useState({
@@ -48,11 +47,10 @@ const ModalAgregarNotificacion = ({ id }) => {
 
     // Obtener detalles del cliente cuando el id cambia
     useEffect(() => {
-        // console.log('ID:', id); // Verificar si el id tiene un valor
         if (id) {
             ClientApiService.getClientById(id)
                 .then((response) => {
-                    const clientData = response.data; // Acceder al campo 'data' que contiene los detalles
+                    const clientData = response.data;
                     setFormData((prevState) => ({
                         ...prevState,
                         nombre: clientData.nombre,
@@ -80,17 +78,25 @@ const ModalAgregarNotificacion = ({ id }) => {
             ...prevState,
             [name]: value,
         }));
+        // Limpiar el error cuando el usuario comienza a escribir
+        if (formErrors[name]) {
+            setFormErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: false,
+            }));
+        }
     };
 
     const handleSave = async () => {
-        if (!formData.titulo || !formData.descripcion || !formData.id) {
-            setToast({
-                show: true,
-                type: 'warning',
-                message: 'Por favor completa todos los campos antes de guardar.',
-            });
-            setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
-            return;
+        // Validar campos obligatorios
+        const errors = {
+            titulo: !formData.titulo,
+            descripcion: !formData.descripcion,
+        };
+        setFormErrors(errors);
+
+        if (errors.titulo || errors.descripcion) {
+            return; // Detener si hay errores
         }
 
         const payload = {
@@ -114,7 +120,7 @@ const ModalAgregarNotificacion = ({ id }) => {
                 message: `La notificación "${formData.titulo}" se ha creado con éxito.`,
             });
 
-            // Reiniciar el formulario correctamente
+            // Reiniciar el formulario
             setFormData({
                 titulo: '',
                 descripcion: '',
@@ -159,7 +165,7 @@ const ModalAgregarNotificacion = ({ id }) => {
                         <h1>Agregar Notificación</h1>
 
                         <div className="options">
-                            <label >Título</label>
+                            <label>Título</label>
                             <div className="input-group">
                                 <input
                                     type="text"
@@ -168,9 +174,14 @@ const ModalAgregarNotificacion = ({ id }) => {
                                     onChange={handleChange}
                                     placeholder="Escribe el título"
                                 />
+                                {formErrors.titulo && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
 
-                            <label >Descripción</label>
+                            <label>Descripción</label>
                             <div className="input-group">
                                 <input
                                     type="text"
@@ -179,6 +190,11 @@ const ModalAgregarNotificacion = ({ id }) => {
                                     onChange={handleChange}
                                     placeholder="Escribe la descripción"
                                 />
+                                {formErrors.descripcion && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
 
                             <label className="form-label-2">Nombre del Cliente</label>
@@ -205,7 +221,7 @@ const ModalAgregarNotificacion = ({ id }) => {
                                 />
                             </div>
 
-                            <label >URL</label>
+                            <label>URL</label>
                             <div className="input-group">
                                 <select
                                     name="url"
@@ -218,7 +234,7 @@ const ModalAgregarNotificacion = ({ id }) => {
                                 </select>
                             </div>
 
-                            <label >Estado</label>
+                            <label>Estado</label>
                             <div className="input-group">
                                 <select
                                     name="estado"

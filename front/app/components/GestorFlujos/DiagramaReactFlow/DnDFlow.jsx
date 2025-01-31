@@ -1,5 +1,6 @@
+import Toast from "../../toastr/toast.jsx";
+
 import { useRef, useCallback, useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import {
     ReactFlow,
     ReactFlowProvider,
@@ -30,9 +31,15 @@ const DnDFlow = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const { screenToFlowPosition } = useReactFlow();
     const [type] = useDnD();
+    const [editingNode, setEditingNode] = useState(null);
+    const [newLabel, setNewLabel] = useState("");
 
-    const [editingNode, setEditingNode] = useState(null); // Nodo en edición
-    const [newLabel, setNewLabel] = useState(""); // Nuevo texto para el nodo
+    const [toast, setToast] = useState({ show: false, type: "", message: "" });
+
+    const showToast = (type, message) => {
+        setToast({ show: true, type, message });
+        setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
+    };
 
     const onConnect = useCallback(
         (params) => setEdges((eds) => addEdge(params, eds)),
@@ -52,7 +59,6 @@ const DnDFlow = () => {
         if (!edgeReconnectSuccessful.current) {
             setEdges((eds) => eds.filter((e) => e.id !== edge.id));
         }
-
         edgeReconnectSuccessful.current = true;
     }, []);
 
@@ -71,7 +77,6 @@ const DnDFlow = () => {
     const onDrop = useCallback(
         (event) => {
             event.preventDefault();
-
             if (!type) return;
 
             const position = screenToFlowPosition({
@@ -99,21 +104,11 @@ const DnDFlow = () => {
         console.log("Estos son los datos que se van a enviar", flowData);
         try {
             const response = await GestorFlujosServ.saveDiagrama(flowData);
-            Swal.fire({
-                title: "",
-                text: "Datos guardados con éxito en el servidor",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-            });
+            showToast("success", "Datos guardados con éxito en el servidor");
             console.log("Respuesta del servidor:", response);
         } catch (error) {
             console.error("Error guardando los datos en el servidor:", error);
-            Swal.fire({
-                title: "Error",
-                text: "No se pudieron guardar los datos en el servidor. Inténtalo nuevamente.",
-                icon: "error",
-                confirmButtonText: "Aceptar",
-            });
+            showToast("failure", "No se pudieron guardar los datos en el servidor. Inténtalo nuevamente.");
         }
 
         localStorage.setItem("reactflow-diagram", JSON.stringify(flowData));
@@ -135,12 +130,7 @@ const DnDFlow = () => {
         setNodes(data.nodes || []);
         setEdges(data.edges || []);
 
-        Swal.fire({
-            title: "",
-            text: "Datos cargados con éxito",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-        });
+        showToast("success", "Datos cargados con éxito");
     }, [setNodes, setEdges]);
 
     useEffect(() => {
@@ -167,6 +157,7 @@ const DnDFlow = () => {
 
     return (
         <div className="dndflow">
+            {toast.show && <Toast type={toast.type} message={toast.message} />}
             <div className="save-load-buttons">
                 <button onClick={saveFlow}>Guardar</button>
                 <button onClick={loadFlow}>Cargar</button>
@@ -190,39 +181,32 @@ const DnDFlow = () => {
                 </ReactFlow>
 
                 {editingNode && (
-                <div 
-                    style={{ 
-                        position: "absolute", 
-                        top: 50, 
-                        right: 50, 
-                        zIndex: 1000,
-                        backgroundColor: "#072A47",
-                        padding: "15px",
-                        borderRadius: "10px",
-                        border: "2px solid white",
-                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        color: "white", // Texto en blanco
-                        fontFamily: "Arial, sans-serif", 
-                    }}
-                >
-                    <input
-                        type="text"
-                        value={newLabel}
-                        onChange={handleLabelChange}
-                        placeholder="Nuevo texto"
+                    <div 
                         style={{ 
-                            marginRight: "10px", 
-                            width: "70%",
-                            borderRadius: "5px",
-                            border: "none"
+                            position: "absolute", 
+                            top: 50, 
+                            right: 50, 
+                            zIndex: 1000,
+                            backgroundColor: "#072A47",
+                            padding: "15px",
+                            borderRadius: "10px",
+                            border: "2px solid white",
+                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                            color: "white",
+                            fontFamily: "Arial, sans-serif",
                         }}
-                    />
-                    <button onClick={saveLabel}>Guardar</button>
-                </div>
-            )}
+                    >
+                        <input
+                            type="text"
+                            value={newLabel}
+                            onChange={handleLabelChange}
+                            placeholder="Nuevo texto"
+                            style={{ marginRight: "10px", width: "70%", borderRadius: "5px", border: "none" }}
+                        />
+                        <button onClick={saveLabel}>Guardar</button>
+                    </div>
+                )}
             </div>
-
-    
 
             <Sidebar />
         </div>

@@ -1,4 +1,4 @@
-"use client"; // Mark this component as a Client Component
+/*"use client"; // Mark this component as a Client Component
  
 import { Box, Button, Modal, Typography } from '@mui/material';
 import React from 'react';
@@ -75,4 +75,4 @@ const CrearFlujoModal = () => {
     );
 };
  
-export default CrearFlujoModal;
+export default CrearFlujoModal;*/

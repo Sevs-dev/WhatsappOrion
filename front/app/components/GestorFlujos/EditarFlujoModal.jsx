@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Modal, Tooltip, Typography } from '@mui/materi
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import EditIcon from '@mui/icons-material/Edit';
+import Toast from '../toastr/toast';  // Importa el componente Toast
 
 const style = {
     position: 'absolute',
@@ -13,11 +14,17 @@ const style = {
     borderRadius: 12,
     p: 4,
 };
+
 const EditarFlujoModal = () => {
     const [open, setOpen] = useState(false);
-    const [nombreFlujo, setNombreFlujo] = useState('');  // Estado para "Nombre Flujo"
-    const [cliente, setCliente] = useState(''); // Estado para "Cliente"
-    const [estado, setEstado] = useState(''); // Estado para "Estado"
+    const [nombreFlujo, setNombreFlujo] = useState('');
+    const [cliente, setCliente] = useState('');
+    const [estado, setEstado] = useState('');
+    const [formErrors, setFormErrors] = useState({
+        nombreFlujo: false,
+        cliente: false,
+        estado: false,
+    });
     const [toast, setToast] = useState({
         show: false,
         type: '',
@@ -25,30 +32,35 @@ const EditarFlujoModal = () => {
     });
 
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const router = useRouter(); // Use Next.js's useRouter
+    const handleClose = () => {
+        setOpen(false);
+        setFormErrors({ nombreFlujo: false, cliente: false, estado: false }); 
+    };
 
-    // Función para mostrar el toast
+    const router = useRouter();
+
     const showToast = (type, message) => {
-        console.log('Toast: ', type, message); // Agregado para depuración
         setToast({ show: true, type, message });
         setTimeout(() => {
             setToast({ show: false, type: '', message: '' });
-        }, 3000); // Duración del toast
+        }, 3000);
     };
-    // Función para guardar los datos
+
     const handleSave = () => {
-        console.log('Validando datos...'); // Agregado para depuración
-        // Verificar que los campos no estén vacíos
-        if (!nombreFlujo || !cliente || !estado) {
-            showToast('failure', 'Por favor, complete todos los campos.');
-            return; // Detener la ejecución si falta algún campo
+        const errors = {
+            nombreFlujo: !nombreFlujo,
+            cliente: !cliente,
+            estado: !estado,
+        };
+        setFormErrors(errors);
+
+        if (errors.nombreFlujo || errors.cliente || errors.estado) {
+            return;
         }
 
-        // Si todos los campos están completos, guardamos los datos (aquí puedes agregar lógica para enviar a una API)
         console.log('Datos guardados:', { nombreFlujo, cliente, estado });
 
-        // Luego redirigimos
+        showToast('success', 'Los datos se han guardado correctamente.');
         router.push('/dashboard/nuevaConfiguracion');
     };
 
@@ -59,6 +71,7 @@ const EditarFlujoModal = () => {
                     <EditIcon />
                 </IconButton>
             </Tooltip>
+
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -77,50 +90,58 @@ const EditarFlujoModal = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    aria-describedby="basic-addon3 basic-addon4"
                                     placeholder="Escriba la clave del usuario"
                                     value={nombreFlujo}
-                                    onChange={(e) => setNombreFlujo(e.target.value)} // Actualiza el estado
+                                    onChange={(e) => setNombreFlujo(e.target.value)}
                                 />
+                                {formErrors.nombreFlujo && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
 
                             <label className="form-label-2">Cliente</label>
                             <div className="input-group">
                                 <select
                                     className="form-select"
-                                    aria-label="Default select example"
                                     value={cliente}
-                                    onChange={(e) => setCliente(e.target.value)} // Actualiza el estado
+                                    onChange={(e) => setCliente(e.target.value)}
                                 >
-                                    <option value="">Seleccione una opción</option> {/* Asegurarse de que haya un valor vacío */}
+                                    <option value="">Seleccione una opción</option>
                                     <option value="1">Opción 1</option>
                                     <option value="2">Opción 2</option>
                                 </select>
+                                {formErrors.cliente && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
 
                             <label className="form-label-2">Estado</label>
                             <div className="input-group">
                                 <select
                                     className="form-select"
-                                    aria-label="Default select example"
                                     value={estado}
-                                    onChange={(e) => setEstado(e.target.value)} // Actualiza el estado
+                                    onChange={(e) => setEstado(e.target.value)}
                                 >
-                                    <option value="">Seleccione una opción</option> {/* Asegurarse de que haya un valor vacío */}
+                                    <option value="">Seleccione una opción</option>
                                     <option value="1">Activo</option>
                                     <option value="2">Inactivo</option>
                                 </select>
+                                {formErrors.estado && (
+                                    <span style={{ color: 'red', fontSize: '12px' }}>
+                                        Este campo es obligatorio
+                                    </span>
+                                )}
                             </div>
 
                             <div className="buttons">
                                 <Button variant="contained" color="error" onClick={handleClose}>
                                     Cerrar
                                 </Button>
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    onClick={handleSave} // Llama a handleSave para guardar
-                                >
+                                <Button variant="contained" color="success" onClick={handleSave}>
                                     Guardar
                                 </Button>
                             </div>
@@ -128,23 +149,9 @@ const EditarFlujoModal = () => {
                     </div>
                 </Box>
             </Modal>
-            {/* Aquí se muestra el toast si el estado de show es true */}
-            {toast.show && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: 10,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        padding: '10px 20px',
-                        backgroundColor: toast.type === 'failure' ? 'red' : 'green',
-                        color: 'white',
-                        borderRadius: '5px',
-                    }}
-                >
-                    {toast.message}
-                </div>
-            )}
+
+            {/* Componente Toast */}
+            {toast.show && <Toast type={toast.type} message={toast.message} />}
         </>
     );
 };
