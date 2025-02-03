@@ -2,7 +2,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration
 {
@@ -35,6 +37,16 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        DB::table('users')->insert([
+            'name' => 'Admin Logismart',
+            'email' => 'admin@logismart.com.co',
+            'email_verified_at' => now(),
+            'password' => Hash::make('Logismart25*'),
+            'remember_token' => "",
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

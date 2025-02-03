@@ -20,14 +20,14 @@ export default function DashboardLayout({ children }) {
       router.push('/login');
     } else {
       // Mostrar el Toast de éxito cuando el usuario es redirigido al dashboard
-      setToast({
-        show: true,
-        type: 'success',
-        message: 'Inicio de sesión correcto.',
-      });
-      setTimeout(() => {
-        setToast({ show: false, type: '', message: '' });
-      }, 3000);
+      // setToast({
+      //   show: true,
+      //   type: 'success',
+      //   message: 'Inicio de sesión correcto.',
+      // });
+      // setTimeout(() => {
+      //   setToast({ show: false, type: '', message: '' });
+      // }, 3000);
     }
   }, [router]);
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\StatusController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -16,6 +17,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::get('/clients', [ApiIp6Controller::class, 'getClientData']);
+Route::get('/dato/{codigo}', [ApiIp6Controller::class, 'getClientByCodigo']);
 
 Route::prefix('config')->group(function () {
     Route::post('/create', [ConfigController::class, 'store']);
@@ -37,7 +39,14 @@ Route::prefix('client')->group(function () {
     Route::post('/create', [ClientController::class, 'store']);
     Route::put('/update/{id}', [ClientController::class, 'update']);
     Route::delete('/delete/{id}', [ClientController::class, 'delete']);
-    Route::get('/list', [ClientController::class, 'index']);
+    Route::get('/info', [ClientController::class, 'index']);
     Route::get('/search/{id}', [ClientController::class, 'consultById']);
     Route::get('/states', [ClientController::class, 'getStates']);
 });
+
+Route::prefix('status')->group(function () {
+    Route::post('/create', [StatusController::class, 'store']);
+    Route::get('/{clientId}/estados', [StatusController::class, 'show']);
+});
+
+

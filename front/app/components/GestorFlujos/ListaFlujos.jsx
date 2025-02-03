@@ -1,56 +1,48 @@
 "use client"; // Mark this component as a Client Component
- 
-import { useMemo } from 'react';
+
+import { useMemo, useState, useEffect } from 'react'; // Import useState and useEffect
 import { useRouter } from 'next/navigation'; // Use Next.js's useRouter
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { IconButton, Tooltip } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditarFlujoModal from './EditarFlujoModal';
 import BlockIcon from "@mui/icons-material/Block";
- 
-// Example data
-const data = [
-  {
-    id: 1,
-    nameFlujo: 'Flujo 1',
-    nameCliente: 'Cliente A',
-    fecha: '2023-10-01',
-  },
-  {
-    id: 2,
-    nameFlujo: 'Flujo 2',
-    nameCliente: 'Cliente B',
-    fecha: '2023-10-02',
-  },
-  {
-    id: 3,
-    nameFlujo: 'Flujo 3',
-    nameCliente: 'Cliente C',
-    fecha: '2023-10-03',
-  },
-];
- 
+import GestorFlujosServ from '../../services/GestorFlujos/GestorFlujosServ';
+
 const ListaFlujos = () => {
-  const router = useRouter(); // Use Next.js's useRouter instead of useNavigate
- 
+  const router = useRouter();
+  const [clients, setClients] = useState([]); // Define the clients state
+  const [loading, setLoading] = useState(true); // Define the loading state
+
+  // Llamada a la API para obtener clientes
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const clientsData = await GestorFlujosServ.getAllClients(); // Llamada a la API
+        setClients(clientsData); // Guarda los datos en el estado
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      } finally {
+        setLoading(false); // Cambia el estado de loading
+      }
+    };
+
+    fetchClients(); // Ejecutar la función cuando se monte el componente
+  }, []);
+
   // Define columns
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'id',
-        header: 'ID',
-        size: 150,
-      },
-      {
-        accessorKey: 'nameFlujo',
-        header: 'Nombre del flujo',
-        size: 150,
-      },
-      {
-        accessorKey: 'nameCliente',
+        accessorKey: 'nombre',
         header: 'Nombre del cliente',
         size: 200,
+      },
+      {
+        accessorKey: 'estado',
+        header: 'Estado',
+        size: 150,
+        Cell: ({ cell }) => (cell.getValue() === 1 ? 'Activo' : 'Inactivo'),
       },
       {
         accessorKey: 'fecha',
@@ -65,14 +57,14 @@ const ListaFlujos = () => {
             <Tooltip title="Ver">
               <IconButton
                 color="primary"
-                onClick={() => router.push(`/dashboard/flujo`)} // Use router.push for navigation
+                onClick={() => router.push(`/dashboard/flujo/${row.original.id}`)}
               >
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
- 
+
             <EditarFlujoModal />
- 
+
             <Tooltip title="Deshabilitar">
               <IconButton color="primary">
                 <BlockIcon />
@@ -84,14 +76,18 @@ const ListaFlujos = () => {
     ],
     [router] // Add router to the dependency array
   );
- 
+
   // Create the table instance
   const table = useMaterialReactTable({
     columns,
-    data, // Data must be memoized or stable
+    data: clients, // Use the clients state here
   });
- 
+
+  if (loading) {
+    return <div>Loading...</div>; // Display loading text or spinner while fetching data
+  }
+
   return <MaterialReactTable table={table} />;
 };
- 
+
 export default ListaFlujos;
