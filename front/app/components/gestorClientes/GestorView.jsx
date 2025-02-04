@@ -13,7 +13,7 @@ const GestorClienteView = () => {
   return (
     <div>
       <div className='header'>
-        <h1>Gestor de mensajes</h1>
+        <h1>Listado de clientes</h1>
         <div className='buttons-container'>
           <ModalCrearCliente onClientCreated={handleRefreshClientes} /> {/* Pasa la función como prop */}
         </div>

@@ -77,14 +77,12 @@ const GestorFlujosServ = {
     getClientStates: async (clientId) => {
         try {
             const response = await apiClient.get(`/status/${clientId}/estados`);
-            
             // Verificar la estructura completa de la respuesta
-            console.log("Respuesta completa del servidor:", response.data);
-    
+            // console.log("Respuesta completa del servidor:", response.data);
             // Accedemos a la data interna donde se encuentra la propiedad estados
             const data = response.data.data;
             let estados = data.estados;
-    
+
             // Verificamos si estados es un string y lo parseamos
             if (typeof estados === 'string') {
                 try {
@@ -94,16 +92,30 @@ const GestorFlujosServ = {
                     throw new Error("Formato de estados inválido.");
                 }
             }
-    
+
             // Retornamos un objeto que combine la data original y el arreglo de estados parseado
             return { ...data, estados };
-    
+
         } catch (error) {
             console.error("Error al obtener los estados del cliente:", error);
             throw error;
         }
-    }     
+    },
 
+    getMessagesByClientId: async (id) => {
+        try {
+            // console.log(`Solicitando mensajes para el cliente con ID: ${id}...`);
+            // Realizamos la petición GET a la ruta /search/{id}
+            const response = await apiClient.get(`/message/search/${id}`);
+            console.log("Mensajes obtenidos:", response.data);
+            // Se retorna la data (puedes personalizar la respuesta según lo que necesites)
+            return response.data;
+        } catch (error) {
+            console.error(`Error al obtener los mensajes para el cliente ${id}:`, error.message);
+            // Puedes personalizar la forma en que se maneja el error
+            throw error;
+        }
+    },
 }
 
 export default GestorFlujosServ;

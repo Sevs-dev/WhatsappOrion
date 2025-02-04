@@ -17,6 +17,7 @@ class StatusController extends Controller
         $validated = $request->validate([
             'id_api' => 'required|integer',
             'estados' => 'required|json',
+            'message' => 'required',
         ]);
     
         try {
@@ -32,6 +33,7 @@ class StatusController extends Controller
                 $status = new StatusClient();
                 $status->id_api = $validated['id_api'];
                 $status->estados = $validated['estados'];
+                $status->message = $validated['message'];
                 $message = 'Estado de flujo guardado con éxito.';
             }
     

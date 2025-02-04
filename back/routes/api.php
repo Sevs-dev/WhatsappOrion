@@ -33,6 +33,7 @@ Route::prefix('message')->group(function () {
     Route::delete('/delete/{id}', [MessageController::class, 'delete']);
     Route::get('/list', [MessageController::class, 'index']);
     Route::get('/{id}', [MessageController::class, 'show']);
+    Route::get('/search/{id}', [MessageController::class, 'getMessagesByClientId']);
 });
 
 Route::prefix('client')->group(function () {

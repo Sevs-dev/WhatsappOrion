@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('status_clients', function (Blueprint $table) {
             $table->id();
             $table->json('estados'); 
+            $table->string('message');
             $table->unsignedBigInteger('id_api');
             $table->foreign('id_api')->references('id')->on('client_apis')->onDelete('cascade');
             $table->timestamps();
         });
+        
     }
 
     /**
