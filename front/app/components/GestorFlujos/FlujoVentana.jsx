@@ -77,20 +77,26 @@ const FlujoVentana = ({ id }) => {
 
 
   const fetchClientStates = async (clientId) => {
+    // Inicia el estado de carga
+    setLoading(true);
+
     try {
-        const response = await GestorFlujosServ.getClientStates(clientId);
-        const estados = response.estados;  // Ahora es un arreglo parseado
+      const response = await GestorFlujosServ.getClientStates(clientId);
+      const estados = response.estados;  // Ahora es un arreglo parseado
 
-        setSelectedEstados(estados);
-        console.log("Respuesta del servidor con los estados parseados:", response);
+      setSelectedEstados(estados);
+      console.log("Respuesta del servidor con los estados parseados:", response);
 
-        // Creamos un objeto para manejar el estado, ej.: { "Inicio": true, "Recibido": true, ... }
-        setEstado(estados.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
+      // Creamos un objeto para manejar el estado, ej.: { "Inicio": true, "Recibido": true, ... }
+      setEstado(estados.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
     } catch (err) {
-        console.error("Error obteniendo los estados del cliente:", err);
-        setError("Error al obtener los estados del cliente.");
+      console.error("Error obteniendo los estados del cliente:", err);
+      setError("Error al obtener los estados del cliente.");
+    } finally {
+      // Una vez finalizada la petición, se desactiva el estado de carga
+      setLoading(false);
     }
-};
+  };
 
 
   const { nombre, codigo } = client || {};

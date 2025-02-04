@@ -15,28 +15,40 @@ class StatusController extends Controller
     {
         // Validar los datos recibidos
         $validated = $request->validate([
-            'id_api' => 'required|integer', // Ajustamos a 'id_api'
-            'estados' => 'required|json',  // Asegurarse de que 'estados' es una cadena JSON
+            'id_api' => 'required|integer',
+            'estados' => 'required|json',
         ]);
-
+    
         try {
-            // Crear el nuevo registro de estado
-            $status = new StatusClient();
-            $status->id_api = $validated['id_api']; // Cambiado de 'id' a 'id_api'
-            $status->estados = $validated['estados'];  // Asume que este campo está en formato JSON
+            // Buscar si ya existe un registro con el mismo id_api
+            $status = StatusClient::where('id_api', $validated['id_api'])->first();
+    
+            if ($status) {
+                // Si existe, actualizar los datos
+                $status->estados = $validated['estados'];
+                $message = 'Estado de flujo actualizado con éxito.';
+            } else {
+                // Si no existe, crear un nuevo registro
+                $status = new StatusClient();
+                $status->id_api = $validated['id_api'];
+                $status->estados = $validated['estados'];
+                $message = 'Estado de flujo guardado con éxito.';
+            }
+    
             $status->save();
-
+    
             return response()->json([
-                'message' => 'Estado de flujo guardado con éxito.',
+                'message' => $message,
                 'data' => $status,
-            ], 201); // Código 201 para éxito al crear un nuevo recurso
+            ], 200); // Código 200 para actualización o 201 si es un nuevo registro
+    
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error al guardar el estado.',
+                'message' => 'Error al guardar/actualizar el estado.',
                 'error' => $e->getMessage(),
-            ], 500); // Código 500 para errores internos
+            ], 500);
         }
-    }
+    }    
 
     /**
      * Obtener los estados de un cliente por ID.
