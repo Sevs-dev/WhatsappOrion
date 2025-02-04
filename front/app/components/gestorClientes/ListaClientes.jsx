@@ -5,8 +5,8 @@ import {
     useMaterialReactTable,
 } from "material-react-table";
 import { Box, Snackbar, Alert } from "@mui/material";
-import { IconButton, Tooltip } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { IconButton, Tooltip, } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import ListaNotificaciones from "./ListaNotificacion";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
@@ -101,7 +101,7 @@ const ListaClientes = ({ refresh }) => {
                                 color="primary"
                                 onClick={() => router.push(`/dashboard/editarMensajes/${row.original.id}`)}
                             >
-                                <VisibilityIcon />
+                                <EditIcon />
                             </IconButton>
                         </Tooltip>
                     </div>
