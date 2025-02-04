@@ -2,14 +2,19 @@ import React, { useState, useEffect } from "react";
 import GestorFlujosServ from '../../services/GestorFlujos/GestorFlujosServ';
 
 const FlujoVentana = ({ id }) => {
+  // Estados para almacenar datos del mensaje, cliente, mensajes, error, etc.
   const [message, setMessage] = useState(null);
-  const [client, setClient] = useState(null); // Para almacenar el cliente encontrado
+  const [client, setClient] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [dataId, setDataId] = useState();
   const [error, setError] = useState(null);
-  const [estado, setEstado] = useState({}); // Estado inicial del flujo
-  const [clientId, setClientId] = useState(null); // Para almacenar el ID del cliente
-  const [selectedEstados, setSelectedEstados] = useState([]); // Para almacenar los estados seleccionados
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [estado, setEstado] = useState({});
+  const [clientId, setClientId] = useState(null);
+  const [messageId, setMessageID] = useState(null);
+  const [selectedEstados, setSelectedEstados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Lista de todos los estados posibles
   const estados = [
     'Inicio',
     'Recibido',
@@ -24,23 +29,23 @@ const FlujoVentana = ({ id }) => {
     'Final'
   ];
 
+  // Primer useEffect para obtener el mensaje y el cliente usando el id
   useEffect(() => {
     const fetchMessageAndClient = async () => {
       try {
-        // Primero, obtener el mensaje
+        // Primero, obtenemos el mensaje (puede ser un mensaje o el primer mensaje relacionado)
         const messageData = await GestorFlujosServ.getMessageById(id);
         setMessage(messageData);
-
-        const codigo = messageData?.data?.codigo; // Asegúrate de que esto se obtenga correctamente
-
+        setDataId(messageData?.data?.id_cliente_whatsapp); 
+        const codigo = messageData?.data?.codigo;
+        setMessageID(messageData?.data?.id_cliente_whatsapp);
         if (codigo) {
-          // Buscar el cliente usando el código
+          // Buscamos el cliente a partir del código
           const clientData = await GestorFlujosServ.getClientByCodigo(codigo);
-          setClient(clientData); // Guardar el cliente encontrado
-          setClientId(clientData?.id); // Guardar el ID del cliente
-
-          // Ahora obtener los estados del cliente
-          fetchClientStates(clientData?.id); // Llamar a la función para obtener los estados
+          setClient(clientData);
+          setClientId(clientData?.id);
+          // Llamamos a la función para obtener los estados del cliente
+          fetchClientStates(clientData?.id);
         } else {
           setError('Código no encontrado en el mensaje.');
         }
@@ -48,22 +53,22 @@ const FlujoVentana = ({ id }) => {
         setError('No se pudo obtener los datos.');
         console.error(err);
       } finally {
-        setLoading(false); // Aseguramos que la carga termine
+        setLoading(false);
       }
     };
 
     fetchMessageAndClient();
   }, [id]);
 
+  // Segundo useEffect para obtener los estados del cliente una vez tenemos su ID
   useEffect(() => {
+    if (!clientId) return;
     const fetchData = async () => {
       try {
-        const response = await GestorFlujosServ.getClientStates(clientId);  // Asegúrate de que la URL es la correcta
+        const response = await GestorFlujosServ.getClientStates(clientId);
         console.log("Respuesta del servidor con los estados:", response.data);
 
-        // Asegúrate de convertir la cadena JSON a un array
         const estadosArray = JSON.parse(response.data.estados);
-
         setSelectedEstados(estadosArray);
         setEstado(estadosArray.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
       } catch (err) {
@@ -73,39 +78,47 @@ const FlujoVentana = ({ id }) => {
     };
 
     fetchData();
-  }, []);
+  }, [clientId]);
 
+  // UseEffect para obtener los mensajes asociados al cliente usando su ID (usando el microservicio)
+  useEffect(() => {
+    if (!dataId) return;
+    const fetchMessages = async () => {
+      try {
+        const response = await GestorFlujosServ.getMessagesByClientId(dataId);
+        console.log("Respuesta del servidor con los mensajes:", response);
+        console.log("Mensajes del cliente:", response.data);
+        setMessages(response.data);
+      } catch (err) {
+        console.error("Error obteniendo los mensajes del cliente:", err);
+        setError("Error al obtener los mensajes del cliente.");
+      }
+    };
 
+    fetchMessages();
+  }, [dataId]);
+
+  // Función para obtener los estados del cliente (si se requiere llamar en otro momento)
   const fetchClientStates = async (clientId) => {
-    // Inicia el estado de carga
     setLoading(true);
-
     try {
       const response = await GestorFlujosServ.getClientStates(clientId);
-      const estados = response.estados;  // Ahora es un arreglo parseado
-
+      const estados = response.estados;
       setSelectedEstados(estados);
       console.log("Respuesta del servidor con los estados parseados:", response);
-
-      // Creamos un objeto para manejar el estado, ej.: { "Inicio": true, "Recibido": true, ... }
       setEstado(estados.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
     } catch (err) {
       console.error("Error obteniendo los estados del cliente:", err);
       setError("Error al obtener los estados del cliente.");
     } finally {
-      // Una vez finalizada la petición, se desactiva el estado de carga
       setLoading(false);
     }
   };
 
-
-  const { nombre, codigo } = client || {};
-
-  // Manejo de cambios en los checkboxes
+  // Maneja el cambio en los checkbox de los estados
   const handleEstadoChange = (event) => {
     const { name, checked } = event.target;
 
-    // Solo actualizar selectedEstados si el estado es diferente al valor actual
     setSelectedEstados((prev) => {
       if (checked && !prev.includes(name)) {
         return [...prev, name];
@@ -115,19 +128,18 @@ const FlujoVentana = ({ id }) => {
       return prev;
     });
 
-    // Actualizar estado local (solo lo mantengo por claridad, puede omitirse si no es necesario)
     setEstado((prevEstado) => ({
       ...prevEstado,
       [name]: checked
     }));
   };
 
+  // Función para guardar el estado del flujo
   const handleSave = async () => {
     if (!clientId) {
       setError("No se puede guardar sin un ID de cliente.");
       return;
     }
-
     if (selectedEstados.length === 0) {
       setError("Debe seleccionar al menos un estado.");
       return;
@@ -136,7 +148,9 @@ const FlujoVentana = ({ id }) => {
     const data = {
       id_api: clientId,
       estados: JSON.stringify(selectedEstados),
+      message: messageId,
     };
+    console.log("Datos a enviar al servidor:", data);
 
     try {
       const response = await GestorFlujosServ.saveEstadoFlujo(data);
@@ -148,7 +162,8 @@ const FlujoVentana = ({ id }) => {
     }
   };
 
-  // Mostrar loader mientras los datos se cargan
+  const { nombre, codigo } = client || {};
+
   if (loading) {
     return <div className="text-white">Cargando datos...</div>;
   }
@@ -217,6 +232,24 @@ const FlujoVentana = ({ id }) => {
         ) : (
           <p className="text-yellow-500">No se han seleccionado estados.</p>
         )}
+
+        {/* Sección para mostrar la lista de mensajes asociados al cliente */}
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">Mensajes del Cliente</h3>
+          {messages.length > 0 ? (
+            <ul className="list-disc pl-5">
+              {messages.map((msg) => (
+                <li key={msg.id}>
+                  <p><strong>{msg.titulo}</strong></p>
+                  <p>{msg.descripcion}</p>
+                  <p className="text-sm">Fecha: {msg.fecha}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-yellow-500">No hay mensajes para este cliente.</p>
+          )}
+        </div>
       </div>
 
       {error && <p className="text-red-500 mt-2">{error}</p>}

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClientApi;
+use App\Models\ClientsWhatsapp;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\MessageWhatsapp;
@@ -127,5 +129,22 @@ class MessageController extends Controller
         }
 
         return response()->json(['data' => $mensaje]);
+    }
+
+
+    public function getMessagesByClientId($id)
+    {
+        // Find the client
+        $empresa = ClientsWhatsapp::find($id);
+        if (!$empresa) {
+            return response()->json(['error' => 'Client not found'], 404);
+        }
+
+        // Query messages where 'codigo' matches the client's code and 'message' matches the given message
+        $datos = MessageWhatsapp::where('codigo', $empresa->codigo)
+            ->where('id_cliente_whatsapp', $empresa->id)
+            ->get();
+
+        return response()->json(['data' => $datos]);
     }
 }

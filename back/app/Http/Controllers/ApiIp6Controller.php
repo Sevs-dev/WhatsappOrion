@@ -55,6 +55,7 @@ class ApiIp6Controller extends Controller
         return response()->json(['error' => 'Failed to fetch data'], 500);
     }
 
+    
     public function getClientByCodigo($codigo)
     {
         $client = ClientApi::where('codigo', $codigo)->first();

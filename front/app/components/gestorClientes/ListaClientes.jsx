@@ -5,11 +5,15 @@ import {
     useMaterialReactTable,
 } from "material-react-table";
 import { Box, Snackbar, Alert } from "@mui/material";
+import { IconButton, Tooltip } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListaNotificaciones from "./ListaNotificacion";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
+import { useRouter } from 'next/navigation'; // Use Next.js's useRouter
 
 const ListaClientes = ({ refresh }) => {
+    const router = useRouter();
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -75,15 +79,32 @@ const ListaClientes = ({ refresh }) => {
                 Cell: ({ row }) => (
                     <div>
                         {/* Pasando el id del cliente correctamente al ModalAgregarNotificacion */}
-                        <ModalAgregarNotificacion 
-                            id={row.original.id} 
+                        <ModalAgregarNotificacion
+                            id={row.original.id}
                             onSuccess={() => setRefreshData(prev => !prev)} // Cambia el estado de refresh
                         />
                     </div>
                 ),
             },
+            {
+                header: "Mensajes",
+                size: 150,
+                Cell: ({ row }) => (
+                    <div>
+                        {/* Pasando el id del cliente correctamente al ModalAgregarNotificacion */}
+                        <Tooltip title="Ver">
+                            <IconButton
+                                color="primary"
+                                onClick={() => router.push(`/dashboard/editarMensajes/${row.original.id}`)}
+                            >
+                                <VisibilityIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                ),
+            },
         ],
-        []
+        [router]
     );
 
     // Configuración de la tabla
@@ -92,9 +113,9 @@ const ListaClientes = ({ refresh }) => {
         data,
         enableExpandAll: false, // Deshabilitar el botón de expandir todo
         enableExpanding: false, // ❌ Deshabilita la funcionalidad de expansión
-    
+
     });
-    
+
 
     // Manejo de la visibilidad del Snackbar
     const handleCloseSnackbar = () => {
