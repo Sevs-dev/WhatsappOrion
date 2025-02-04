@@ -19,14 +19,15 @@ export default function DashboardLayout({ children }) {
     if (!token) {
       router.push('/login');
     } else {
-      setToast({
-        show: true,
-        type: 'success',
-        message: 'Inicio de sesión correcto.',
-      });
-      setTimeout(() => {
-        setToast({ show: false, type: '', message: '' });
-      }, 3000);
+      // Mostrar el Toast de éxito cuando el usuario es redirigido al dashboard
+      // setToast({
+      //   show: true,
+      //   type: 'success',
+      //   message: 'Inicio de sesión correcto.',
+      // });
+      // setTimeout(() => {
+      //   setToast({ show: false, type: '', message: '' });
+      // }, 3000);
     }
   }, [router]);
 
@@ -49,8 +50,8 @@ export default function DashboardLayout({ children }) {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <Sidebar 
-        isCollapsed={isCollapsed} 
+      <Sidebar
+        isCollapsed={isCollapsed}
         toggleSidebar={toggleSidebar}
         handleLogout={handleLogout}  // Pasar la función de logout
       />

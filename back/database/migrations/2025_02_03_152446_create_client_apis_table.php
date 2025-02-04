@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
-        Schema::create('clientes_whatsapp', function (Blueprint $table) {
-            $table->string('id_cliente_whatsapp')->primary();
+        Schema::create('client_apis', function (Blueprint $table) {
+            $table->id();
+            $table->string('codigo');
             $table->string('nombre');
-            $table->integer('estado');
-            $table->dateTime('fecha')->nullable();
-            $table->string('usuario');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clientes_whatsapp');
+        Schema::dropIfExists('client_apis');
     }
 };
