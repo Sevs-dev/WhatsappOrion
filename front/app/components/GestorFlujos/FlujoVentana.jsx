@@ -1,111 +1,114 @@
-import React, { useState, useEffect } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import GestorFlujosServ from "../../services/GestorFlujos/GestorFlujosServ";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import React, { useState, useEffect } from "react"; // Importa React y los hooks necesarios
+import { useDrag, useDrop } from "react-dnd"; // Importa hooks de react-dnd para habilitar el drag-and-drop
+import GestorFlujosServ from "../../services/GestorFlujos/GestorFlujosServ"; // Importa el servicio que interactúa con la API
+import { DndProvider } from "react-dnd"; // Importa el proveedor para drag-and-drop
+import { HTML5Backend } from "react-dnd-html5-backend"; // Backend de HTML5 para el drag-and-drop
 
-const FlujoVentana = ({ id }) => {
-  const estados = [
+const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' como prop
+  const estados = [ // Lista de estados posibles para el flujo
     "Inicio", "Recibido", "En procesamiento", "En alistamiento",
     "Alistado", "Verificado", "En transporte", "En transito",
     "Entregado", "Con novedad", "Final",
   ];
 
-  const [client, setClient] = useState(null);
-  const [clientId, setClientId] = useState(null);
-  const [selectedEstados, setSelectedEstados] = useState(new Set());
-  const [estado, setEstado] = useState({});
-  const [messageId, setMessageId] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Definición de estados locales utilizando useState
+  const [client, setClient] = useState(null); // Guarda los datos del cliente
+  const [clientId, setClientId] = useState(null); // Guarda el ID del cliente
+  const [selectedEstados, setSelectedEstados] = useState(new Set()); // Estados seleccionados por el usuario
+  const [estado, setEstado] = useState({}); // Representación interna de los estados
+  const [messageId, setMessageId] = useState(""); // ID del mensaje
+  const [messages, setMessages] = useState([]); // Lista de mensajes del cliente
+  const [error, setError] = useState(null); // Estado para manejar errores
+  const [loading, setLoading] = useState(true); // Estado de carga
 
+  // useEffect para obtener los datos del cliente cuando cambia 'id'
   useEffect(() => {
     const fetchDataClient = async () => {
       try {
-        setLoading(true);
-        const datosCliente = await GestorFlujosServ.getClientById(id);
-        if (datosCliente?.data) {
-          setClient(datosCliente.data);
-          setClientId(datosCliente.data.id);
+        setLoading(true); // Marca que la carga comenzó
+        const datosCliente = await GestorFlujosServ.getClientById(id); // Llama al servicio para obtener los datos del cliente
+        if (datosCliente?.data) { // Si se obtiene datos válidos
+          setClient(datosCliente.data); // Establece los datos del cliente
+          setClientId(datosCliente.data.id); // Establece el ID del cliente
         } else {
-          setClient(datosCliente);
-          setClientId(datosCliente.id);
+          setClient(datosCliente); // Si no tiene la propiedad 'data'
+          setClientId(datosCliente.id); // Establece el ID de otra forma
         }
       } catch (err) {
-        setError("Error al obtener datos del cliente");
+        setError("Error al obtener datos del cliente"); // Maneja el error
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoading(false); // Marca que la carga terminó
       }
     };
 
-    fetchDataClient();
-  }, [id]);
+    fetchDataClient(); // Llama a la función de carga
+  }, [id]); // Depende de 'id', se ejecuta cuando cambia
 
+  // useEffect para obtener los estados del cliente
   useEffect(() => {
-    if (!clientId) return;
-    fetchEstados(clientId);
-  }, [clientId]);
+    if (!clientId) return; // Si no hay ID de cliente, no hace nada
+    fetchEstados(clientId); // Llama a la función que obtiene los estados
+  }, [clientId]); // Depende de 'clientId', se ejecuta cuando cambia
 
-  const fetchEstados = async (id) => {
+  const fetchEstados = async (id) => { // Función para obtener los estados del cliente
     try {
-      const response = await GestorFlujosServ.getClientStates(id);
-      if (!response || !response.estados) {
+      const response = await GestorFlujosServ.getClientStates(id); // Llama al servicio para obtener los estados
+      if (!response || !response.estados) { // Si no hay estados
         console.warn("No hay estados disponibles para este cliente.");
-        setSelectedEstados(new Set());
+        setSelectedEstados(new Set()); // Resetea los estados seleccionados
         setEstado({});
         return;
       }
 
-      let estadosArray = response.estados;
-      if (typeof estadosArray === "string") {
+      let estadosArray = response.estados; // Asigna los estados obtenidos
+      if (typeof estadosArray === "string") { // Si los estados están en formato de cadena
         try {
-          estadosArray = JSON.parse(estadosArray);
+          estadosArray = JSON.parse(estadosArray); // Intenta convertir la cadena a un array
         } catch (parseError) {
           console.error("Error al parsear los estados:", parseError);
           estadosArray = [];
         }
       }
-      if (!Array.isArray(estadosArray)) estadosArray = [];
+      if (!Array.isArray(estadosArray)) estadosArray = []; // Si no es un array, lo resetea
 
-      setSelectedEstados(new Set(estadosArray));
-      setEstado(estadosArray.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
+      setSelectedEstados(new Set(estadosArray)); // Establece los estados seleccionados
+      setEstado(estadosArray.reduce((acc, curr) => ({ ...acc, [curr]: true }), {})); // Convierte el array en un objeto
     } catch (err) {
       console.error("Error obteniendo estados:", err);
       setError("Error al obtener estados del cliente.");
     }
   };
 
-  const fetchMessages = async (id) => {
+  const fetchMessages = async (id) => { // Función para obtener los mensajes del cliente
     try {
-      const response = await GestorFlujosServ.getMessageById(id);
-      setMessageId(response.data[0]?.id_cliente_whatsapp);
+      const response = await GestorFlujosServ.getMessageById(id); // Llama al servicio para obtener los mensajes
+      setMessageId(response.data[0]?.id_cliente_whatsapp); // Establece el ID del mensaje
     } catch (err) {
       console.error("Error obteniendo mensajes:", err);
       setError("Error al obtener mensajes del cliente.");
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // useEffect para obtener los mensajes cuando 'clientId' cambia
     if (!clientId) return;
     fetchMessages(clientId);
   }, [clientId]);
 
-  const handleEstadoChange = (event) => {
+  const handleEstadoChange = (event) => { // Función para manejar el cambio de estado (checkbox)
     const { name, checked } = event.target;
     setSelectedEstados((prev) => {
       const newSet = new Set(prev);
-      checked ? newSet.add(name) : newSet.delete(name);
+      checked ? newSet.add(name) : newSet.delete(name); // Agrega o elimina el estado seleccionado
       return newSet;
     });
     setEstado((prevEstado) => ({
       ...prevEstado,
-      [name]: checked,
+      [name]: checked, // Actualiza el estado con el nuevo valor
     }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async () => { // Función para guardar los estados seleccionados
     if (!clientId) {
       setError("No se puede guardar sin un ID de cliente.");
       return;
@@ -122,7 +125,7 @@ const FlujoVentana = ({ id }) => {
     };
 
     try {
-      await GestorFlujosServ.saveEstadoFlujo(data);
+      await GestorFlujosServ.saveEstadoFlujo(data); // Guarda los datos a través del servicio
       alert("Estado guardado correctamente.");
     } catch (error) {
       console.error("Error guardando el estado del flujo:", error);
@@ -130,13 +133,12 @@ const FlujoVentana = ({ id }) => {
     }
   };
 
-  // UseEffect para obtener los mensajes asociados al cliente usando su ID (usando el microservicio)
-  useEffect(() => {
+  useEffect(() => { // useEffect para obtener los mensajes cuando 'messageId' cambia
     if (!messageId) return;
     const fetchMessages = async () => {
       try {
-        const response = await GestorFlujosServ.getMessagesByClientId(messageId);
-        setMessages(response.data);
+        const response = await GestorFlujosServ.getMessagesByClientId(messageId); // Llama al servicio para obtener los mensajes asociados
+        setMessages(response.data); // Establece los mensajes en el estado
       } catch (err) {
         console.error("Error obteniendo los mensajes del cliente:", err);
         setError("Error al obtener los mensajes del cliente.");
@@ -146,7 +148,7 @@ const FlujoVentana = ({ id }) => {
     fetchMessages();
   }, [messageId]);
 
-  const MessageItem = ({ message }) => {
+  const MessageItem = ({ message }) => { // Componente para cada mensaje, habilita el drag
     const [, drag] = useDrag(() => ({
       type: "MESSAGE",
       item: { message },
@@ -161,7 +163,7 @@ const FlujoVentana = ({ id }) => {
     );
   };
 
-  const EstadoDrop = ({ estado, messages, onDrop }) => {
+  const EstadoDrop = ({ estado, messages, onDrop }) => { // Componente para manejar el drop de mensajes en un estado
     const [, drop] = useDrop(() => ({
       accept: "MESSAGE",
       drop: (item) => onDrop(estado, item.message),
@@ -181,9 +183,9 @@ const FlujoVentana = ({ id }) => {
     );
   };
 
-  const [estadoMessages, setEstadoMessages] = useState({});
+  const [estadoMessages, setEstadoMessages] = useState({}); // Estado para almacenar los mensajes en cada estado
 
-  const handleDropMessage = (estado, message) => {
+  const handleDropMessage = (estado, message) => { // Función para manejar el drop de un mensaje en un estado
     setEstadoMessages((prev) => {
       const newMessages = prev[estado] ? [...prev[estado], message] : [message];
       return { ...prev, [estado]: newMessages };
