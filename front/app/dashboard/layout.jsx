@@ -1,9 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react'; // Importa useState
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import Sidebar from '../components/sidebar/Sidebard'; // Asegúrate de que el nombre sea correcto
-import Toast from '../components/toastr/toast'; // Importa el componente Toast
+import Sidebar from '../components/sidebar/Sidebard';
+import Toast from '../components/toastr/toast';
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -19,7 +19,6 @@ export default function DashboardLayout({ children }) {
     if (!token) {
       router.push('/login');
     } else {
-      // Mostrar el Toast de éxito cuando el usuario es redirigido al dashboard
       setToast({
         show: true,
         type: 'success',
@@ -35,6 +34,11 @@ export default function DashboardLayout({ children }) {
     setIsCollapsed((prevState) => !prevState);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    router.push('/login');
+  };
+
   return (
     <div
       className="flex h-screen"
@@ -45,15 +49,16 @@ export default function DashboardLayout({ children }) {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Barra lateral */}
-      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+      <Sidebar 
+        isCollapsed={isCollapsed} 
+        toggleSidebar={toggleSidebar}
+        handleLogout={handleLogout}  // Pasar la función de logout
+      />
 
-      {/* Contenido principal */}
       <div className="flex-grow overflow-y-auto p-6">
         {children}
       </div>
 
-      {/* Mostrar el Toast si es necesario */}
       {toast.show && <Toast type={toast.type} message={toast.message} />}
     </div>
   );

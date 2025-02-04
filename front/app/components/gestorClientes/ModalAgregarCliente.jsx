@@ -5,16 +5,6 @@ import Toast from '../toastr/toast';
 import debounce from 'lodash.debounce'; // Usamos lodash.debounce para retrasar la búsqueda
 import '../toastr/toast.css';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    borderRadius: 12,
-    p: 4,
-};
-
 const ModalCrearCliente = ({ onClientCreated }) => {
     const [open, setOpen] = useState(false);
     const [toast, setToast] = useState({ show: false, type: '', message: '' });
@@ -138,14 +128,19 @@ const ModalCrearCliente = ({ onClientCreated }) => {
                 <Toast type={toast.type} message={toast.message} />
             )}
             <button onClick={handleOpen} className='btn btn-primary'>Crear cliente</button>
-            <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Box sx={style}>
-                    <div className='modal-container'>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box className="modal-container">
+                    <Box className="modal-content">
                         <div>
                             <h1>Agregar cliente</h1>
                         </div>
                         <div className='options'>
-                            <label >Codigo Cliente</label>
+                            <label>Codigo Cliente</label>
                             <div className='input-group'>
                                 <input
                                     type="text"
@@ -189,7 +184,7 @@ const ModalCrearCliente = ({ onClientCreated }) => {
                                 <Button variant="contained" color='success' onClick={handleSave}>Guardar</Button>
                             </div>
                         </div>
-                    </div>
+                    </Box>
                 </Box>
             </Modal>
         </div>

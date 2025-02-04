@@ -4,16 +4,6 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
 import Toast from '../toastr/toast';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 500,
-    borderRadius: 12,
-    p: 4,
-};
-
 const ModalAgregarNotificacion = ({ id }) => {
     const [open, setOpen] = useState(false);
     const [toast, setToast] = useState({
@@ -29,7 +19,7 @@ const ModalAgregarNotificacion = ({ id }) => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
-        setFormErrors({ titulo: false, descripcion: false }); // Limpiar errores al cerrar
+        setFormErrors({ titulo: false, descripcion: false });
     };
 
     const [formData, setFormData] = useState({
@@ -45,7 +35,6 @@ const ModalAgregarNotificacion = ({ id }) => {
         usuario: '',
     });
 
-    // Obtener detalles del cliente cuando el id cambia
     useEffect(() => {
         if (id) {
             ClientApiService.getClientById(id)
@@ -78,7 +67,6 @@ const ModalAgregarNotificacion = ({ id }) => {
             ...prevState,
             [name]: value,
         }));
-        // Limpiar el error cuando el usuario comienza a escribir
         if (formErrors[name]) {
             setFormErrors((prevErrors) => ({
                 ...prevErrors,
@@ -88,7 +76,6 @@ const ModalAgregarNotificacion = ({ id }) => {
     };
 
     const handleSave = async () => {
-        // Validar campos obligatorios
         const errors = {
             titulo: !formData.titulo,
             descripcion: !formData.descripcion,
@@ -96,7 +83,7 @@ const ModalAgregarNotificacion = ({ id }) => {
         setFormErrors(errors);
 
         if (errors.titulo || errors.descripcion) {
-            return; // Detener si hay errores
+            return;
         }
 
         const payload = {
@@ -120,7 +107,6 @@ const ModalAgregarNotificacion = ({ id }) => {
                 message: `La notificación "${formData.titulo}" se ha creado con éxito.`,
             });
 
-            // Reiniciar el formulario
             setFormData({
                 titulo: '',
                 descripcion: '',
@@ -160,101 +146,99 @@ const ModalAgregarNotificacion = ({ id }) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
-                    <div className="modal-container">
-                        <h1>Agregar Notificación</h1>
+                <Box className="modal-container">
+                    <h1>Agregar Notificación</h1>
+                    <div className="options">
+                        <label>Título</label>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                name="titulo"
+                                value={formData.titulo}
+                                onChange={handleChange}
+                                placeholder="Escribe el título"
+                            />
+                            {formErrors.titulo && (
+                                <span className="error-message" style={{ color: 'red' }}>
+                                    * Este campo es obligatorio
+                                </span>
+                            )}
+                        </div>
 
-                        <div className="options">
-                            <label>Título</label>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    name="titulo"
-                                    value={formData.titulo}
-                                    onChange={handleChange}
-                                    placeholder="Escribe el título"
-                                />
-                                {formErrors.titulo && (
-                                    <span style={{ color: 'red', fontSize: '12px' }}>
-                                        Este campo es obligatorio
-                                    </span>
-                                )}
-                            </div>
+                        <label>Descripción</label>
+                        <div className="input-group">
+  <textarea
+    name="descripcion"
+    value={formData.descripcion}
+    onChange={handleChange}
+    placeholder="Escribe la descripción"
+    rows={4}  // Puedes ajustar el número de filas iniciales
+    className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  {formErrors.descripcion && (
+    <span className="error-message text-red-500 text-sm">
+      * Este campo es obligatorio
+    </span>
+  )}
+</div>
 
-                            <label>Descripción</label>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    name="descripcion"
-                                    value={formData.descripcion}
-                                    onChange={handleChange}
-                                    placeholder="Escribe la descripción"
-                                />
-                                {formErrors.descripcion && (
-                                    <span style={{ color: 'red', fontSize: '12px' }}>
-                                        Este campo es obligatorio
-                                    </span>
-                                )}
-                            </div>
+                        <label className="form-label-2">Nombre del Cliente</label>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="nombre"
+                                value={formData.nombre}
+                                onChange={handleChange}
+                                disabled
+                            />
+                        </div>
 
-                            <label className="form-label-2">Nombre del Cliente</label>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="nombre"
-                                    value={formData.nombre}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                            </div>
+                        <label className="form-label-2">Código Cliente</label>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="codigo"
+                                value={formData.codigo}
+                                onChange={handleChange}
+                                disabled
+                            />
+                        </div>
 
-                            <label className="form-label-2">Código Cliente</label>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="codigo"
-                                    value={formData.codigo}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                            </div>
+                        <label>URL</label>
+                        <div className="input-group">
+                            <select
+                                name="url"
+                                value={formData.url}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="A">URL 1</option>
+                                <option value="B">URL 2</option>
+                            </select>
+                        </div>
 
-                            <label>URL</label>
-                            <div className="input-group">
-                                <select
-                                    name="url"
-                                    value={formData.url}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Seleccionar</option>
-                                    <option value="A">URL 1</option>
-                                    <option value="B">URL 2</option>
-                                </select>
-                            </div>
+                        <label>Estado</label>
+                        <div className="input-group">
+                            <select
+                                name="estado"
+                                value={formData.estado}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
 
-                            <label>Estado</label>
-                            <div className="input-group">
-                                <select
-                                    name="estado"
-                                    value={formData.estado}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Seleccionar</option>
-                                    <option value="1">Activo</option>
-                                    <option value="0">Inactivo</option>
-                                </select>
-                            </div>
-
-                            <div className="buttons">
-                                <Button variant="contained" color="error" onClick={handleClose}>
-                                    Cerrar
-                                </Button>
-                                <Button variant="contained" color="success" onClick={handleSave}>
-                                    Guardar
-                                </Button>
-                            </div>
+                        <div className="buttons">
+                            <Button variant="contained" color="error" onClick={handleClose}>
+                                Cerrar
+                            </Button>
+                            <Button variant="contained" color="success" onClick={handleSave}>
+                                Guardar
+                            </Button>
                         </div>
                     </div>
                 </Box>

@@ -2,12 +2,14 @@ import React from 'react';
 
 function Home() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-bl from-gray-900 via-gray-800 to-black flex items-center justify-center overflow-hidden">
-      {/* Efectos decorativos en el fondo */}
-      <div className="absolute inset-0">
-        <div className="absolute w-72 h-72 bg-gradient-to-br from-blue-600 to-indigo-600 opacity-30 rounded-full blur-2xl -top-10 -left-10"></div>
-        <div className="absolute w-60 h-60 bg-gradient-to-tr from-purple-500 to-pink-500 opacity-20 rounded-full blur-2xl bottom-5 right-5"></div>
-      </div>
+<div className="relative min-h-screen bg-gradient-to-bl from-gray-900 via-gray-800 to-black flex items-center justify-center overflow-hidden rounded-lg">
+  {/* Efectos decorativos en el fondo */}
+  <div className="absolute inset-0">
+    {/* Gradiente verdoso oscuro */}
+    <div className="absolute w-72 h-72 bg-gradient-to-br from-green-900 to-teal-800 opacity-30 rounded-full blur-2xl -top-10 -left-10"></div>
+    {/* Gradiente azul oscuro */}
+    <div className="absolute w-60 h-60 bg-gradient-to-tr from-blue-900 to-cyan-800 opacity-20 rounded-full blur-2xl bottom-5 right-5"></div>
+  </div>
 
       {/* Contenedor principal */}
       <div className="relative bg-white bg-opacity-90 backdrop-blur-2xl px-6 py-8 rounded-2xl shadow-xl w-full max-w-3xl border border-gray-200 sm:px-10 sm:py-12">

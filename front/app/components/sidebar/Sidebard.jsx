@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -11,9 +11,10 @@ import Avatar from '@mui/material/Avatar';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
-  const [userName, setUserName] = useState(""); // Inicializado como cadena vacía
+  const [userName, setUserName] = useState("");
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
@@ -34,6 +35,29 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     setUserName("");
     router.push('/login');
   };
+
+  const menuItems = [
+    { 
+      path: '/dashboard/home', 
+      icon: <HomeIcon className="icon text-white" />, 
+      label: 'Inicio' 
+    },
+    { 
+      path: '/dashboard/gestorClientes', 
+      icon: <EmailIcon className="icon text-white" />, 
+      label: 'Gestor de mensajes' 
+    },
+    { 
+      path: '/dashboard/gestorFlujos', 
+      icon: <TimelineIcon className="icon text-white" />, 
+      label: 'Gestor de flujos' 
+    },
+    { 
+      path: '/dashboard/configDatos', 
+      icon: <SettingsIcon className="icon text-white" />, 
+      label: 'Configuración' 
+    }
+  ];
 
   return (
     <div
@@ -61,71 +85,61 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       </div>
 
       {/* Sidebar Menu */}
-      <div className="sidebar-menu flex-1">
-        <Link
-          href="/dashboard/home"
-          className="menu-link flex items-center space-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
-        >
-          <HomeIcon className="icon text-white" />
-          {!isCollapsed && <span>Inicio</span>}
-        </Link>
+      <div className="sidebar-menu flex-1 px-4 py-2">
+      {menuItems.map((item) => (
+    <Link
+      key={item.path}
+      href={item.path}
+      className={`menu-link flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'} gap-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all relative 
+        ${pathname === item.path ? 'bg-[rgba(26,82,118,0.6)]' : ''}`}
+    >
+      {item.icon}
+      {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+      
+      {/* Indicador de módulo activo */}
+      {pathname === item.path && (
+        <span 
+          className="absolute right-2 w-2 h-2 bg-yellow-500 rounded-full animate-bounce"
+          style={{ 
+            boxShadow: '0 0 5px rgba(59, 130, 246, 0.7)',
+            animationDuration: '0.5s'
+          }}
+        />
+      )}
+          </Link>
+        ))}
 
         <hr className="divider my-4 border-t border-gray-500 mx-4" />
 
         {!isCollapsed && (
           <p className="menu-title text-sm text-gray-400 mb-6 px-4">Menú principal</p>
         )}
-
-        <Link
-          href="/dashboard/gestorClientes"
-          className="menu-link flex items-center space-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
-        >
-          <EmailIcon className="icon text-white" />
-          {!isCollapsed && <span>Gestor de mensajes</span>}
-        </Link>
-
-        <Link
-          href="/dashboard/gestorFlujos"
-          className="menu-link flex items-center space-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
-        >
-          <TimelineIcon className="icon text-white" />
-          {!isCollapsed && <span>Gestor de flujos</span>}
-        </Link>
-
-        <Link
-          href="/dashboard/configDatos"
-          className="menu-link flex items-center space-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
-        >
-          <SettingsIcon className="icon text-white" />
-          {!isCollapsed && <span>Configuración</span>}
-        </Link>
       </div>
 
-      {/* Sidebar Footer */}
-      <div className={`sidebar-footer ${isCollapsed ? 'collapsed' : ''}`}>
-        <div className="user-info flex items-center space-x-4 py-4 px-4">
-          <Avatar
-            alt="User"
-            src={userName?.avatarUrl || "https://via.placeholder.com/50"}
-            className={`transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'}`}
-          />
-          {!isCollapsed && (
-            <div>
-              <p className="user-name text-sm font-medium">
-                {userName || 'Invitado'} {/* Muestra "Invitado" si no hay nombre de usuario */}
-              </p>
-              <p className="user-role text-xs text-gray-400">Ingeniero de software</p>
-            </div>
-          )}
+      {/* Sidebar Footer (unchanged) */}
+      <div className={`sidebar-footer px-4 py-2`}>
+  <div className={`user-info flex items-center ${isCollapsed ? "justify-center" : "justify-start"} gap-x-4 px-4 py-2`}>
+    <Avatar
+      alt="User"
+      src={userName?.avatarUrl || "https://via.placeholder.com/50"}
+      className={`transition-all duration-300 ${isCollapsed ? 'w-12 h-12' : 'w-12 h-12'}`}
+    />
+    {!isCollapsed && (
+      <div>
+        <p className="user-name text-sm font-medium">{userName || 'Invitado'}</p>
+        <p className="user-role text-xs text-gray-400">Ingeniero de software</p>
+      </div>
+    )}
+
         </div>
 
         {/* Logout Button */}
         <div className="mt-6 w-full">
           <button
             onClick={handleLogout}
-            className="menu-link flex items-center space-x-4 py-3 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
+            className="menu-link flex items-center space-x-4 py-4 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all"
           >
-            <LogoutIcon className="mr-6" />
+            <LogoutIcon className="mr-2" />
             {!isCollapsed && <span>Cerrar sesión</span>}
           </button>
         </div>

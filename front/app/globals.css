@@ -80,29 +80,32 @@
 /* MODALES */
 /* Contenedor del modal */
 .modal-container {
-    padding: 30px;
-    background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco moderno con un toque de transparencia */
-    border-radius: 20px; /* Bordes redondeados más suaves */
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1); /* Sombra más difusa y sutil */
-    backdrop-filter: blur(15px); /* Desenfoque para mantener el fondo visible */
-    border: none;
-    max-width: 500px; /* Limita el ancho del modal */
-    margin: auto; /* Centra el modal */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+    
 }
 
 /* Título del modal */
 .modal-container h1 {
-    font-size: 28px; /* Un tamaño un poco más grande */
-    font-weight: 700; /* Mayor peso para resaltar el título */
-    color: rgba(26, 82, 118, 0.9); /* Color azul para el título */
-    margin-bottom: 20px; /* Espaciado inferior cómodo */
-    text-align: center; /* Centrado para mayor simetría */
-    font-family: 'Poppins', sans-serif; /* Fuente moderna */
+    font-size: 24px; /* Tamaño más pequeño para pantallas pequeñas */
+    font-weight: 700;
+    color: rgba(26, 82, 118, 0.9);
+    margin-bottom: 15px; /* Menos margen para pantallas pequeñas */
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Estilo de botones */
 .buttons {
-    margin-top: 30px; /* Más espacio para separar botones de la parte superior */
+    margin-top: 20px; /* Menos margen para pantallas pequeñas */
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
@@ -110,56 +113,77 @@
 
 /* Estilo de los botones dentro de la sección */
 .buttons button {
-    border-radius: 10px; /* Bordes más redondeados */
-    padding: 14px 30px; /* Botones más grandes para mejor interacción */
-    font-size: 16px; /* Tamaño cómodo para la lectura */
+    border-radius: 10px;
+    padding: 10px 20px; /* Botones más pequeños para pantallas pequeñas */
+    font-size: 14px; /* Tamaño de fuente más pequeño */
     font-weight: 600;
-    transition: all 0.3s ease; /* Transición suave para los botones */
+    transition: all 0.3s ease;
     border: none;
-    color: #fff; /* Texto blanco por defecto */
-    background-color: rgba(26, 82, 118, 0.9); /* Azul translúcido con un poco de saturación */
+    color: #fff;
+    background-color: rgba(26, 82, 118, 0.9);
 }
 
 /* Hover en botones */
 .buttons button:hover {
-    background-color: rgba(17, 49, 83, 0.9); /* Color al pasar el ratón */
-    transform: translateY(-2px); /* Efecto de elevación */
+    background-color: rgba(17, 49, 83, 0.9);
+    transform: translateY(-2px);
 }
 
 /* Estilo del input */
 input[type="text"],
 select {
-    border-radius: 10px; /* Bordes redondeados para mayor uniformidad */
-    padding: 14px 18px; /* Más espacio dentro de los inputs */
-    width: 100%; /* Asegura que el input ocupe el 100% del ancho */
-    border: 1px solid #ddd; /* Borde suave */
-    margin-bottom: 20px; /* Espaciado más grande para mejor separación */
-    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con un toque de transparencia */
-    font-family: 'Roboto', sans-serif; /* Fuente moderna */
-    font-weight: 400; /* Peso de letra más ligero para el input */
-    font-size: 16px; /* Tamaño de texto más legible */
-    color: rgba(26, 82, 118, 0.9); /* Color azul para el texto */
+    border-radius: 10px;
+    padding: 10px 14px; /* Padding más pequeño para pantallas pequeñas */
+    width: 100%;
+    border: 1px solid #ddd;
+    margin-bottom: 15px; /* Menos margen para pantallas pequeñas */
+    background-color: rgba(255, 255, 255, 0.9);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+    color: rgba(26, 82, 118, 0.9);
 }
 
 /* Estilo del placeholder para asegurar visibilidad */
 input[type="text"]::placeholder {
-    color: rgba(26, 82, 118, 0.6); /* Color azul más claro para el placeholder */
-    font-style: italic; /* Hace que el texto del placeholder se vea más destacado */
+    color: rgba(26, 82, 118, 0.6);
+    font-style: italic;
 }
 
 /* Estilo del input en focus */
 input[type="text"]:focus,
 select:focus {
-    border-color: rgba(26, 82, 118, 0.9); /* Borde azul al enfocar */
-    outline: none; /* Eliminar el contorno predeterminado */
-    box-shadow: 0 0 5px rgba(26, 82, 118, 0.4); /* Sombra suave azul */
+    border-color: rgba(26, 82, 118, 0.9);
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 82, 118, 0.4);
 }
 
 /* Estilo del modal cuando el fondo es transparente */
 .MuiModal-root {
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro y más opaco para dar contraste */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* Media Queries */
+@media screen and (max-width: 768px) {
+    .modal-container {
+        padding: 15px; /* Menos padding para pantallas pequeñas */
+    }
+
+    .modal-container h1 {
+        font-size: 20px; /* Tamaño de fuente más pequeño */
+    }
+
+    .buttons button {
+        padding: 8px 16px; /* Botones más pequeños */
+        font-size: 12px; /* Tamaño de fuente más pequeño */
+    }
+
+    input[type="text"],
+    select {
+        padding: 8px 12px; /* Padding más pequeño */
+        font-size: 12px; /* Tamaño de fuente más pequeño */
+    }
+}
 
 /* Media Queries */
 @media screen and (max-width: 1360px) {
@@ -179,14 +203,7 @@ select:focus {
     .form {
         height: 75vh;
     }
-
-    .modal-container {
-        padding: 10px;
-    }
-
-    .modal-container h1 {
-        font-size: 18px;
-    }
+    
 
     .content {
         height: 75vh;

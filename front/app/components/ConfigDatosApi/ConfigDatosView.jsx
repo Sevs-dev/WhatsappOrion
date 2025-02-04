@@ -8,14 +8,14 @@ import Loader from '../loader/Loader';
 
 const ConfigDatos = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);//Maneja estado de efecto de carga
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');//Obtiene el token del local storage
     if (!token) {
-      router.push('/login');
+      router.push('/login');//Si no existe token redirige a la página de login 
     } else {
-      // Simula una validación del token (puedes agregar lógica adicional aquí)
+      // 
       setTimeout(() => {
         setLoading(false);
       }, 1000); // Simula un tiempo de carga de 1 segundo
@@ -26,11 +26,12 @@ const ConfigDatos = () => {
     return <Loader />; // Muestra el componente Loader mientras se valida el token
   }
 
+  //Retorna el ModalVerificacionUsuario y el HistoricoConfig
   return (
     <div>
       <div className='header'>
         <h1>Configuración de datos de la API de Whatsapp</h1>
-        <ModalVerificacionUsuario />
+        <ModalVerificacionUsuario /> 
       </div>
       <div className='content'>
         <HistoricoConfig />

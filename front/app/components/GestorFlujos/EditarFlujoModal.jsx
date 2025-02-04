@@ -3,17 +3,7 @@ import { Box, Button, IconButton, Modal, Tooltip, Typography } from '@mui/materi
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import EditIcon from '@mui/icons-material/Edit';
-import Toast from '../toastr/toast';  // Importa el componente Toast
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    borderRadius: 12,
-    p: 4,
-};
+import Toast from '../toastr/toast';
 
 const EditarFlujoModal = () => {
     const [open, setOpen] = useState(false);
@@ -34,7 +24,7 @@ const EditarFlujoModal = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
-        setFormErrors({ nombreFlujo: false, cliente: false, estado: false }); 
+        setFormErrors({ nombreFlujo: false, cliente: false, estado: false });
     };
 
     const router = useRouter();
@@ -60,7 +50,16 @@ const EditarFlujoModal = () => {
 
         console.log('Datos guardados:', { nombreFlujo, cliente, estado });
 
-        showToast('success', 'Los datos se han guardado correctamente.');
+        handleClose();
+
+        setNombreFlujo('');
+        setCliente('');
+        setEstado('');
+
+        setTimeout(() => {
+            showToast('success', 'Los datos se han guardado correctamente.');
+        }, 300);
+
         router.push('/dashboard/nuevaConfiguracion');
     };
 
@@ -78,79 +77,76 @@ const EditarFlujoModal = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
-                    <div className="modal-container">
-                        <Typography variant="h6" component="h2">
-                            Editar Flujo
-                        </Typography>
+                <Box className="modal-container">
+                    <Typography variant="h6" component="h1">
+                        Editar Flujo
+                    </Typography>
 
-                        <div className="options">
-                            <label className="form-label-2">Nombre Flujo</label>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Escriba la clave del usuario"
-                                    value={nombreFlujo}
-                                    onChange={(e) => setNombreFlujo(e.target.value)}
-                                />
-                                {formErrors.nombreFlujo && (
-                                    <span style={{ color: 'red', fontSize: '12px' }}>
-                                        Este campo es obligatorio
-                                    </span>
-                                )}
-                            </div>
+                    <div className="options">
+                        <label className="form-label-2">Nombre Flujo</label>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Escriba la clave del usuario"
+                                value={nombreFlujo}
+                                onChange={(e) => setNombreFlujo(e.target.value)}
+                            />
+                            {formErrors.nombreFlujo && (
+                                <span className="error-message" style={{ color: 'red' }}>
+                                    * Este campo es obligatorio
+                                </span>
+                            )}
+                        </div>
 
-                            <label className="form-label-2">Cliente</label>
-                            <div className="input-group">
-                                <select
-                                    className="form-select"
-                                    value={cliente}
-                                    onChange={(e) => setCliente(e.target.value)}
-                                >
-                                    <option value="">Seleccione una opción</option>
-                                    <option value="1">Opción 1</option>
-                                    <option value="2">Opción 2</option>
-                                </select>
-                                {formErrors.cliente && (
-                                    <span style={{ color: 'red', fontSize: '12px' }}>
-                                        Este campo es obligatorio
-                                    </span>
-                                )}
-                            </div>
+                        <label className="form-label-2">Cliente</label>
+                        <div className="input-group">
+                            <select
+                                className="form-select"
+                                value={cliente}
+                                onChange={(e) => setCliente(e.target.value)}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Opción 1</option>
+                                <option value="2">Opción 2</option>
+                            </select>
+                            {formErrors.cliente && (
+                                <span className="error-message" style={{ color: 'red' }}>
+                                    * Este campo es obligatorio
+                                </span>
+                            )}
+                        </div>
 
-                            <label className="form-label-2">Estado</label>
-                            <div className="input-group">
-                                <select
-                                    className="form-select"
-                                    value={estado}
-                                    onChange={(e) => setEstado(e.target.value)}
-                                >
-                                    <option value="">Seleccione una opción</option>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
-                                </select>
-                                {formErrors.estado && (
-                                    <span style={{ color: 'red', fontSize: '12px' }}>
-                                        Este campo es obligatorio
-                                    </span>
-                                )}
-                            </div>
+                        <label className="form-label-2">Estado</label>
+                        <div className="input-group">
+                            <select
+                                className="form-select"
+                                value={estado}
+                                onChange={(e) => setEstado(e.target.value)}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
+                            </select>
+                            {formErrors.estado && (
+                                <span className="error-message" style={{ color: 'red' }}>
+                                    * Este campo es obligatorio
+                                </span>
+                            )}
+                        </div>
 
-                            <div className="buttons">
-                                <Button variant="contained" color="error" onClick={handleClose}>
-                                    Cerrar
-                                </Button>
-                                <Button variant="contained" color="success" onClick={handleSave}>
-                                    Guardar
-                                </Button>
-                            </div>
+                        <div className="buttons">
+                            <Button variant="contained" color="error" onClick={handleClose}>
+                                Cerrar
+                            </Button>
+                            <Button variant="contained" color="success" onClick={handleSave}>
+                                Guardar
+                            </Button>
                         </div>
                     </div>
                 </Box>
             </Modal>
 
-            {/* Componente Toast */}
             {toast.show && <Toast type={toast.type} message={toast.message} />}
         </>
     );

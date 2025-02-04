@@ -91,29 +91,10 @@ const ListaClientes = ({ refresh }) => {
         columns,
         data,
         enableExpandAll: false, // Deshabilitar el botón de expandir todo
-        muiDetailPanelProps: () => ({
-            sx: (theme) => ({
-                backgroundColor:
-                    theme.palette.mode === "dark"
-                        ? "rgba(255,210,244,0.1)"
-                        : "rgba(0,0,0,0.1)",
-            }),
-        }),
-        // Renderización condicional del panel de detalles
-        renderDetailPanel: ({ row }) =>
-            row.original.id ? (
-                <Box
-                    sx={{
-                        display: "grid",
-                        margin: "auto",
-                        gridTemplateColumns: "1fr",
-                        width: "100%",
-                    }}
-                >
-                    <ListaNotificaciones id={row.original.id} />
-                </Box>
-            ) : null,
+        enableExpanding: false, // ❌ Deshabilita la funcionalidad de expansión
+    
     });
+    
 
     // Manejo de la visibilidad del Snackbar
     const handleCloseSnackbar = () => {

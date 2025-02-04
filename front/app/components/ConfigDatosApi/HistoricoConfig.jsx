@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { IconButton, Tooltip } from '@mui/material';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';//Icono de apagado
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';//Icono de encendido
 import PageviewIcon from '@mui/icons-material/Pageview';
 import ConfigApiService from '../../services/ConfigDatosApi/ConfigDatosServ';
 
 
-
+//Busca los datos para rellenar la tabla
 const HistoricoConfig = () => {
 
   const [data, setData] = useState([]);
@@ -15,8 +15,8 @@ const HistoricoConfig = () => {
   useEffect(() => {
     const fetchData = async () => {
       try{
-        const configurations = await ConfigApiService.getAllConfigs();
-        setData(configurations);
+        const configurations = await ConfigApiService.getAllConfigs();//llama a la api para obtener todas las configuraciones
+        setData(configurations);//Guarda los datos obtenidos en el estado `data`
 
       } catch (err) {
         console.error('Error fetch todas las configuraciones', err)
@@ -25,7 +25,7 @@ const HistoricoConfig = () => {
     fetchData();
   }, [])
   
-
+//Define las columnas de la tabla Usememo  (para evitar que se vuelva a renderizar cada vez que se actualiza el estado)
   const columns = useMemo(
     () => [
       {
@@ -83,12 +83,12 @@ const HistoricoConfig = () => {
     ],
     []
   );
-
+//Define la tabla con los datos obtenidos
   const table = useMaterialReactTable({
     columns,
-    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data, 
   });
-
+//Retorna la tabla
   return (
     <div>
       <MaterialReactTable 
