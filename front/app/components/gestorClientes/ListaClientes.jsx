@@ -4,8 +4,7 @@ import {
     MaterialReactTable,
     useMaterialReactTable,
 } from "material-react-table";
-import { Box, Snackbar, Alert } from "@mui/material";
-import ListaNotificaciones from "./ListaNotificacion";
+import { Snackbar, Alert } from "@mui/material";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
 
@@ -13,14 +12,13 @@ const ListaClientes = ({ refresh }) => {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [refreshData, setRefreshData] = useState(false);
-
 
     useEffect(() => {
-        const fetchMensajes = async () => {
+        const fetchClientes = async () => {
             try {
                 const response = await ClientApiService.getAllClients();
-                setData(response.data || response); // Ajusta según la estructura de la respuesta
+                const sortedData = (response.data || response).sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha descendente
+                setData(sortedData);
             } catch (err) {
                 console.error("Error fetching clients:", err);
                 setError("Hubo un problema al cargar los datos.");
@@ -28,8 +26,13 @@ const ListaClientes = ({ refresh }) => {
             }
         };
 
-        fetchMensajes();
-    }, [refreshData]); // El useEffect se ejecuta cada vez que 'refresh' cambie
+        fetchClientes();
+    }, [refresh]); // El useEffect se ejecuta cada vez que 'refresh' cambia
+
+    const handleClientCreated = (newClient) => {
+        // Agrega el nuevo cliente al principio de la lista
+        setData((prevData) => [newClient, ...prevData]);
+    };
 
     // Configuración de las columnas de la tabla
     const columns = useMemo(
@@ -77,7 +80,7 @@ const ListaClientes = ({ refresh }) => {
                         {/* Pasando el id del cliente correctamente al ModalAgregarNotificacion */}
                         <ModalAgregarNotificacion 
                             id={row.original.id} 
-                            onSuccess={() => setRefreshData(prev => !prev)} // Cambia el estado de refresh
+                            onSuccess={handleClientCreated} // Pasamos la función que actualiza el estado
                         />
                     </div>
                 ),
@@ -90,11 +93,10 @@ const ListaClientes = ({ refresh }) => {
     const table = useMaterialReactTable({
         columns,
         data,
+        enablePagination: true,  // Asegurarse de que la paginación esté habilitada
         enableExpandAll: false, // Deshabilitar el botón de expandir todo
         enableExpanding: false, // ❌ Deshabilita la funcionalidad de expansión
-    
     });
-    
 
     // Manejo de la visibilidad del Snackbar
     const handleCloseSnackbar = () => {

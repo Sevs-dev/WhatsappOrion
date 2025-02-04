@@ -163,6 +163,7 @@ select:focus {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+
 /* Media Queries */
 @media screen and (max-width: 768px) {
     .modal-container {
@@ -208,7 +209,12 @@ select:focus {
     .content {
         height: 75vh;
     }
+
+    
 }
+
+
+
 
 @media screen and (max-width: 1024px) {
     .sidebar {

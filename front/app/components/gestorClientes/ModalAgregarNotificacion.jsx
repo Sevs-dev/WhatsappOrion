@@ -158,7 +158,7 @@ const ModalAgregarNotificacion = ({ id }) => {
         <>
             {/* Si hay un toast (mensaje emergente), lo mostramos */}
             {toast.show && <Toast type={toast.type} message={toast.message} />}
-
+            
             {/* Botón para abrir el modal */}
             <Tooltip title="Agregar Notificación">
                 <IconButton color="primary" onClick={handleOpen} className="btn btn-primary">
@@ -173,7 +173,28 @@ const ModalAgregarNotificacion = ({ id }) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="modal-container">
+                <Box className="modal-container"
+                    sx={{
+                        maxWidth: '90%', 
+                         maxHeight: '90vh',
+                         overflowY: 'auto',
+                         '&::-webkit-scrollbar': { 
+                          width: '8px'  // Un poco más ancho para mejor visibilidad
+                         },
+                        '&::-webkit-scrollbar-track': { 
+                        background: 'rgba(0, 0, 0, 0.1)', 
+                        borderRadius: '12px' // Más redondeado
+                         },
+                        '&::-webkit-scrollbar-thumb': { 
+                         background: 'rgba(15, 63, 120, 0.9)',  // Azul más oscuro
+                         borderRadius: '12px',  // Más redondeado
+                         border: '2px solid rgba(0, 0, 0, 0.2)' // Borde para que se fusione con el modal
+                         },
+                        '&::-webkit-scrollbar-thumb:hover': { 
+                             background: 'rgba(10, 50, 100, 1)' // Aún más oscuro al hacer hover
+                         },
+                     }}
+                 >
                     <h1>Agregar Notificación</h1>
                     <div className="options">
                         <label>Título</label>
@@ -194,20 +215,20 @@ const ModalAgregarNotificacion = ({ id }) => {
 
                         <label>Descripción</label>
                         <div className="input-group">
-                            <textarea
-                                name="descripcion"
-                                value={formData.descripcion}
-                                onChange={handleChange}
-                                placeholder="Escribe la descripción"
-                                rows={4}  // Puedes ajustar el número de filas iniciales
-                                className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            {formErrors.descripcion && (
-                                <span className="error-message text-red-500 text-sm">
-                                    * Este campo es obligatorio
-                                </span>
-                            )}
-                        </div>
+  <textarea
+    name="descripcion"
+    value={formData.descripcion}
+    onChange={handleChange}
+    placeholder="Escribe la descripción"
+    rows={4}  // Puedes ajustar el número de filas iniciales
+    className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  {formErrors.descripcion && (
+    <span className="error-message text-red-500 text-sm">
+      * Este campo es obligatorio
+    </span>
+  )}
+</div>
 
                         <label className="form-label-2">Nombre del Cliente</label>
                         <div className="input-group">
