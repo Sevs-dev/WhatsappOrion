@@ -123,14 +123,13 @@ class MessageController extends Controller
     // Método para obtener un mensaje específico por su ID
     public function show($id)
     {
-        $mensaje = MessageWhatsapp::find($id);
+        $mensaje = MessageWhatsapp::where('id_cliente_whatsapp', $id)->get();
         if (!$mensaje) {
             return response()->json(['error' => 'Mensaje no encontrado'], 404);
         }
 
         return response()->json(['data' => $mensaje]);
     }
-
 
     public function getMessagesByClientId($id)
     {

@@ -20,6 +20,7 @@ const ModalCrearCliente = ({ onClientCreated }) => {
         const fetchClients = async () => {
             try {
                 const data = await ClientApiService.getClients(); // Obtener clientes
+                
                 setClients(data); // Establecer los clientes en el estado
                 setLoading(false); // Cambiar el estado de carga a false
             } catch (error) {

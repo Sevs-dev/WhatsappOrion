@@ -50,6 +50,22 @@ const GestorFlujosServ = {
         }
     },
 
+    getClientById: async (id) => {
+        // console.log(`Solicitando cliente con ID: ${id}...`);
+        try {
+            const response = await apiClient.get(`/client/search/${id}`);
+            // console.log("Cliente obtenido:", response.data); // Log para ver los datos del cliente
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                console.error('Error fetching client by ID:', error.response.data.message);
+            } else {
+                console.error('Error fetching client by ID:', error.message);
+            }
+            throw error;
+        }
+    },
+
     // Obtener un cliente por código
     getClientByCodigo: async (codigo) => {
         // console.log(`Solicitando cliente con código: ${codigo}...`);
@@ -77,28 +93,34 @@ const GestorFlujosServ = {
     getClientStates: async (clientId) => {
         try {
             const response = await apiClient.get(`/status/${clientId}/estados`);
-            // Verificar la estructura completa de la respuesta
-            // console.log("Respuesta completa del servidor:", response.data);
-            // Accedemos a la data interna donde se encuentra la propiedad estados
-            const data = response.data.data;
-            let estados = data.estados;
 
-            // Verificamos si estados es un string y lo parseamos
-            if (typeof estados === 'string') {
+            // Si no hay datos, retornamos un objeto vacío
+            if (!response.data || !response.data.data) {
+                return { estados: [] };
+            }
+
+            const data = response.data.data;
+            let estados = data.estados || []; // Si estados es null o undefined, usa un array vacío
+
+            // Verificar si estados es un string y tratar de parsearlo
+            if (typeof estados === "string") {
                 try {
                     estados = JSON.parse(estados);
                 } catch (parseError) {
                     console.error("Error al parsear los estados:", parseError);
-                    throw new Error("Formato de estados inválido.");
+                    estados = []; // En caso de error, retornar un array vacío
                 }
             }
 
-            // Retornamos un objeto que combine la data original y el arreglo de estados parseado
             return { ...data, estados };
-
         } catch (error) {
+            if (error.response && error.response.status === 404) {
+                console.warn(`No se encontraron estados para el cliente ${clientId}`);
+                return { estados: [] }; // Retornar un array vacío en caso de 404
+            }
+
             console.error("Error al obtener los estados del cliente:", error);
-            throw error;
+            return { estados: [] }; // Evitar que el error rompa la app
         }
     },
 
@@ -107,7 +129,7 @@ const GestorFlujosServ = {
             // console.log(`Solicitando mensajes para el cliente con ID: ${id}...`);
             // Realizamos la petición GET a la ruta /search/{id}
             const response = await apiClient.get(`/message/search/${id}`);
-            console.log("Mensajes obtenidos:", response.data);
+            // console.log("Mensajes obtenidos:", response.data);
             // Se retorna la data (puedes personalizar la respuesta según lo que necesites)
             return response.data;
         } catch (error) {

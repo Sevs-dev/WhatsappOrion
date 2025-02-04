@@ -1,93 +1,141 @@
 import React, { useState, useEffect } from "react";
-import GestorFlujosServ from '../../services/GestorFlujos/GestorFlujosServ';
+import { useDrag, useDrop } from "react-dnd";
+import GestorFlujosServ from "../../services/GestorFlujos/GestorFlujosServ";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const FlujoVentana = ({ id }) => {
-  // Estados para almacenar datos del mensaje, cliente, mensajes, error, etc.
-  const [message, setMessage] = useState(null);
-  const [client, setClient] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [dataId, setDataId] = useState();
-  const [error, setError] = useState(null);
-  const [estado, setEstado] = useState({});
-  const [clientId, setClientId] = useState(null);
-  const [messageId, setMessageID] = useState(null);
-  const [selectedEstados, setSelectedEstados] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Lista de todos los estados posibles
   const estados = [
-    'Inicio',
-    'Recibido',
-    'En procesamiento',
-    'En alistamiento',
-    'Alistado',
-    'Verificado',
-    'En transporte',
-    'En transito',
-    'Entregado',
-    'Con novedad',
-    'Final'
+    "Inicio", "Recibido", "En procesamiento", "En alistamiento",
+    "Alistado", "Verificado", "En transporte", "En transito",
+    "Entregado", "Con novedad", "Final",
   ];
 
-  // Primer useEffect para obtener el mensaje y el cliente usando el id
+  const [client, setClient] = useState(null);
+  const [clientId, setClientId] = useState(null);
+  const [selectedEstados, setSelectedEstados] = useState(new Set());
+  const [estado, setEstado] = useState({});
+  const [messageId, setMessageId] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const fetchMessageAndClient = async () => {
+    const fetchDataClient = async () => {
       try {
-        // Primero, obtenemos el mensaje (puede ser un mensaje o el primer mensaje relacionado)
-        const messageData = await GestorFlujosServ.getMessageById(id);
-        setMessage(messageData);
-        setDataId(messageData?.data?.id_cliente_whatsapp); 
-        const codigo = messageData?.data?.codigo;
-        setMessageID(messageData?.data?.id_cliente_whatsapp);
-        if (codigo) {
-          // Buscamos el cliente a partir del código
-          const clientData = await GestorFlujosServ.getClientByCodigo(codigo);
-          setClient(clientData);
-          setClientId(clientData?.id);
-          // Llamamos a la función para obtener los estados del cliente
-          fetchClientStates(clientData?.id);
+        setLoading(true);
+        const datosCliente = await GestorFlujosServ.getClientById(id);
+        if (datosCliente?.data) {
+          setClient(datosCliente.data);
+          setClientId(datosCliente.data.id);
         } else {
-          setError('Código no encontrado en el mensaje.');
+          setClient(datosCliente);
+          setClientId(datosCliente.id);
         }
       } catch (err) {
-        setError('No se pudo obtener los datos.');
+        setError("Error al obtener datos del cliente");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMessageAndClient();
+    fetchDataClient();
   }, [id]);
 
-  // Segundo useEffect para obtener los estados del cliente una vez tenemos su ID
   useEffect(() => {
     if (!clientId) return;
-    const fetchData = async () => {
-      try {
-        const response = await GestorFlujosServ.getClientStates(clientId);
-        console.log("Respuesta del servidor con los estados:", response.data);
+    fetchEstados(clientId);
+  }, [clientId]);
 
-        const estadosArray = JSON.parse(response.data.estados);
-        setSelectedEstados(estadosArray);
-        setEstado(estadosArray.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
-      } catch (err) {
-        console.error("Error obteniendo los estados del cliente:", err);
-        setError("Error al obtener los estados del cliente.");
+  const fetchEstados = async (id) => {
+    try {
+      const response = await GestorFlujosServ.getClientStates(id);
+      if (!response || !response.estados) {
+        console.warn("No hay estados disponibles para este cliente.");
+        setSelectedEstados(new Set());
+        setEstado({});
+        return;
       }
+
+      let estadosArray = response.estados;
+      if (typeof estadosArray === "string") {
+        try {
+          estadosArray = JSON.parse(estadosArray);
+        } catch (parseError) {
+          console.error("Error al parsear los estados:", parseError);
+          estadosArray = [];
+        }
+      }
+      if (!Array.isArray(estadosArray)) estadosArray = [];
+
+      setSelectedEstados(new Set(estadosArray));
+      setEstado(estadosArray.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
+    } catch (err) {
+      console.error("Error obteniendo estados:", err);
+      setError("Error al obtener estados del cliente.");
+    }
+  };
+
+  const fetchMessages = async (id) => {
+    try {
+      const response = await GestorFlujosServ.getMessageById(id);
+      setMessageId(response.data[0]?.id_cliente_whatsapp);
+    } catch (err) {
+      console.error("Error obteniendo mensajes:", err);
+      setError("Error al obtener mensajes del cliente.");
+    }
+  };
+
+  useEffect(() => {
+    if (!clientId) return;
+    fetchMessages(clientId);
+  }, [clientId]);
+
+  const handleEstadoChange = (event) => {
+    const { name, checked } = event.target;
+    setSelectedEstados((prev) => {
+      const newSet = new Set(prev);
+      checked ? newSet.add(name) : newSet.delete(name);
+      return newSet;
+    });
+    setEstado((prevEstado) => ({
+      ...prevEstado,
+      [name]: checked,
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!clientId) {
+      setError("No se puede guardar sin un ID de cliente.");
+      return;
+    }
+    if (selectedEstados.size === 0) {
+      setError("Debe seleccionar al menos un estado.");
+      return;
+    }
+
+    const data = {
+      id_api: clientId,
+      estados: JSON.stringify([...selectedEstados]),
+      message: messageId,
     };
 
-    fetchData();
-  }, [clientId]);
+    try {
+      await GestorFlujosServ.saveEstadoFlujo(data);
+      alert("Estado guardado correctamente.");
+    } catch (error) {
+      console.error("Error guardando el estado del flujo:", error);
+      setError("Error al guardar el estado.");
+    }
+  };
 
   // UseEffect para obtener los mensajes asociados al cliente usando su ID (usando el microservicio)
   useEffect(() => {
-    if (!dataId) return;
+    if (!messageId) return;
     const fetchMessages = async () => {
       try {
-        const response = await GestorFlujosServ.getMessagesByClientId(dataId);
-        console.log("Respuesta del servidor con los mensajes:", response);
-        console.log("Mensajes del cliente:", response.data);
+        const response = await GestorFlujosServ.getMessagesByClientId(messageId);
         setMessages(response.data);
       } catch (err) {
         console.error("Error obteniendo los mensajes del cliente:", err);
@@ -96,154 +144,112 @@ const FlujoVentana = ({ id }) => {
     };
 
     fetchMessages();
-  }, [dataId]);
+  }, [messageId]);
 
-  // Función para obtener los estados del cliente (si se requiere llamar en otro momento)
-  const fetchClientStates = async (clientId) => {
-    setLoading(true);
-    try {
-      const response = await GestorFlujosServ.getClientStates(clientId);
-      const estados = response.estados;
-      setSelectedEstados(estados);
-      console.log("Respuesta del servidor con los estados parseados:", response);
-      setEstado(estados.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
-    } catch (err) {
-      console.error("Error obteniendo los estados del cliente:", err);
-      setError("Error al obtener los estados del cliente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Maneja el cambio en los checkbox de los estados
-  const handleEstadoChange = (event) => {
-    const { name, checked } = event.target;
-
-    setSelectedEstados((prev) => {
-      if (checked && !prev.includes(name)) {
-        return [...prev, name];
-      } else if (!checked && prev.includes(name)) {
-        return prev.filter((estado) => estado !== name);
-      }
-      return prev;
-    });
-
-    setEstado((prevEstado) => ({
-      ...prevEstado,
-      [name]: checked
+  const MessageItem = ({ message }) => {
+    const [, drag] = useDrag(() => ({
+      type: "MESSAGE",
+      item: { message },
     }));
+
+    return (
+      <li ref={drag} className="cursor-pointer">
+        <p><strong>{message.titulo}</strong></p>
+        <p>{message.descripcion}</p>
+        <p className="text-sm">Fecha: {message.fecha}</p>
+      </li>
+    );
   };
 
-  // Función para guardar el estado del flujo
-  const handleSave = async () => {
-    if (!clientId) {
-      setError("No se puede guardar sin un ID de cliente.");
-      return;
-    }
-    if (selectedEstados.length === 0) {
-      setError("Debe seleccionar al menos un estado.");
-      return;
-    }
+  const EstadoDrop = ({ estado, messages, onDrop }) => {
+    const [, drop] = useDrop(() => ({
+      accept: "MESSAGE",
+      drop: (item) => onDrop(estado, item.message),
+    }));
 
-    const data = {
-      id_api: clientId,
-      estados: JSON.stringify(selectedEstados),
-      message: messageId,
-    };
-    console.log("Datos a enviar al servidor:", data);
-
-    try {
-      const response = await GestorFlujosServ.saveEstadoFlujo(data);
-      console.log("Estado guardado con éxito:", response);
-      alert("Estado guardado correctamente.");
-    } catch (error) {
-      console.error("Error guardando el estado del flujo:", error);
-      setError("Error al guardar el estado.");
-    }
+    return (
+      <div ref={drop} className="border-2 p-2 mb-2">
+        <h4>{estado}</h4>
+        <ul>
+          {messages.map((msg, index) => (
+            <li key={index}>
+              <p><strong>{msg.titulo}</strong></p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   };
 
-  const { nombre, codigo } = client || {};
+  const [estadoMessages, setEstadoMessages] = useState({});
 
-  if (loading) {
-    return <div className="text-white">Cargando datos...</div>;
-  }
+  const handleDropMessage = (estado, message) => {
+    setEstadoMessages((prev) => {
+      const newMessages = prev[estado] ? [...prev[estado], message] : [message];
+      return { ...prev, [estado]: newMessages };
+    });
+  };
 
   return (
-    <div className="flex bg-gray-800 p-6 rounded-lg shadow-lg text-white max-w-full mx-auto">
-      <div className="w-1/2 pr-4">
-        <h1 className="text-xl font-bold mb-2">Gestor de Flujos</h1>
-
-        {client ? (
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold">Cliente Encontrado</h2>
-            <p><strong>Código:</strong> {codigo}</p>
-            <p><strong>Nombre Cliente:</strong> {nombre}</p>
-          </div>
-        ) : (
-          <p className="text-yellow-500 mt-2">No se encontró un cliente con este código.</p>
-        )}
-
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold">Estado del Flujo</h3>
-          <div className="space-y-2">
-            {estados.map((estadoOption) => (
-              <div key={estadoOption} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={estadoOption}
-                  name={estadoOption}
-                  checked={estado[estadoOption] || false}
-                  onChange={handleEstadoChange}
-                  className="mr-2"
-                />
-                <label htmlFor={estadoOption} className="text-white">{estadoOption}</label>
+    <DndProvider backend={HTML5Backend}>
+      <div className="flex bg-gray-800 p-6 rounded-lg shadow-lg text-white max-w-full mx-auto">
+        <div className="w-1/2 pr-4">
+          <h1 className="text-xl font-bold mb-2">Gestor de Flujos</h1>
+          {loading ? (
+            <p className="text-blue-400">Cargando datos...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : client ? (
+            <div className="mt-4">
+              <h2 className="text-lg font-semibold">Cliente Encontrado</h2>
+              <p><strong>Código:</strong> {client.codigo || "No disponible"}</p>
+              <p><strong>Nombre Cliente:</strong> {client.nombre || "No disponible"}</p>
+              <h3 className="text-md font-semibold mt-4">Estados del Cliente</h3>
+              <div className="space-y-2">
+                {estados.map((estadoOption) => (
+                  <div key={estadoOption} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={estadoOption}
+                      name={estadoOption}
+                      checked={estado[estadoOption] || false}
+                      onChange={handleEstadoChange}
+                      className="mr-2"
+                    />
+                    <label htmlFor={estadoOption} className="text-white">{estadoOption}</label>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+              <div className="mt-4">
+                <button className="bg-blue-600 p-2 text-white rounded" onClick={handleSave}>
+                  Guardar Estado
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-yellow-500 mt-2">No se encontró un cliente con este código.</p>
+          )}
         </div>
-
-        <div className="mt-4">
-          <button
-            className="bg-blue-600 p-2 text-white rounded"
-            onClick={handleSave}
-          >
-            Guardar Estado
-          </button>
-        </div>
-      </div>
-
-      <div className="w-1/2 pl-4">
-        <h3 className="text-lg font-semibold mb-2">Estados Seleccionados</h3>
-        {selectedEstados.length > 0 ? (
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-700">
-                <th className="px-4 py-2 text-left text-white">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedEstados.map((estadoSeleccionado, index) => (
-                <tr key={index} className="bg-gray-800">
-                  <td className="px-4 py-2 text-white">{estadoSeleccionado}</td>
-                </tr>
+        <div className="w-1/2 pl-4">
+          <h3 className="text-lg font-semibold mb-2">Estados Seleccionados</h3>
+          {selectedEstados.size > 0 ? (
+            <ul className="list-disc ml-5">
+              {[...selectedEstados].map((estado, index) => (
+                <li key={index}>
+                  <EstadoDrop estado={estado} messages={estadoMessages[estado] || []} onDrop={handleDropMessage} />
+                </li>
               ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-yellow-500">No se han seleccionado estados.</p>
-        )}
-
-        {/* Sección para mostrar la lista de mensajes asociados al cliente */}
+            </ul>
+          ) : (
+            <p className="text-yellow-500">No se han seleccionado estados.</p>
+          )}
+        </div>
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Mensajes del Cliente</h3>
           {messages.length > 0 ? (
-            <ul className="list-disc pl-5">
+            <ul className="list-disc pl-5 border">
               {messages.map((msg) => (
-                <li key={msg.id}>
-                  <p><strong>{msg.titulo}</strong></p>
-                  <p>{msg.descripcion}</p>
-                  <p className="text-sm">Fecha: {msg.fecha}</p>
-                </li>
+                <MessageItem key={msg.id} message={msg} />
               ))}
             </ul>
           ) : (
@@ -251,9 +257,7 @@ const FlujoVentana = ({ id }) => {
           )}
         </div>
       </div>
-
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-    </div>
+    </DndProvider>
   );
 };
 

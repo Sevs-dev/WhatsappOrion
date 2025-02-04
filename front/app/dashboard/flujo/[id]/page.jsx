@@ -1,5 +1,7 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import withAuth from "../../../hooks/withAuth";
 import FlujoVentana from '../../../components/GestorFlujos/FlujoVentana';
 
@@ -11,7 +13,11 @@ function FlujoVentanaPage() {
         return <div>Cargando...</div>;
     }
 
-    return <FlujoVentana id={id} />;
+    return (
+        <DndProvider backend={HTML5Backend}>
+            <FlujoVentana id={id} />
+        </DndProvider>
+    );
 }
 
 export default withAuth(FlujoVentanaPage);
