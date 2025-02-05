@@ -6,6 +6,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\StatusController;
+use App\Models\DropStatus;
 use Illuminate\Support\Facades\Route;
 
 
@@ -48,6 +49,11 @@ Route::prefix('client')->group(function () {
 Route::prefix('status')->group(function () {
     Route::post('/create', [StatusController::class, 'store']);
     Route::get('/{clientId}/estados', [StatusController::class, 'show']);
+});
+
+Route::prefix('drop')->group(function () {
+    Route::post('/create', [StatusController::class, 'saveDropStatus']); 
+    Route::get('/data/{id_cliente}', [StatusController::class, 'getMessageStatus']); 
 });
 
 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DropStatus;
 use App\Models\StatusClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StatusController extends Controller
 {
@@ -19,11 +21,11 @@ class StatusController extends Controller
             'estados' => 'required|json',
             'message' => 'required',
         ]);
-    
+
         try {
             // Buscar si ya existe un registro con el mismo id_api
             $status = StatusClient::where('id_api', $validated['id_api'])->first();
-    
+
             if ($status) {
                 // Si existe, actualizar los datos
                 $status->estados = $validated['estados'];
@@ -36,21 +38,21 @@ class StatusController extends Controller
                 $status->message = $validated['message'];
                 $message = 'Estado de flujo guardado con éxito.';
             }
-    
+
             $status->save();
-    
+
             return response()->json([
                 'message' => $message,
                 'data' => $status,
             ], 200); // Código 200 para actualización o 201 si es un nuevo registro
-    
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al guardar/actualizar el estado.',
                 'error' => $e->getMessage(),
             ], 500);
         }
-    }    
+    }
 
     /**
      * Obtener los estados de un cliente por ID.
@@ -76,5 +78,96 @@ class StatusController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function saveDropStatus(Request $request)
+    {
+        // Validación
+        $validated = $request->validate([
+            'id_cliente' => 'required|integer',
+            'estado' => 'required|array',
+        ]);
+
+        $cliente_id = $validated['id_cliente']; // Cambié a id_cliente
+        $datos = $validated['estado']; // Debe ser un array
+
+        try {
+            // Obtener todos los estados actuales del cliente
+            $currentStatuses = DropStatus::where('id_cliente', $cliente_id)->get();
+
+            // Eliminar estados que ya no están en el nuevo array
+            foreach ($currentStatuses as $status) {
+                $estadoFound = false;
+                foreach ($datos as $estadoData) {
+                    $estadoActual = json_decode($status->estado)->estado;
+                    if ($estadoData['estado'] == $estadoActual) {
+                        $estadoFound = true;
+                        // Actualizar los mensajes si es necesario
+                        if ($estadoData['mensaje'] != json_decode($status->estado)->mensaje) {
+                            $status->estado = json_encode([
+                                'estado' => $estadoData['estado'],
+                                'mensaje' => $estadoData['mensaje'],
+                            ]);
+                            $status->message = $estadoData['message'] ?? null;
+                            $status->save();
+                        }
+                        break;
+                    }
+                }
+
+                // Si el estado no se encuentra en la nueva lista, eliminamos el estado
+                if (!$estadoFound) {
+                    $status->delete();
+                }
+            }
+
+            // Agregar los nuevos estados (o actualizarlos)
+            foreach ($datos as $estadoData) {
+                $estadoExistente = DropStatus::where('id_cliente', $cliente_id)
+                    ->where('estado', json_encode([
+                        'estado' => $estadoData['estado'],
+                        'mensaje' => $estadoData['mensaje'],
+                    ]))
+                    ->first();
+
+                if (!$estadoExistente) {
+                    // Si el estado no existe, lo creamos
+                    $dropStatus = new DropStatus();
+                    $dropStatus->estado = json_encode([
+                        'estado' => $estadoData['estado'],
+                        'mensaje' => $estadoData['mensaje'],
+                    ]);
+                    $dropStatus->message = $estadoData['message'] ?? null;
+                    $dropStatus->id_cliente = $cliente_id;
+                    $dropStatus->save();
+                }
+            }
+
+            return response()->json(['message' => 'Datos guardados correctamente.'], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar los datos.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // En el controlador
+    public function getMessageStatus($id_cliente)
+    {
+        $datos = DropStatus::where('id_cliente', $id_cliente)->get();
+        if ($datos->isEmpty()) {
+            return response()->json(['error' => 'No se encontraron datos para este cliente.'], 404);
+        }
+
+        $messagesByState = [];
+        foreach ($datos as $status) {
+            $estado = json_decode($status->estado, true);
+            $estadoName = $estado['estado'];  // Aseguramos que utilizamos el nombre del estado
+
+            $messagesByState[$estadoName] = $estado;
+        }
+
+        return response()->json(['datos' => $messagesByState])->header('Content-Type', 'application/json');
     }
 }

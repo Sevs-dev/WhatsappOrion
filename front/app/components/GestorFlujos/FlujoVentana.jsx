@@ -20,6 +20,7 @@ const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' co
   const [messages, setMessages] = useState([]); // Lista de mensajes del cliente
   const [error, setError] = useState(null); // Estado para manejar errores
   const [loading, setLoading] = useState(true); // Estado de carga
+  const [estadoMessages, setEstadoMessages] = useState({}); // Estado para almacenar los mensajes en cada estado
 
   // useEffect para obtener los datos del cliente cuando cambia 'id'
   useEffect(() => {
@@ -148,7 +149,8 @@ const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' co
     fetchMessages();
   }, [messageId]);
 
-  const MessageItem = ({ message }) => { // Componente para cada mensaje, habilita el drag
+  // Componente para cada mensaje, habilita el drag
+  const MessageItem = ({ message }) => {
     const [, drag] = useDrag(() => ({
       type: "MESSAGE",
       item: { message },
@@ -163,7 +165,8 @@ const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' co
     );
   };
 
-  const EstadoDrop = ({ estado, messages, onDrop }) => { // Componente para manejar el drop de mensajes en un estado
+  // Componente para manejar el drop de mensajes en un estado
+  const EstadoDrop = ({ estado, messages, onDrop, onRemoveMessage }) => {
     const [, drop] = useDrop(() => ({
       accept: "MESSAGE",
       drop: (item) => onDrop(estado, item.message),
@@ -174,8 +177,14 @@ const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' co
         <h4>{estado}</h4>
         <ul>
           {messages.map((msg, index) => (
-            <li key={index}>
+            <li key={index} className="flex justify-between items-center">
               <p><strong>{msg.titulo}</strong></p>
+              <button
+                className="text-red-500"
+                onClick={() => onRemoveMessage(estado, index)}
+              >
+                Eliminar
+              </button>
             </li>
           ))}
         </ul>
@@ -183,80 +192,151 @@ const FlujoVentana = ({ id }) => { // Componente principal que recibe el 'id' co
     );
   };
 
-  const [estadoMessages, setEstadoMessages] = useState({}); // Estado para almacenar los mensajes en cada estado
-
-  const handleDropMessage = (estado, message) => { // Función para manejar el drop de un mensaje en un estado
+  const handleRemoveMessage = (estado, index) => {
     setEstadoMessages((prev) => {
-      const newMessages = prev[estado] ? [...prev[estado], message] : [message];
+      const newMessages = prev[estado].filter((_, i) => i !== index);
       return { ...prev, [estado]: newMessages };
     });
   };
 
+
+  // Maneja la actualización de los mensajes cuando se hace drop en un estado
+  const handleDropMessage = (estado, message) => {
+    const transformedMessage = {
+      estado: estado,
+      titulo: message.titulo,
+      descripcion: message.descripcion,
+      fecha: message.fecha,
+    };
+
+    setEstadoMessages((prev) => {
+      // Añadir el nuevo mensaje al estado específico
+      const newMessages = prev[estado] ? [...prev[estado], transformedMessage] : [transformedMessage];
+      return { ...prev, [estado]: newMessages };
+    });
+  };
+
+  // Función para guardar los estados y mensajes en el backend
+  const handleSaveBlockStatus = async () => {
+    if (!clientId) {
+      setError("No se puede guardar sin un ID de cliente.");
+      return;
+    }
+
+    // Prepara los datos para el backend, asegurando que "estado" contenga un objeto con los mensajes
+    const data = {
+      id_cliente: clientId,
+      estado: Object.entries(estadoMessages).map(([estado, messages]) => ({
+        estado: estado, // El nombre del estado (por ejemplo, "Inicio")
+        mensaje: messages.map(msg => ({
+          titulo: msg.titulo,  // Título del mensaje
+          descripcion: msg.descripcion,  // Descripción del mensaje
+          fecha: msg.fecha,  // Fecha del mensaje
+        })),
+      })),
+    };
+
+    try {
+      // Llamada al servicio para guardar los datos
+      await GestorFlujosServ.saveDropStatus(data);
+      alert("Estados y mensajes guardados correctamente.");
+    } catch (error) {
+      console.error("Error guardando el estado del flujo:", error);
+      setError("Error al guardar el estado.");
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex bg-gray-800 p-6 rounded-lg shadow-lg text-white max-w-full mx-auto">
-        <div className="w-1/2 pr-4">
-          <h1 className="text-xl font-bold mb-2">Gestor de Flujos</h1>
-          {loading ? (
-            <p className="text-blue-400">Cargando datos...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : client ? (
-            <div className="mt-4">
-              <h2 className="text-lg font-semibold">Cliente Encontrado</h2>
-              <p><strong>Código:</strong> {client.codigo || "No disponible"}</p>
-              <p><strong>Nombre Cliente:</strong> {client.nombre || "No disponible"}</p>
-              <h3 className="text-md font-semibold mt-4">Estados del Cliente</h3>
-              <div className="space-y-2">
-                {estados.map((estadoOption) => (
-                  <div key={estadoOption} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={estadoOption}
-                      name={estadoOption}
-                      checked={estado[estadoOption] || false}
-                      onChange={handleEstadoChange}
-                      className="mr-2"
-                    />
-                    <label htmlFor={estadoOption} className="text-white">{estadoOption}</label>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4">
-                <button className="bg-blue-600 p-2 text-white rounded" onClick={handleSave}>
-                  Guardar Estado
-                </button>
-              </div>
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-8 rounded-2xl shadow-2xl text-white max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-400 animate-pulse">
+          🚀 Gestor de Flujos
+        </h1>
+
+        <div className="grid grid-cols-2 gap-8">
+          {/* Sección de Cliente */}
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg border border-gray-700 hover:shadow-xl transition duration-300">
+            {loading ? (
+              <p className="text-blue-400 text-center animate-pulse">Cargando datos...</p>
+            ) : error ? (
+              <p className="text-red-500 text-center">{error}</p>
+            ) : client ? (
+              <>
+                <h2 className="text-xl font-semibold text-green-400 mb-4">✅ Cliente Encontrado</h2>
+                <p><strong className="text-gray-300">Código:</strong> {client.codigo || "No disponible"}</p>
+                <p><strong className="text-gray-300">Nombre Cliente:</strong> {client.nombre || "No disponible"}</p>
+
+                <h3 className="text-lg font-semibold mt-6 text-indigo-400">📌 Estados del Cliente</h3>
+                <div className="mt-3 space-y-3">
+                  {estados.map((estadoOption) => (
+                    <div key={estadoOption} className="flex items-center space-x-3 group hover:scale-105 transition-transform">
+                      <input
+                        type="checkbox"
+                        id={estadoOption}
+                        name={estadoOption}
+                        checked={estado[estadoOption] || false}
+                        onChange={handleEstadoChange}
+                        className="w-5 h-5 text-blue-500 border-2 border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-200"
+                      />
+                      <label htmlFor={estadoOption} className="cursor-pointer text-gray-200 group-hover:text-blue-300 transition duration-200">
+                        {estadoOption}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    className="w-full bg-blue-600 hover:bg-blue-500 transition duration-300 p-3 text-white rounded-lg shadow-md font-semibold transform hover:scale-105 hover:shadow-lg"
+                    onClick={handleSave}
+                  >
+                    💾 Guardar Estado
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="text-yellow-500 text-center">⚠ No se encontró un cliente con este código.</p>
+            )}
+          </div>
+
+          {/* Sección de Estados y Mensajes lado a lado */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Estados Seleccionados */}
+            <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg border border-gray-700 hover:shadow-xl transition duration-300">
+              <h3 className="text-lg font-semibold text-indigo-400 mb-3">📍 Estados Seleccionados</h3>
+              {selectedEstados.size > 0 ? (
+                <ul className="list-disc space-y-3 ml-5">
+                  {[...selectedEstados].map((estado, index) => (
+                    <li key={index} className="text-gray-300 hover:text-blue-300 transition duration-200">
+                      <EstadoDrop
+                        estado={estado}
+                        messages={estadoMessages[estado] || []}
+                        onDrop={handleDropMessage}
+                        onRemoveMessage={handleRemoveMessage}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-yellow-500 text-center">⚠ No se han seleccionado estados.</p>
+              )}
             </div>
-          ) : (
-            <p className="text-yellow-500 mt-2">No se encontró un cliente con este código.</p>
-          )}
-        </div>
-        <div className="w-1/2 pl-4">
-          <h3 className="text-lg font-semibold mb-2">Estados Seleccionados</h3>
-          {selectedEstados.size > 0 ? (
-            <ul className="list-disc ml-5">
-              {[...selectedEstados].map((estado, index) => (
-                <li key={index}>
-                  <EstadoDrop estado={estado} messages={estadoMessages[estado] || []} onDrop={handleDropMessage} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-yellow-500">No se han seleccionado estados.</p>
-          )}
-        </div>
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold">Mensajes del Cliente</h3>
-          {messages.length > 0 ? (
-            <ul className="list-disc pl-5 border">
-              {messages.map((msg) => (
-                <MessageItem key={msg.id} message={msg} />
-              ))}
-            </ul>
-          ) : (
-            <p className="text-yellow-500">No hay mensajes para este cliente.</p>
-          )}
+
+            {/* Mensajes */}
+            <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg border border-gray-700 hover:shadow-xl transition duration-300">
+              <h3 className="text-lg font-semibold text-indigo-400">📨 Mensajes</h3>
+              {messages.length > 0 ? (
+                <ul className="list-disc pl-5 border-l-4 border-blue-500 mt-3 space-y-3">
+                  {messages.map((msg) => (
+                    <MessageItem key={msg.id} message={msg} />
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-yellow-500 text-center mt-2">📭 No hay mensajes.</p>
+              )}
+            </div>
+            <button onClick={handleSaveBlockStatus}>Guardar Estado</button>
+          </div>
         </div>
       </div>
     </DndProvider>
