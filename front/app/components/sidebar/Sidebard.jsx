@@ -65,7 +65,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     { 
       path: '/dashboard/gestorClientes', 
       icon: <EmailIcon className="icon text-white" />, 
-      label: 'Listado de clientes' 
+      label: 'Listado clientes' 
     },
     { 
       path: '/dashboard/gestorFlujos', 
