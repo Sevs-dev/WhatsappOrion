@@ -1,17 +1,16 @@
 'use client';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import withAuth from "../../../hooks/withAuth";
 import EditarMensaje from '../../../components/EdicionMensaje/EdicionMensajeView';
 
 function EditarMensajePage() {
-    const { id } = useParams();
-    const router = useRouter();
+    const { id } = useParams(); // Obtenemos el id desde la URL
 
     if (!id) {
-        return <div>Cargando...</div>;
+        return <div>Cargando...</div>; // Si no hay id, espera
     }
 
-    return <EditarMensaje id={id} />;
+    return <EditarMensaje id={id} />; // Pasa el id al componente hijo
 }
 
 export default withAuth(EditarMensajePage);
