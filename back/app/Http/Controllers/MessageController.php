@@ -66,26 +66,22 @@ class MessageController extends Controller
             'id_url' => 'nullable|integer',
             'estado_flujo_activacion' => 'required|boolean',
         ];
-
         // Validar los datos de la petición
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
         // Buscar el mensaje en la base de datos
         $mensaje = MessageWhatsapp::find($id);
         if (!$mensaje) {
             return response()->json(['error' => 'Mensaje no encontrado'], 404);
         }
-
         // Convertir valores booleanos correctamente
         $request->merge([
             'check_url' => filter_var($request->check_url, FILTER_VALIDATE_BOOLEAN),
             'estado_flujo_activacion' => filter_var($request->estado_flujo_activacion, FILTER_VALIDATE_BOOLEAN),
         ]);
-
         // Actualizar los datos del mensaje
         $mensaje->update([
             'titulo' => $request->titulo,
@@ -95,7 +91,6 @@ class MessageController extends Controller
             'estado_flujo_activacion' => $request->estado_flujo_activacion,
             'usuario' => 'admin',
         ]);
-
         return response()->json(['message' => 'Registro actualizado con éxito', 'data' => $mensaje]);
     }
 
@@ -107,7 +102,6 @@ class MessageController extends Controller
         if (!$mensaje) {
             return response()->json(['error' => 'Mensaje no encontrado'], 404);
         }
-
         // Eliminar el mensaje
         $mensaje->delete();
         return response()->json(['message' => 'Registro eliminado con éxito']);
@@ -127,7 +121,6 @@ class MessageController extends Controller
         if (!$mensaje) {
             return response()->json(['error' => 'Mensaje no encontrado'], 404);
         }
-
         return response()->json(['data' => $mensaje]);
     }
 
@@ -138,12 +131,10 @@ class MessageController extends Controller
         if (!$empresa) {
             return response()->json(['error' => 'Client not found'], 404);
         }
-
         // Query messages where 'codigo' matches the client's code and 'message' matches the given message
         $datos = MessageWhatsapp::where('codigo', $empresa->codigo)
             ->where('id_cliente_whatsapp', $empresa->id)
             ->get();
-
         return response()->json(['data' => $datos]);
     }
 }
