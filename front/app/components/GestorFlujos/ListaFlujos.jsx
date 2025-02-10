@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'; // Use Next.js's useRouter
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { IconButton, Tooltip } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditarFlujoModal from './EditarFlujoModal';
 import BlockIcon from "@mui/icons-material/Block";
 import GestorFlujosServ from '../../services/GestorFlujos/GestorFlujosServ';
 
@@ -33,6 +32,12 @@ const ListaFlujos = () => {
   // Define columns
   const columns = useMemo(
     () => [
+      {
+        accessorKey: "codigo",
+        header: "Código Cliente",
+        size: 150,
+      },
+    
       {
         accessorKey: 'nombre',
         header: 'Nombre del cliente',
@@ -62,8 +67,6 @@ const ListaFlujos = () => {
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
-
-            <EditarFlujoModal />
 
             <Tooltip title="Deshabilitar">
               <IconButton color="primary">

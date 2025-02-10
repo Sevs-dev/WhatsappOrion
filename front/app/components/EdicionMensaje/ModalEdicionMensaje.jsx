@@ -103,7 +103,10 @@ const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
         <Box
           className="modal-container"
           sx={{
-            maxWidth: '90%',
+            maxWidth: '600px',
+            width: '50%',
+            padding: 3,
+            backgroundColor: 'white',
             maxHeight: '90vh',
             overflowY: 'auto',
             '&::-webkit-scrollbar': {

@@ -3,40 +3,45 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import { Box, Snackbar, Alert, Tooltip, IconButton } from "@mui/material";
+import { Box, Snackbar, Alert, Tooltip, IconButton, Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import GestorEditorMensajes from "../../services/EditarMensajes/GestorEditorMensajes";
 import ModalEdicionMensaje from "./ModalEdicionMensaje";
+import ModalAgregarNotificacion from '../gestorClientes/ModalAgregarNotificacion';
+import { useRouter } from 'next/navigation'; // Importa useRouter de Next.js
+
 
 function EdicionMensajeView({ id }) {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const router = useRouter(); // Usa useRouter de Next.js
+
+  const fetchMessages = async () => {
+    try {
+      const response = await GestorEditorMensajes.getMessagesByClientId(id);
+      console.log("Mensajes obtenidos:", response);
+
+      if (Array.isArray(response.data)) {
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.fecha) - new Date(a.fecha)
+        );
+        setMessages(sortedData);
+      } else {
+        setMessages([]);
+        console.error("Formato de datos inesperado:", response.data);
+      }
+    } catch (err) {
+      console.error("Error al cargar los mensajes:", err);
+      setError("Hubo un problema al cargar los mensajes.");
+      setOpenSnackbar(true);
+    }
+  };
 
   useEffect(() => {
     if (id) {
-      const fetchMessages = async () => {
-        try {
-          const response = await GestorEditorMensajes.getMessagesByClientId(id);
-          console.log("Mensajes obtenidos:", response);
-
-          if (Array.isArray(response.data)) {
-            const sortedData = response.data.sort(
-              (a, b) => new Date(b.fecha) - new Date(a.fecha)
-            );
-            setMessages(sortedData);
-          } else {
-            setMessages([]);
-            console.error("Formato de datos inesperado:", response.data);
-          }
-        } catch (err) {
-          console.error("Error al cargar los mensajes:", err);
-          setError("Hubo un problema al cargar los mensajes.");
-          setOpenSnackbar(true);
-        }
-      };
-
       fetchMessages();
     }
   }, [id]);
@@ -76,7 +81,6 @@ function EdicionMensajeView({ id }) {
         size: 200,
         Cell: ({ cell }) => new Date(cell.getValue()).toLocaleString(),
       },
-
       {
         header: "Acciones",
         size: 100,
@@ -105,10 +109,34 @@ function EdicionMensajeView({ id }) {
 
   return (
     <Box>
-    
-     {/* Encabezado */}
-     <div className="header mb-4">
+     
+      
+      <div className="header mb-4">
+      <Button
+      variant="contained"
+      color="primary"
+      onClick={() => router.push('/dashboard/gestorClientes')}
+      style={{
+        marginBottom: '16px',
+        backgroundColor: '#155E75',
+        color: 'white',
+        fontWeight: 'bold',
+        padding: '10px 20px',
+        borderRadius: '8px',
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        '&:hover': {
+          backgroundColor: '#1565c0',
+        },
+      }}
+    >
+      <ArrowBackIcon />
+      Regresar
+    </Button>
         <h1>Mensajes del Cliente</h1>
+        <ModalAgregarNotificacion id={id} onSaveSuccess={fetchMessages} />
       </div>
       
       {error && (
@@ -117,31 +145,14 @@ function EdicionMensajeView({ id }) {
         </Snackbar>
       )}
       <div style={{ width: '98%', margin: '0 auto' }}>
-      <MaterialReactTable table={table} />
-    </div>
-      
-      
+        <MaterialReactTable table={table} />
+      </div>
 
       {selectedMessage && (
         <ModalEdicionMensaje
           mensaje={selectedMessage}
           onClose={() => setSelectedMessage(null)}
-          onUpdate={async () => {
-            try {
-              const response = await GestorEditorMensajes.getMessagesByClientId(id);
-              if (Array.isArray(response.data)) {
-                const sortedData = response.data.sort(
-                  (a, b) => new Date(b.fecha) - new Date(a.fecha)
-                );
-                setMessages(sortedData);
-              }
-              setSelectedMessage(null);
-            } catch (err) {
-              console.error("Error al recargar los mensajes:", err);
-              setError("Hubo un problema al recargar los mensajes.");
-              setOpenSnackbar(true);
-            }
-          }}
+          onUpdate={fetchMessages}
         />
       )}
     </Box>
