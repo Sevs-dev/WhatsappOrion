@@ -366,7 +366,7 @@ const FlujoVentana = ({ id }) => {
           onClick={handleSaveBlockStatus}
           className="mt-4 sm:mt-6 w-full sm:w-auto bg-blue-600 hover:bg-blue-500 transition duration-300 p-2 sm:p-3 text-white rounded-lg shadow-md font-semibold transform hover:scale-105 hover:shadow-lg"
         >
-          Guardar Estado
+          Guardar Mensaje 💬
         </button>
       </div>
     </DndProvider>
