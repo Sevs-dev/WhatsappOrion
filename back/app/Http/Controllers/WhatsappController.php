@@ -18,16 +18,13 @@ class WhatsappController extends Controller
         // Puedes obtener estos valores desde el request o definirlos de manera fija.
         $nombre = $request->input('nombre', 'Sebastian');
         $telefono = $request->input('to', '573204627207');
-
         // Obtén la URL y el token desde el archivo .env
         $url = env('WHATSAPP_API_URL');   // Ahora se obtiene correctamente el valor desde el .env
         $token = env('WHATSAPP_API_TOKEN'); // Se obtiene el token de la variable de entorno
-
         // Verificar que la URL no esté vacía
         if (!$url) {
             return response()->json(['error' => 'La URL de la API de WhatsApp no está configurada en el archivo .env.'], 500);
         }
-
         // Construir el array de datos que se enviará en la petición
         $data = [
             "messaging_product" => "whatsapp",
@@ -52,14 +49,12 @@ class WhatsappController extends Controller
                 ]
             ]
         ];
-
         // Realizar la petición POST utilizando el cliente HTTP de Laravel
         $response = Http::withToken($token)
             ->withHeaders([
                 'Content-Type' => 'application/json',
             ])
             ->post($url, $data);
-
         // Manejar la respuesta
         if ($response->successful()) {
             return response()->json([

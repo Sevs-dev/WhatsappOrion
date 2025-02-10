@@ -4,9 +4,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from '@mui/icons-material/Email';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import EmailIcon from '@mui/icons-material/Email';
+import EmailIcon from '@mui/icons-material/List';
 import Avatar from '@mui/material/Avatar';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -75,7 +75,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     { 
       path: '/dashboard/configDatos', 
       icon: <SettingsIcon className="icon text-white" />, 
-      label: 'Configuración' 
+      label: 'Envió de Mensajes' 
     }
   ];
 
