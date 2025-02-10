@@ -8,9 +8,7 @@ import '../toastr/toast.css';
 
 const FlujoVentana = ({ id }) => {
   const estados = [
-    "Inicio", "Recibido", "En procesamiento", "En alistamiento",
-    "Alistado", "Verificado", "En transporte", "En transito",
-    "Entregado", "Con novedad", "Final",
+    "Inicio", "Recibido", "En procesamiento", "Alistado", "Despachado", "Entregado", "Con novedad"
   ];
 
   const [client, setClient] = useState(null);
