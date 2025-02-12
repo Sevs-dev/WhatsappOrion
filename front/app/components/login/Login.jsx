@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Toast from '../toastr/toast';
 import '../toastr/toast.css';
 import Loader from '../loader/Loader';
+import { login } from '../../services/authService/authService'; // Asegúrate de importar la función login
 
 function Login() {
   const [email, setEmail] = useState('admin@logismart.com.co');
@@ -27,44 +28,45 @@ function Login() {
       setToast({ show: false, type: '', message: '' });
     }, 3000);
   };
-
+  const handleLogin = (email, isAdmin) => {
+    localStorage.setItem("userEmail", email); // Almacena el correo electrónico
+    localStorage.setItem("isAdmin", isAdmin); // Almacena el estado de administrador
+    router.push("/dashboard/home"); // Redirige al usuario a la página de inicio
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     if (!email || !password) {
-      showToast('failure', 'Por favor completa todos los campos');
-      setLoading(false);
-      return;
+        showToast('failure', 'Por favor completa todos los campos');
+        setLoading(false);
+        return;
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+        const response = await login(email, password); // Usa la función del authService
 
-      const data = await response.json();
+        if (response.success) {
+            const data = response.data;
+            localStorage.setItem('token', data.autorización.token);
+            localStorage.setItem('userName', data.usuario.name);
 
-      if (response.ok) {
-        localStorage.setItem('token', data.autorización.token);
-        localStorage.setItem('userName', data.usuario.name);
-        router.push('/dashboard/home');
-      } else {
-        setError(data.message || 'Error de inicio de sesión.');
-        showToast('failure', data.message || 'Error de inicio de sesión.');
-      }
+            // Verificar si el usuario es admin
+            const isAdmin = email === "admin@logismart.com.co";
+            handleLogin(email, isAdmin);
+        } else {
+            setError(response.message || 'Error de inicio de sesión.');
+            showToast('failure', response.message || 'Error de inicio de sesión.');
+        }
     } catch (err) {
-      showToast('failure', 'Error al conectar con el servidor.');
-      setError('Error al conectar con el servidor');
+        showToast('failure', 'Error al conectar con el servidor.');
+        setError('Error al conectar con el servidor');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   return (
     <div
@@ -131,6 +133,13 @@ function Login() {
             >
               Iniciar Sesión
             </button>
+           
+            <div className="mt-6 text-center">
+            <span onClick={() => router.push('/register')} className="text-white hover:underline cursor-pointer">
+                 ¿No tienes una cuenta? Regístrate aquí
+                 </span>
+
+            </div>
 
             <div className="mt-6 text-center">
               <a

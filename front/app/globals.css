@@ -158,6 +158,63 @@ select:focus {
     box-shadow: 0 0 5px rgba(26, 82, 118, 0.4);
 }
 
+/* Estilo del input type email */
+input[type="email"],
+select {
+    border-radius: 10px;
+    padding: 10px 14px; /* Padding más pequeño para pantallas pequeñas */
+    width: 100%;
+    border: 1px solid #ddd;
+    margin-bottom: 15px; /* Menos margen para pantallas pequeñas */
+    background-color: rgba(255, 255, 255, 0.9);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+    color: rgba(26, 82, 118, 0.9);
+}
+
+/* Estilo del placeholder para asegurar visibilidad */
+input[type="email"]::placeholder {
+    color: rgba(26, 82, 118, 0.6);
+    font-style: italic;
+}
+
+/* Estilo del input en focus */
+input[type="email"]:focus,
+select:focus {
+    border-color: rgba(26, 82, 118, 0.9);
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 82, 118, 0.4);
+}
+
+/* Estilo del input type password */
+input[type="password"],
+select {
+    border-radius: 10px;
+    padding: 10px 14px; /* Padding más pequeño para pantallas pequeñas */
+    width: 100%;
+    border: 1px solid #ddd;
+    margin-bottom: 15px; /* Menos margen para pantallas pequeñas */
+    background-color: rgba(255, 255, 255, 0.9);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+    color: rgba(26, 82, 118, 0.9);
+}
+
+/* Estilo del placeholder para asegurar visibilidad */
+input[type="password"]::placeholder {
+    color: rgba(26, 82, 118, 0.6);
+    font-style: italic;
+}
+
+/* Estilo del input en focus */
+input[type="password"]:focus,
+select:focus {
+    border-color: rgba(26, 82, 118, 0.9);
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 82, 118, 0.4);
+}
 /* Estilo del modal cuando el fondo es transparente */
 .MuiModal-root {
     background-color: rgba(0, 0, 0, 0.5);
