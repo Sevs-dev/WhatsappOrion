@@ -68,11 +68,11 @@ const ListaFlujos = () => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Deshabilitar">
+            {/* <Tooltip title="Deshabilitar">
               <IconButton color="primary">
                 <BlockIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         ),
       },

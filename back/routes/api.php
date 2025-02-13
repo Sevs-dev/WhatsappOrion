@@ -59,6 +59,7 @@ Route::prefix('drop')->group(function () {
 
 Route::prefix('whatsapp')->group(function () {
     Route::post('/send-whatsapp-message', [WhatsappController::class, 'sendTemplateMessage']);
+    Route::get('/webhook', [WhatsappController::class, 'handleWebhook']);
+    Route::post('/webhook', [WhatsappController::class, 'handleWebhook']);
+    Route::post('/config-whatsapp', [WhatsappController::class, 'enviarConfigWhatsApp']);
 });
-
-
