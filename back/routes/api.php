@@ -16,7 +16,15 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
+
+    Route::post('/useradd', 'addUser'); // Nueva ruta para agregar usuarios
+    Route::get('/users', 'getAllUsers');  // Listar todos los usuarios
+    Route::get('/users/{id}', 'getUser'); // Obtener un usuario específico
+    Route::put('/users/update/{id}', action: 'updateUser'); // Actualizar usuario ✅ (antes estaba mal con GET)
+    Route::delete('/users/{id}', 'deleteUser'); // Eliminar usuario
+
 });
+
 
 Route::get('/clients', [ApiIp6Controller::class, 'getClientData']);
 Route::get('/dato/{codigo}', [ApiIp6Controller::class, 'getClientByCodigo']);
