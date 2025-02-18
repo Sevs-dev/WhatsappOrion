@@ -80,24 +80,24 @@ function Login() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex bg-white/20 backdrop-blur-md rounded-lg shadow-lg overflow-hidden w-full max-w-4xl border border-white/20"
+        className="flex flex-col md:flex-row bg-white/20 backdrop-blur-md rounded-lg shadow-lg overflow-hidden w-full max-w-4xl border border-white/20 mx-4"
       >
         {/* Columna izquierda: Formulario de inicio de sesión */}
-        <div className="w-full md:w-1/2 p-8">
+        <div className="w-full md:w-1/2 p-4 md:p-8">
           {/* Logo en la parte superior */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4 md:mb-6">
             <img
               src="/logo.png" // Ruta de la imagen del logo
               alt="Logo de la empresa"
-              className="w-24 h-24" // Ajusta el tamaño del logo
+              className="w-16 h-16 md:w-24 md:h-24" // Ajusta el tamaño del logo
             />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <h2 className="text-3xl font-semibold text-center text-white mb-6">Iniciar Sesión</h2>
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+            <h2 className="text-2xl md:text-3xl font-semibold text-center text-white mb-4 md:mb-6">Iniciar Sesión</h2>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-1 md:mb-2">
                 Correo Electrónico
               </label>
               <input
@@ -105,14 +105,14 @@ function Login() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                className="w-full p-2 md:p-3 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                 placeholder="Ingresa tu correo"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-1 md:mb-2">
                 Contraseña
               </label>
               <input
@@ -120,7 +120,7 @@ function Login() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                className="w-full p-2 md:p-3 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                 placeholder="Ingresa tu contraseña"
                 required
               />
@@ -129,19 +129,19 @@ function Login() {
             <button
               type="submit"
               style={{ backgroundColor: 'rgba(26, 82, 118, 0.9)' }} // Color del botón
-              className="w-full text-white py-3 rounded-lg hover:bg-opacity-80 hover:scale-105 transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-opacity-50 shadow-md hover:shadow-lg"
+              className="w-full text-white py-2 md:py-3 rounded-lg hover:bg-opacity-80 hover:scale-105 transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-opacity-50 shadow-md hover:shadow-lg"
             >
               Iniciar Sesión
             </button>
            
-            <div className="mt-6 text-center">
+            <div className="mt-4 md:mt-6 text-center">
             <span onClick={() => router.push('/register')} className="text-white hover:underline cursor-pointer">
                  ¿No tienes una cuenta? Regístrate aquí
                  </span>
 
             </div>
 
-            <div className="mt-6 text-center">
+            <div className="mt-4 md:mt-6 text-center">
               <a
                 href="#"
                 style={{ color: 'white' }} // Color del enlace
