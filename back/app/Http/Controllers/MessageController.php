@@ -7,6 +7,7 @@ use App\Models\ClientsWhatsapp;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\MessageWhatsapp;
+use App\Models\ParamsMessage;
 use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
@@ -20,9 +21,8 @@ class MessageController extends Controller
         // Definir reglas de validación
         $rules = [
             'titulo' => 'required|string|max:255',
-            'descripcion' => 'required|string',
-            'check_url' => 'nullable|boolean',
-            'id_url' => 'nullable|integer',
+            'descripcion' => 'required|string', 
+            'api_url' => 'required',
             'estado_flujo_activacion' => 'required|boolean',
         ];
 
@@ -34,8 +34,7 @@ class MessageController extends Controller
         }
 
         // Convertir valores booleanos correctamente
-        $request->merge([
-            'check_url' => filter_var($request->check_url, FILTER_VALIDATE_BOOLEAN),
+        $request->merge([ 
             'estado_flujo_activacion' => filter_var($request->estado_flujo_activacion, FILTER_VALIDATE_BOOLEAN),
         ]);
 
@@ -45,9 +44,8 @@ class MessageController extends Controller
             'nombre' => $request->nombre,
             'usuario' => $request->usuario,
             'codigo' => $request->codigo,
-            'estado_flujo_activacion' => $request->estado_flujo_activacion,
-            'check_url' => $request->check_url,
-            'id_url' => $request->id_url,
+            'estado_flujo_activacion' => $request->estado_flujo_activacion, 
+            'api_url' => $request->api_url,
             'fecha' => $fecha,
             'id_cliente_whatsapp' => $request->id_cliente_whatsapp,
         ]);
@@ -61,9 +59,8 @@ class MessageController extends Controller
         // Definir reglas de validación
         $rules = [
             'titulo' => 'required|string|max:255',
-            'descripcion' => 'required|string',
-            'check_url' => 'nullable|boolean',
-            'id_url' => 'nullable|integer',
+            'descripcion' => 'required|string', 
+            'api_url' => 'required',
             'estado_flujo_activacion' => 'required|boolean',
         ];
         // Validar los datos de la petición
@@ -78,16 +75,14 @@ class MessageController extends Controller
             return response()->json(['error' => 'Mensaje no encontrado'], 404);
         }
         // Convertir valores booleanos correctamente
-        $request->merge([
-            'check_url' => filter_var($request->check_url, FILTER_VALIDATE_BOOLEAN),
+        $request->merge([ 
             'estado_flujo_activacion' => filter_var($request->estado_flujo_activacion, FILTER_VALIDATE_BOOLEAN),
         ]);
         // Actualizar los datos del mensaje
         $mensaje->update([
             'titulo' => $request->titulo,
-            'descripcion' => $request->descripcion,
-            'check_url' => $request->check_url,
-            'id_url' => $request->id_url,
+            'descripcion' => $request->descripcion, 
+            'api_url' => $request->api_url,
             'estado_flujo_activacion' => $request->estado_flujo_activacion,
             'usuario' => 'admin',
         ]);
@@ -136,5 +131,32 @@ class MessageController extends Controller
             ->where('id_cliente_whatsapp', $empresa->id)
             ->get();
         return response()->json(['data' => $datos]);
+    }
+
+    public function createParams(Request $request)
+    {
+        // Validar los datos
+        $request->validate([
+            'name' => 'required',
+            'label' => 'required',
+        ]);
+
+        // Crear el nuevo parámetro
+        $param = ParamsMessage::create([
+            'name' => $request->name,
+            'label' => $request->label,
+        ]);
+
+        // Responder con el nuevo parámetro
+        return response()->json($param, 201);
+    }
+
+    public function parametros()
+    {
+        // Obtener todos los parámetros
+        $params = ParamsMessage::all();
+
+        // Responder con los parámetros
+        return response()->json($params);
     }
 }

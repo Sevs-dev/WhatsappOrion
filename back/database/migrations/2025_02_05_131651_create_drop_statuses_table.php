@@ -16,6 +16,7 @@ return new class extends Migration
             $table->json('estado');
             $table->string('message')->nullable();
             $table->string('user')->nullable();
+            $table->string('codigo')->nullable();
             $table->unsignedBigInteger('id_cliente');
             $table->foreign('id_cliente')->references('id')->on('clients_whatsapps')->onDelete('cascade');
             $table->timestamps();

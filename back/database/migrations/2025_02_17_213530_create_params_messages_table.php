@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_clients', function (Blueprint $table) {
+        Schema::create('params_messages', function (Blueprint $table) {
             $table->id();
-            $table->json('estados'); 
-            $table->string('message');
-            $table->string('codigo');
-            $table->unsignedBigInteger('id_api');
-            $table->foreign('id_api')->references('id')->on('client_apis')->onDelete('cascade');
+            $table->string('name');
+            $table->string('label'); 
             $table->timestamps();
         });
-        
     }
 
     /**
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('status_clients');
+        Schema::dropIfExists('params_messages');
     }
 };

@@ -53,7 +53,7 @@ const ListaNotificaciones = ({ id_cliente }) => {
                 size: 150,
             },
             {
-                accessorKey: 'id_url',
+                accessorKey: 'api_url',
                 header: 'URL',
                 size: 150,
             },

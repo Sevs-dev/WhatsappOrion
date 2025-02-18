@@ -15,7 +15,7 @@ const ClientApiService = {
     getClients: async () => {
         try {
             const response = await apiClient.get('/clients');
-            const clients = response.data; 
+            const clients = response.data;
             // console.log("Lista de clientes obtenida:", clients);
             return clients;
         } catch (error) {
@@ -118,6 +118,27 @@ const ClientApiService = {
             throw error;
         }
     },
+
+    // Crear un nuevo cliente
+    createParams: async (parametros) => {
+        try {
+            const response = await apiClient.post('/parametros/params', parametros);
+            return response.data;
+        } catch (error) {
+            console.error('Error creando parámetro:', error.response || error.message);
+            throw error;
+        }
+    },
+
+    getParams: async () => {
+        try {
+            const response = await apiClient.get('/parametros/parametros'); 
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching params:', error);
+            throw error;
+        }
+    }
 
 };
 

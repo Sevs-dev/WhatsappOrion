@@ -15,15 +15,5 @@ class Mensaje extends Model
     protected $primaryKey = 'id_mensaje_whatsapp';
     public $incrementing = true;
     protected $keyType = 'int';
-    protected $fillable = [
-        'id_mensaje_whatsapp',
-        'titulo',
-        'descripcion',
-        'check_url',
-        'id_url',
-        'estado_flujo_activacion',
-        'id_cliente_whatsapp',
-        'fecha',
-        'usuario'
-    ];
+    protected $guarded = [];
 }

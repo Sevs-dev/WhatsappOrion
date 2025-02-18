@@ -24,7 +24,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     const storedUserName = localStorage.getItem('userName');
     const storedUserData = localStorage.getItem('userData');
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
-    console.log("Is Admin:", adminStatus); // Depuración
+    // console.log("Is Admin:", adminStatus); // Depuración
     setIsAdmin(adminStatus);
   
     if (storedUserData) {

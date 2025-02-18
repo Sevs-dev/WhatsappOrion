@@ -20,6 +20,7 @@ class StatusController extends Controller
             'id_api' => 'required|integer',
             'estados' => 'required|json',
             'message' => 'required',
+            'codigo' => 'required',
         ]);
 
         try {
@@ -36,9 +37,12 @@ class StatusController extends Controller
                 $status->id_api = $validated['id_api'];
                 $status->estados = $validated['estados'];
                 $status->message = $validated['message'];
+                $status->codigo = $validated['codigo'];
                 $message = 'Estado de flujo guardado con éxito.';
             }
+
             $status->save();
+
             return response()->json([
                 'message' => $message,
                 'data' => $status,
@@ -83,15 +87,18 @@ class StatusController extends Controller
         // Validación
         $validated = $request->validate([
             'id_cliente' => 'required|integer',
+            'codigo' => 'required|string', // Agregado 'codigo'
             'estado' => 'required|array',
         ]);
 
-        $cliente_id = $validated['id_cliente']; // Cambié a id_cliente
+        $cliente_id = $validated['id_cliente'];
+        $codigo = $validated['codigo']; // Capturar el código
         $datos = $validated['estado']; // Debe ser un array
 
         try {
             // Obtener todos los estados actuales del cliente
             $currentStatuses = DropStatus::where('id_cliente', $cliente_id)->get();
+
             // Eliminar estados que ya no están en el nuevo array
             foreach ($currentStatuses as $status) {
                 $estadoFound = false;
@@ -106,16 +113,19 @@ class StatusController extends Controller
                                 'mensaje' => $estadoData['mensaje'],
                             ]);
                             $status->message = $estadoData['message'] ?? null;
+                            $status->codigo = $codigo; // Asignar el código
                             $status->save();
                         }
                         break;
                     }
                 }
+
                 // Si el estado no se encuentra en la nueva lista, eliminamos el estado
                 if (!$estadoFound) {
                     $status->delete();
                 }
             }
+
             // Agregar los nuevos estados (o actualizarlos)
             foreach ($datos as $estadoData) {
                 $estadoExistente = DropStatus::where('id_cliente', $cliente_id)
@@ -124,6 +134,7 @@ class StatusController extends Controller
                         'mensaje' => $estadoData['mensaje'],
                     ]))
                     ->first();
+
                 if (!$estadoExistente) {
                     // Si el estado no existe, lo creamos
                     $dropStatus = new DropStatus();
@@ -133,6 +144,7 @@ class StatusController extends Controller
                     ]);
                     $dropStatus->message = $estadoData['message'] ?? null;
                     $dropStatus->id_cliente = $cliente_id;
+                    $dropStatus->codigo = $codigo; // Asignar el código
                     $dropStatus->save();
                 }
             }
@@ -146,6 +158,7 @@ class StatusController extends Controller
         }
     }
 
+
     // En el controlador
     public function getMessageStatus($id_cliente)
     {
@@ -153,6 +166,7 @@ class StatusController extends Controller
         if ($datos->isEmpty()) {
             return response()->json(['error' => 'No se encontraron datos para este cliente.'], 404);
         }
+
         $messagesByState = [];
         foreach ($datos as $status) {
             $estado = json_decode($status->estado, true);
@@ -160,6 +174,7 @@ class StatusController extends Controller
 
             $messagesByState[$estadoName] = $estado;
         }
+
         return response()->json(['datos' => $messagesByState])->header('Content-Type', 'application/json');
     }
 }

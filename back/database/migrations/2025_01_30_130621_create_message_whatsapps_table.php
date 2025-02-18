@@ -19,8 +19,7 @@ return new class extends Migration
             $table->string('usuario');
             $table->string('codigo')->nullable();
             $table->integer('estado_flujo_activacion')->nullable();
-            $table->integer('check_url')->nullable();
-            $table->integer('id_url');
+            $table->string('api_url')->nullable();
             $table->dateTime('fecha')->nullable();
             $table->unsignedBigInteger('id_cliente_whatsapp'); // Debe coincidir con la clave primaria en clientes_whatsapp
             $table->foreign('id_cliente_whatsapp')->references('id')->on('clients_whatsapps')->onDelete('cascade'); // Opcional, define qué sucede al eliminar un cliente

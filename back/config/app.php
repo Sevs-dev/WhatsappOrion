@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'whatsapp_webhook_token' => env('WHATSAPP_WEBHOOK_TOKEN'),
+    'whatsapp_api_url'=> env('WHATSAPP_API_URL'),
 ];

@@ -1,12 +1,20 @@
-'use client';
 import { Box, Button, IconButton, Modal, Tooltip } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
+import ApiUrl from '../../services/EditarMensajes/GestorEditorMensajes';
 import Toast from '../toastr/toast';
+import TextField from '@mui/material/TextField';
+
 
 const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
     const [open, setOpen] = useState(false);
+    const [urlApi, setUrlApi] = useState([]);
+    const [paramModalOpen, setParamModalOpen] = useState(false);
+    const [newParamName, setNewParamName] = useState('');
+    const [newParamLabel, setNewParamLabel] = useState('');
+    const [availableVariables, setAvailableVariables] = useState([]);
+    const [paramSaved, setParamSaved] = useState(false);
     const [toast, setToast] = useState({
         show: false,
         type: '',
@@ -25,8 +33,7 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
             titulo: '',
             descripcion: '',
             id: id || '',
-            id_url: '123',
-            check_url: true,
+            api_url: '',
             estado_flujo_activacion: false,
             estado: '',
             codigo: '',
@@ -39,14 +46,28 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
         titulo: '',
         descripcion: '',
         id: id || '',
-        id_url: '123',
-        check_url: true,
+        api_url: true,
         estado_flujo_activacion: false,
         estado: '',
         codigo: '',
         nombre: '',
         usuario: '',
     });
+
+    useEffect(() => {
+        const fetchParams = async () => {
+            try {
+                const params = await ClientApiService.getParams();
+                const variables = params.data ? params.data : params;  // Ajustar dependiendo de la estructura
+                setAvailableVariables(Array.isArray(variables) ? variables : []);
+            } catch (error) {
+                console.error('Error al obtener los parámetros:', error);
+            }
+        };
+
+        fetchParams();
+    }, [paramSaved]);
+
 
     useEffect(() => {
         if (id && open) {
@@ -73,6 +94,20 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                 });
         }
     }, [id, open]);
+
+    useEffect(() => {
+        const fetchClients = async () => {
+            try {
+                const data = await ApiUrl.getWhatsappApi(); // Obtener solo las URLs de la API de WhatsApp
+                const apiUrls = data.map(client => client.api_url); // Extraer solo las URLs
+                setUrlApi(apiUrls); // Establecer las URLs en el estado
+            } catch (error) {
+                console.error('Error fetching clients:', error);
+            }
+        };
+
+        fetchClients();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -106,8 +141,7 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
             nombre: formData.nombre,
             codigo: formData.codigo,
             estado_flujo_activacion: formData.estado ?? false,
-            check_url: formData.check_url ?? false,
-            id_url: formData.id_url ? String(formData.id_url) : '',
+            api_url: formData.api_url ?? false,
             id_cliente_whatsapp: formData.id,
             fecha: new Date().toISOString(),
         };
@@ -127,8 +161,7 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                 usuario: '',
                 codigo: '',
                 nombre: '',
-                id_url: '',
-                check_url: false,
+                api_url: '',
                 id_cliente_whatsapp: '',
             });
 
@@ -150,10 +183,55 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
         }
     };
 
+    const handleInsertVariable = (variable) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            descripcion: `${prevState.descripcion} {{${variable}}}`,
+        }));
+    };
+
+    // Manejo de apertura/cierre del modal de parámetros
+    const handleOpenParamModal = () => setParamModalOpen(true);
+    const handleCloseParamModal = () => {
+        setParamModalOpen(false);
+        setNewParamName('');
+        setNewParamLabel('');
+    };
+
+    const handleSaveParam = async () => {
+        if (!newParamName || !newParamLabel) {
+            setToast({
+                show: true,
+                type: 'failure',
+                message: 'El nombre y el label del parámetro son obligatorios.',
+            });
+            return;
+        }
+
+        const parametros = { name: newParamName, label: newParamLabel };
+        try {
+            await ClientApiService.createParams(parametros);
+            setToast({
+                show: true,
+                type: 'success',
+                message: `Parámetro creado con éxito.`,
+            });
+            setParamSaved(prev => !prev);  // Cambiar el valor de `paramSaved`
+            handleCloseParamModal();
+        } catch (error) {
+            console.error('Error creando parámetro:', error);
+            setToast({
+                show: true,
+                type: 'failure',
+                message: 'Hubo un error al crear el parámetro.',
+            });
+        }
+    };
+
     return (
         <>
             {toast.show && <Toast type={toast.type} message={toast.message} />}
-            
+
             <Tooltip title="Agregar Notificación">
                 <IconButton color="primary" onClick={handleOpen} className="btn btn-primary">
                     <AddCircleIcon />
@@ -168,23 +246,23 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
             >
                 <Box className="modal-container"
                     sx={{
-                        maxWidth: '600px', 
+                        maxWidth: '600px',
                         maxHeight: '90vh',
                         padding: 3,
                         overflowY: 'auto',
-                        '&::-webkit-scrollbar': { 
+                        '&::-webkit-scrollbar': {
                             width: '8px'
                         },
-                        '&::-webkit-scrollbar-track': { 
-                            background: 'rgba(0, 0, 0, 0.1)', 
+                        '&::-webkit-scrollbar-track': {
+                            background: 'rgba(0, 0, 0, 0.1)',
                             borderRadius: '12px'
                         },
-                        '&::-webkit-scrollbar-thumb': { 
-                            background: 'rgba(15, 63, 120, 0.9)', 
-                            borderRadius: '12px', 
+                        '&::-webkit-scrollbar-thumb': {
+                            background: 'rgba(15, 63, 120, 0.9)',
+                            borderRadius: '12px',
                             border: '2px solid rgba(0, 0, 0, 0.2)'
                         },
-                        '&::-webkit-scrollbar-thumb:hover': { 
+                        '&::-webkit-scrollbar-thumb:hover': {
                             background: 'rgba(10, 50, 100, 1)'
                         },
                     }}
@@ -217,11 +295,68 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                                 rows={4}
                                 className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
-                            {formErrors.descripcion && (
-                                <span className="error-message text-red-500 text-sm">
-                                    * Este campo es obligatorio
-                                </span>
-                            )}
+                        </div>
+
+                        {/* Botón para abrir el modal de creación de parámetros */}
+                        <Button variant="outlined" color="primary" onClick={handleOpenParamModal}>
+                            Agregar Parámetro
+                        </Button>
+
+                        {/* Modal para crear un parámetro */}
+                        <Modal open={paramModalOpen} onClose={handleCloseParamModal}>
+                            <Box className="modal-container">
+                                <h2>Crear Parámetro</h2>
+                                <TextField
+                                    label="Parámetro requerido"
+                                    value={newParamName}
+                                    onChange={(e) => setNewParamName(e.target.value)}
+                                    fullWidth
+                                />
+                                <TextField
+                                    label="Nombre del Parámetro"
+                                    value={newParamLabel}
+                                    onChange={(e) => setNewParamLabel(e.target.value)}
+                                    fullWidth
+                                />
+                                <Button variant="contained" color="primary" onClick={handleSaveParam}>
+                                    Guardar Parámetro
+                                </Button>
+                                <Button variant="outlined" color="error" onClick={handleCloseParamModal}>
+                                    Cancelar
+                                </Button>
+                            </Box>
+                        </Modal>
+
+                        <div style={{ marginTop: '20px' }}>
+                            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Seleccionar Variables</h4>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
+                                {Array.isArray(availableVariables) && availableVariables.map((param, index) => (
+                                    <Button
+                                        key={param.name}  // Usar param.name aquí para el key
+                                        onClick={() => handleInsertVariable(param.name)}  // Usar param.name aquí también
+                                        variant="outlined"
+                                        color="primary"
+                                        sx={{
+                                            padding: '6px 12px',   // Reducción de padding
+                                            borderRadius: '6px',
+                                            textTransform: 'capitalize',
+                                            fontWeight: '400',
+                                            fontSize: '0.7rem',  // Tamaño de fuente reducido
+                                            boxShadow: 'none',
+                                            border: '1px solid #1976d2', // Añadir un borde sutil
+                                            '&:hover': {
+                                                backgroundColor: '#1976d2',
+                                                color: '#fff',
+                                                borderColor: '#1565c0',
+                                            },
+                                        }}
+                                    >
+                                        {param.label} {/* Mostrar los datos del parámetro */}
+                                    </Button>
+                                ))}
+                            </div>
+
                         </div>
 
                         <label className="form-label-2">Nombre del Cliente</label>
@@ -251,13 +386,16 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                         <label>URL</label>
                         <div className="input-group">
                             <select
-                                name="url"
-                                value={formData.url}
+                                name="api_url"
+                                value={formData.api_url}
                                 onChange={handleChange}
                             >
                                 <option value="">Seleccionar</option>
-                                <option value="A">URL 1</option>
-                                <option value="B">URL 2</option>
+                                {urlApi.map((url, index) => (
+                                    <option key={index} value={url}>
+                                        {url}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
@@ -275,10 +413,18 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                         </div>
 
                         <div className="buttons">
-                            <Button variant="contained" color="error" onClick={handleClose}>
-                                Cerrar
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={handleClose}
+                            >
+                                Cancelar
                             </Button>
-                            <Button variant="contained" color="success" onClick={handleSave}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSave}
+                            >
                                 Guardar
                             </Button>
                         </div>

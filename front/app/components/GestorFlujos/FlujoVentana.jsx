@@ -132,6 +132,7 @@ const FlujoVentana = ({ id }) => {
       id_api: clientId,
       estados: JSON.stringify([...selectedEstados]),
       message: messageId,
+      codigo: client.codigo
     };
 
     try {
@@ -239,11 +240,22 @@ const FlujoVentana = ({ id }) => {
       });
       return;
     }
-
+  
+    const estadoValores = {
+      "Inicio": 0,
+      "Recibido": 3500,
+      "En procesamiento": 7000,
+      "Alistado": 11500,
+      "Despachado": 12000,
+      "Entregado": 15000,
+      "Con novedad": 17000
+    };
+  
     const data = {
       id_cliente: clientId,
+      codigo: client.codigo,
       estado: Object.entries(estadoMessages).map(([estado, messages]) => ({
-        estado: estado,
+        estado: estadoValores[estado] ?? null,
         mensaje: messages.map(msg => ({
           titulo: msg.titulo,
           descripcion: msg.descripcion,
@@ -251,7 +263,7 @@ const FlujoVentana = ({ id }) => {
         })),
       })),
     };
-
+  
     try {
       await GestorFlujosServ.saveDropStatus(data);
       setToast({

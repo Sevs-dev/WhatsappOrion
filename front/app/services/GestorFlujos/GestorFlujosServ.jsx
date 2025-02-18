@@ -142,27 +142,26 @@ const GestorFlujosServ = {
     saveDropStatus: async (data) => {
         try {
             const response = await apiClient.post(`/drop/create`, data);
-            // console.log("Datos del servicio", response);
             return response.data;
         } catch (error) {
-            console.error("Error al guardar el estado del drop:", error); 
+            console.error("Error al guardar el estado del drop:", error);
         }
     },
 
     getDropStatus: async (clientId) => {
         try {
-          const response = await apiClient.get(`/drop/data/${clientId}`);
-          
-          if (response.status !== 200) {
-            throw new Error('No se pudieron obtener los mensajes.');
-          } 
-          return response.data.datos;
+            const response = await apiClient.get(`/drop/data/${clientId}`);
+
+            if (response.status !== 200) {
+                throw new Error('No se pudieron obtener los mensajes.');
+            }
+            return response.data.datos;
         } catch (error) {
-          console.error('Error al obtener los mensajes:', error);
-          throw error;
+            console.error('Error al obtener los mensajes:', error);
+            throw error;
         }
-      },
-      
+    },
+
 }
 
 export default GestorFlujosServ;

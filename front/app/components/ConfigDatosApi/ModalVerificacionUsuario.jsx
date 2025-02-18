@@ -1,76 +1,101 @@
-import { Box, Button, Modal, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState, useEffect } from 'react';
+import { Button, TextField, Modal, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import Services from "../../services/EditarMensajes/GestorEditorMensajes";
 
-const ModalVerificacionUsuario = () => {
-    const [open, setOpen] = useState(false);//Estado para manejar si el modal esta abierto o cerrado
-    const [claveUsuario, setClaveUsuario] = useState('');//Almacena la clave del usuario
+const ModalAgregarApi = () => {
+    const [open, setOpen] = useState(false);
+    const [apiUrl, setApiUrl] = useState('');
     const [error, setError] = useState(false);
-    const router = useRouter();
-//Funciones para abrir y cerrar el modal
+    const [estado, setEstado] = useState('true'); // Estado para manejar si la API es activa o inactiva
+    const [number, setNumber] = useState(''); // Estado para manejar si la API es activa o inactiva
+
+    // Función para abrir el modal
     const handleOpen = () => setOpen(true);
+
+    // Función para cerrar el modal
     const handleClose = () => {
         setOpen(false);
-        setClaveUsuario('');
+        setApiUrl('');
         setError(false);
     };
 
-    const handleGuardar = () => {
-        if (!claveUsuario) { //Si no se ha ingresado la clave del usuario muestra un mensaje de error
+    // Función para guardar la nueva URL de la API
+    const handleGuardar = async () => {
+        if (!apiUrl) {
             setError(true);
             return;
         }
-        router.push('/dashboard/nuevaConfiguracion');
+    
+        try {
+            const response = await Services.saveWhatsappApi({
+                api_url: apiUrl,
+                estado: estado === 'activo' ? 1 : 0,
+                number_test: number,
+            });
+            alert('API URL guardada correctamente');
+            setOpen(false); 
+        } catch (err) {
+            console.error('Error al guardar el estado del whatsapp Api:', err);
+        }
     };
+    
+    
 
     return (
         <div>
-            <button onClick={handleOpen} className="btn btn-primary">
-                Crear cliente
-            </button>
-            <Modal
-                open={open}
-                onClose={handleClose}//Cierra el modal al hacer click fuera de el
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box className="modal-container">
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        Verificación de Usuario
-                    </Typography>
-                    <div className="options">
-                        <Typography variant="body1" component="label">
-                            Clave de usuario
+            <Button onClick={handleOpen}>Agregar API URL</Button>
+
+            {/* Modal para agregar nueva URL de la API */}
+            <Modal open={open} onClose={handleClose}>
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+                        <Typography variant="h6" component="h2">
+                            Agregar Nueva API URL
                         </Typography>
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                placeholder="Escriba la clave del usuario"
-                                value={claveUsuario}
-                                onChange={(e) => {
-                                    setClaveUsuario(e.target.value);
-                                    setError(false);
-                                }}
-                            />
-                            {error && (
-                                <span className="error-message" style={{ color: 'red' }}>
-                                    * Este campo es obligatorio
-                                </span>
-                            )}
-                        </div>
-                        <div className="buttons">
-                            <Button variant="contained" color="error" onClick={handleClose}>
-                                Cerrar
+                        <TextField
+                            label="API URL"
+                            value={apiUrl}
+                            onChange={(e) => setApiUrl(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            error={error}
+                            helperText={error && "Este campo es obligatorio"}
+                        />
+                        {/* Select para el estado de la API */}
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Estado de la API</InputLabel>
+                            <Select
+                                value={estado}
+                                onChange={(e) => setEstado(e.target.value)}
+                                label="Estado de la API"
+                            >
+                                <MenuItem value="activo">Activo</MenuItem>
+                                <MenuItem value="inactivo">Inactivo</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <TextField
+                            label="Numero de prueba"
+                            value={number}
+                            onChange={(e) => setNumber(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            error={error}
+                            helperText={error && "Este campo es obligatorio"}
+                        />
+                        <div className="flex justify-end space-x-2 mt-4">
+                            <Button onClick={handleClose} className="bg-gray-300 text-black hover:bg-gray-400">
+                                Cancelar
                             </Button>
-                            <Button variant="contained" color="success" onClick={handleGuardar}>
+                            <Button onClick={handleGuardar} className="bg-blue-500 text-white hover:bg-blue-600">
                                 Guardar
                             </Button>
                         </div>
                     </div>
-                </Box>
+                </div>
             </Modal>
         </div>
     );
 };
 
-export default ModalVerificacionUsuario;
+export default ModalAgregarApi;

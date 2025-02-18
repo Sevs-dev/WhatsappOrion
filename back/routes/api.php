@@ -43,7 +43,12 @@ Route::prefix('message')->group(function () {
     Route::delete('/delete/{id}', [MessageController::class, 'delete']);
     Route::get('/list', [MessageController::class, 'index']);
     Route::get('/{id}', [MessageController::class, 'show']);
-    Route::get('/search/{id}', [MessageController::class, 'getMessagesByClientId']);
+    Route::get('/search/{id}', [MessageController::class, 'getMessagesByClientId']); 
+});
+
+Route::prefix('parametros')->group(function () { 
+    Route::post('/params', [MessageController::class, 'createParams']);
+    Route::get('/parametros', [MessageController::class, 'parametros']);
 });
 
 Route::prefix('client')->group(function () {
@@ -61,12 +66,18 @@ Route::prefix('status')->group(function () {
 });
 
 Route::prefix('drop')->group(function () {
-    Route::post('/create', [StatusController::class, 'saveDropStatus']); 
-    Route::get('/data/{id_cliente}', [StatusController::class, 'getMessageStatus']); 
+    Route::post('/create', [StatusController::class, 'saveDropStatus']);
+    Route::get('/data/{id_cliente}', [StatusController::class, 'getMessageStatus']);
 });
 
 Route::prefix('whatsapp')->group(function () {
-    Route::post('/send-whatsapp-message', [WhatsappController::class, 'sendTemplateMessage']);
+    Route::post('/whatsapp-api', [WhatsappController::class, 'store']);
+    Route::get('/whatsapp-api', [WhatsappController::class, 'getAll']);
+    Route::get('/whatsapp-api-id/{id}', [WhatsappController::class, 'getwhatsappId']);
+    Route::post('/send-prueba/{id}', [WhatsappController::class, 'sendPrueba']);
+    Route::post('/send-whatsapp-message1', [WhatsappController::class, 'sendTemplateMessage1']);
+    Route::post('/send-whatsapp-message2', [WhatsappController::class, 'sendTemplateMessage2']);
+    Route::post('/send-whatsapp-message3', [WhatsappController::class, 'sendTemplateMessage3']);
     Route::get('/webhook', [WhatsappController::class, 'handleWebhook']);
     Route::post('/webhook', [WhatsappController::class, 'handleWebhook']);
     Route::post('/config-whatsapp', [WhatsappController::class, 'enviarConfigWhatsApp']);

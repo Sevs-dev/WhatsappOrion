@@ -1,61 +1,66 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { IconButton, Tooltip } from '@mui/material';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';//Icono de apagado
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';//Icono de encendido
+import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import PageviewIcon from '@mui/icons-material/Pageview';
-import ConfigApiService from '../../services/ConfigDatosApi/ConfigDatosServ';
+import Services from "../../services/EditarMensajes/GestorEditorMensajes";
 
-
-//Busca los datos para rellenar la tabla
 const HistoricoConfig = () => {
-
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); // Usamos "data" para los datos de la tabla
 
   useEffect(() => {
-    const fetchData = async () => {
-      try{
-        const configurations = await ConfigApiService.getAllConfigs();//llama a la api para obtener todas las configuraciones
-        setData(configurations);//Guarda los datos obtenidos en el estado `data`
-
-      } catch (err) {
-        console.error('Error fetch todas las configuraciones', err)
-      };
+    const fetchClients = async () => {
+      try {
+        const clientsData = await Services.getWhatsappApi(); // Llamada a la API 
+        setData(clientsData); // Asegura que data se establezca correctamente
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+        setData([]); // En caso de error, asignamos un array vacío
+      }
     };
-    fetchData();
-  }, [])
   
-//Define las columnas de la tabla Usememo  (para evitar que se vuelva a renderizar cada vez que se actualiza el estado)
+    fetchClients();
+  }, []);
+
+  // Función para manejar el clic en "Probar"
+  const handleTestClick = async (id) => {
+    try {
+      const response = await Services.sendPrueba(id); // Llamada al servicio de prueba con el id
+      if (response.success) {
+        alert('Mensaje de prueba enviado correctamente!');
+      } else {
+        alert('Hubo un error al enviar el mensaje.');
+      }
+    } catch (error) {
+      alert('Error al intentar enviar el mensaje de prueba.');
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'id_configuracion', 
-        header: 'Id Configuracion',
-        size: 100,
-      },
-      // {
-      //   accessorKey: 'token_api', 
-      //   header: 'Token API',
-      //   size: 50,
-      // },
-      {
-        accessorKey: 'numero_verificacion',
-        header: 'Numero Verificacion',
-        size: 150,
-      },
-      {
-        accessorKey: 'fecha', 
-        header: 'Fecha',
-        size: 100,
-      },
-      {
-        accessorKey: 'usuario',
-        header: 'Usuario',
+        accessorKey: 'api_url',
+        header: 'URL',
         size: 100,
       },
       {
         accessorKey: 'estado',
         header: 'Estado',
+        size: 100,
+        Cell: ({ row }) => (
+          <span style={{ color: row.original.estado === 1 ? 'green' : 'red', fontWeight: 'bold' }}>
+            {row.original.estado === 1 ? 'Activo' : 'Inactivo'}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'number_test',
+        header: 'Numero de Prueba',
+        size: 100,
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Fecha',
         size: 100,
       },
       {
@@ -63,39 +68,26 @@ const HistoricoConfig = () => {
         size: 150,
         Cell: ({ row }) => (
           <div>
-            <Tooltip title="Estado">
-                <IconButton
-                    color='primary'
-                >
-                    <ToggleOffIcon/>
-                </IconButton>
-            </Tooltip>
             <Tooltip title="Probar">
-                <IconButton
-                    color='primary'
-                >
-                    <PageviewIcon/>
-                </IconButton>
+              <IconButton color="primary" onClick={() => handleTestClick(row.original.id)}>
+              <VisibilityIcon />
+              </IconButton>
             </Tooltip>
           </div>
-        )
+        ),
       },
     ],
     []
   );
-//Define la tabla con los datos obtenidos
+
   const table = useMaterialReactTable({
     columns,
-    data, 
+    data,
   });
-//Retorna la tabla
+
   return (
     <div>
-      <MaterialReactTable 
-        table={table}  
-        columns={columns} 
-        data={data} 
-      />
+      <MaterialReactTable table={table} columns={columns} data={data} />
     </div>
   );
 };

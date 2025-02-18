@@ -52,21 +52,7 @@ return new class extends Migration
             $table->string('nombre_proceso');
             $table->string('codigo_proceso_ip6');
             $table->string('id_flujo_ip6')->unique();
-        });
-
-        Schema::create('plantillas_mensajes_cab', function (Blueprint $table) {
-            $table->id('id_plantilla_cab')->primary();
-            $table->string('titulo');
-            $table->string('mensaje');
-            $table->integer('check_url');
-            $table->longText('url');
-            $table->string('variable_url');
-            $table->text('connection');
-            $table->text('queue');
-            $table->longText('payload');
-            $table->longText('exception');
-            $table->timestamp('failed_at')->useCurrent();
-        });
+        }); 
 
         Schema::create('plantillas_mensajes_lin', function (Blueprint $table) {
             $table->id();

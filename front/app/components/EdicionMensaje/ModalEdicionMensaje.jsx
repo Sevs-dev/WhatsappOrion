@@ -19,9 +19,8 @@ const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     titulo: mensaje?.titulo || '',
     descripcion: mensaje?.descripcion || '',
-    estado_flujo_activacion: mensaje?.estado_flujo_activacion === 1, // Convertir a booleano
-    check_url: mensaje?.check_url || false,
-    id_url: mensaje?.id_url || '',
+    estado_flujo_activacion: mensaje?.estado_flujo_activacion === 1, 
+    api_url: mensaje?.api_url || '',
   });
 
   useEffect(() => {
@@ -29,9 +28,8 @@ const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
       setFormData({
         titulo: mensaje.titulo,
         descripcion: mensaje.descripcion,
-        estado_flujo_activacion: mensaje.estado_flujo_activacion === 1, // Convertir a booleano
-        check_url: mensaje.check_url,
-        id_url: mensaje.id_url,
+        estado_flujo_activacion: mensaje.estado_flujo_activacion === 1, 
+        api_url: mensaje.api_url,
       });
     }
   }, [mensaje]);
@@ -182,8 +180,8 @@ const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
             <label>Check URL</label>
             <div className="input-group">
               <select
-                name="check_url"
-                value={formData.check_url}
+                name="api_url"
+                value={formData.api_url}
                 onChange={handleChange}
               >
                 <option value={true}>Sí</option>
