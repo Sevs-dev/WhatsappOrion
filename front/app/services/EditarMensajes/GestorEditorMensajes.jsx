@@ -59,7 +59,16 @@ const GestorEditorMensajes = {
       console.error('Error sending prueba:', error);
       throw error;
     }
-  }
+  },
+
+  sendWhatsappConfig: async (dataConfig) => {
+    try {
+      const response = await apiClient.post(`/whatsapp/config-whatsapp`, dataConfig);
+      return response.data;
+    } catch (error) {
+      console.error("Error al enviar el mensaje:", error);
+    }
+  },
 };
 
 export default GestorEditorMensajes;

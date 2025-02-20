@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import GestorFlujosServ from "../../services/GestorFlujos/GestorFlujosServ";
+import WhatsappConfig from "../../services/EditarMensajes/GestorEditorMensajes";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Toast from '../toastr/toast';
@@ -26,7 +27,7 @@ const FlujoVentana = ({ id }) => {
     const fetchDataClient = async () => {
       try {
         setLoading(true);
-        const datosCliente = await GestorFlujosServ.getClientById(id);
+        const datosCliente = await GestorFlujosServ.getClientById(id); 
         if (datosCliente?.data) {
           setClient(datosCliente.data);
           setClientId(datosCliente.data.id);
@@ -222,7 +223,7 @@ const FlujoVentana = ({ id }) => {
       estado: estado,
       titulo: message.titulo,
       descripcion: message.descripcion,
-      fecha: message.fecha,
+      api_url: message.api_url,
     };
 
     setEstadoMessages((prev) => {
@@ -254,18 +255,31 @@ const FlujoVentana = ({ id }) => {
     const data = {
       id_cliente: clientId,
       codigo: client.codigo,
-      estado: Object.entries(estadoMessages).map(([estado, messages]) => ({
-        estado: estadoValores[estado] ?? null,
-        mensaje: messages.map(msg => ({
+      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) => 
+        messages.map(msg => ({
+          estado: estadoValores[estado] ?? null,
           titulo: msg.titulo,
           descripcion: msg.descripcion,
-          fecha: msg.fecha,
-        })),
-      })),
+          api_url: msg.api_url, 
+        }))
+      )
+    }; 
+    
+    const dataConfig = {
+      codigo: client.codigo,
+      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) => 
+        messages.map(msg => ({
+          estado: estadoValores[estado] ?? null,
+          titulo: msg.titulo,
+          descripcion: msg.descripcion,
+          url: msg.api_url, 
+        }))
+      )
     };
   
     try {
       await GestorFlujosServ.saveDropStatus(data);
+      await WhatsappConfig.sendWhatsappConfig(dataConfig);
       setToast({
         show: true,
         type: 'success',

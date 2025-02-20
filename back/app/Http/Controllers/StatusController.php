@@ -87,64 +87,71 @@ class StatusController extends Controller
         // Validación
         $validated = $request->validate([
             'id_cliente' => 'required|integer',
-            'codigo' => 'required|string', // Agregado 'codigo'
-            'estado' => 'required|array',
+            'codigo' => 'required|string',
+            'estados' => 'required|array',
         ]);
 
         $cliente_id = $validated['id_cliente'];
-        $codigo = $validated['codigo']; // Capturar el código
-        $datos = $validated['estado']; // Debe ser un array
+        $codigo = $validated['codigo'];
+        $datos = $validated['estados']; // Lista de estados
 
         try {
             // Obtener todos los estados actuales del cliente
             $currentStatuses = DropStatus::where('id_cliente', $cliente_id)->get();
 
-            // Eliminar estados que ya no están en el nuevo array
+            // Eliminar estados que ya no están en la nueva lista
             foreach ($currentStatuses as $status) {
                 $estadoFound = false;
                 foreach ($datos as $estadoData) {
                     $estadoActual = json_decode($status->estado)->estado;
                     if ($estadoData['estado'] == $estadoActual) {
                         $estadoFound = true;
-                        // Actualizar los mensajes si es necesario
-                        if ($estadoData['mensaje'] != json_decode($status->estado)->mensaje) {
+                        // Actualizar si los datos han cambiado
+                        if (
+                            $estadoData['titulo'] !== json_decode($status->estado)->titulo ||
+                            $estadoData['descripcion'] !== json_decode($status->estado)->descripcion ||
+                            $estadoData['api_url'] !== json_decode($status->estado)->api_url  
+                        ) {
                             $status->estado = json_encode([
                                 'estado' => $estadoData['estado'],
-                                'mensaje' => $estadoData['mensaje'],
+                                'titulo' => $estadoData['titulo'],
+                                'descripcion' => $estadoData['descripcion'],
+                                'api_url' => $estadoData['api_url'], 
                             ]);
-                            $status->message = $estadoData['message'] ?? null;
-                            $status->codigo = $codigo; // Asignar el código
+                            $status->codigo = $codigo;
                             $status->save();
                         }
                         break;
                     }
                 }
 
-                // Si el estado no se encuentra en la nueva lista, eliminamos el estado
+                // Si el estado no está en la nueva lista, eliminarlo
                 if (!$estadoFound) {
                     $status->delete();
                 }
             }
 
-            // Agregar los nuevos estados (o actualizarlos)
+            // Agregar los nuevos estados que no existen
             foreach ($datos as $estadoData) {
                 $estadoExistente = DropStatus::where('id_cliente', $cliente_id)
                     ->where('estado', json_encode([
                         'estado' => $estadoData['estado'],
-                        'mensaje' => $estadoData['mensaje'],
+                        'titulo' => $estadoData['titulo'],
+                        'descripcion' => $estadoData['descripcion'],
+                        'api_url' => $estadoData['api_url'], 
                     ]))
                     ->first();
 
                 if (!$estadoExistente) {
-                    // Si el estado no existe, lo creamos
                     $dropStatus = new DropStatus();
                     $dropStatus->estado = json_encode([
                         'estado' => $estadoData['estado'],
-                        'mensaje' => $estadoData['mensaje'],
+                        'titulo' => $estadoData['titulo'],
+                        'descripcion' => $estadoData['descripcion'],
+                        'api_url' => $estadoData['api_url'], 
                     ]);
-                    $dropStatus->message = $estadoData['message'] ?? null;
                     $dropStatus->id_cliente = $cliente_id;
-                    $dropStatus->codigo = $codigo; // Asignar el código
+                    $dropStatus->codigo = $codigo;
                     $dropStatus->save();
                 }
             }
@@ -157,6 +164,7 @@ class StatusController extends Controller
             ], 500);
         }
     }
+
 
 
     // En el controlador

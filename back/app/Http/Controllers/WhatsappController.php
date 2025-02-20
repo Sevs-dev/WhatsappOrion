@@ -41,7 +41,8 @@ class WhatsappController extends Controller
         $apis = WhatsappApi::all();
         return response()->json($apis);
     }
-    public function getwhatsappId($id){
+    public function getwhatsappId($id)
+    {
         $whatsapp = WhatsappApi::find($id);
         return response()->json($whatsapp);
     }
@@ -51,27 +52,24 @@ class WhatsappController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendTemplateMessage1(Request $request)
+
+    public function sendTemplateMessage(Request $request)
     {
         try {
-            // Obtener datos del request o usar valores por defecto
-            $nombre = $request->input('nombre', 'Sebastian');
-            $telefono = $request->input('to', '573204627207');
-            $pedido = $request->input('pedido', '12345');
+            // Extraer y limpiar los datos obligatorios
+            $telefono = trim($request->input('telefono'));
+            $url      = trim($request->input('url'));
+            $mensaje  = trim($request->input('mensaje'));
 
-            // Obtener la URL y el token desde el archivo .env
-            $url = config('app.whatsapp_api_url');
-            $token = config('app.whatsapp_webhook_token');
-
-            if (!$url || !$token) {
-                return response()->json(['error' => 'Falta configuración en el archivo .env.'], 500);
+            if (!$telefono || !$url || !$mensaje) {
+                return response()->json(['error' => 'Faltan datos obligatorios (mensaje, url o telefono).'], 400);
             }
 
-            // Mensaje a enviar
-            $mensaje = "¡Hola, $nombre!\n\n" .
-                "Agradecemos tu compra en Loto del Sur🌴.\n\n"
-                . "Te informamos que tu pedido número *$pedido* se encuentra en proceso de alistamiento.\n\n"
-                . "Una vez finalice este proceso te estaremos informando por este medio. 📬";
+            // Obtener el token desde la configuración (o en el request si así se prefiere)
+            $token = config('app.whatsapp_webhook_token');
+            if (!$token) {
+                return response()->json(['error' => 'Falta configuración del token en el archivo .env.'], 500);
+            }
 
             // Construir el array de datos para la API de WhatsApp
             $data = [
@@ -84,14 +82,13 @@ class WhatsappController extends Controller
                 ]
             ];
 
-            // Realizar la petición POST con Laravel HTTP Client
+            // Enviar la petición POST con el HTTP Client de Laravel
             $response = Http::withToken($token)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                 ])
                 ->post($url, $data);
 
-            // Verificar la respuesta de la API de WhatsApp
             if ($response->successful()) {
                 return response()->json([
                     'success' => true,
@@ -107,142 +104,6 @@ class WhatsappController extends Controller
             }
         } catch (\Exception $e) {
             Log::error('Error al enviar mensaje: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'error'   => 'Error interno del servidor',
-            ], 500);
-        }
-    }
-
-    public function sendTemplateMessage2(Request $request)
-    {
-        try {
-            // Obtener datos del request o usar valores por defecto
-            $nombre = $request->input('nombre', 'Sebastian');
-            $telefono = $request->input('to', '573204627207');
-            $direccion = $request->input('direccion', 'No especificada');
-            $fecha = $request->input('fecha', 'Pendiente');
-            $hora = $request->input('hora', 'Pendiente');
-            $sitio_web = $request->input('sitio_web', 'https://www.tusitio.com');
-
-            // Obtener la URL y el token desde el archivo .env
-            $url = config('app.whatsapp_api_url');
-            $token = config('app.whatsapp_webhook_token');
-
-            if (!$url || !$token) {
-                return response()->json(['error' => 'Falta configuración en el archivo .env.'], 500);
-            }
-
-            // Mensaje a enviar
-            $mensaje = "¡Hola, $nombre! 🌴\n\n" .
-                "¡Tu pedido ya fue alistado! y está siendo entregado a nuestro aliado en transporte para que lo recibas en: 📍 *$direccion.*\n\n"
-                . "Fecha estimada de entrega: *$fecha*\n"
-                . "Hora estimada: *$hora*\n\n"
-                . "Recuerda estar disponible para recibir tu pedido y verificar que los productos se encuentren en perfectas condiciones antes de firmar el soporte de entrega.\n\n"
-                . "Si deseas conocer más detalles, consulta el estado de tu pedido aquí. 👇"
-                . "*$sitio_web*";
-
-            // Construir el array de datos para la API de WhatsApp
-            $data = [
-                "messaging_product" => "whatsapp",
-                "recipient_type"    => "individual",
-                "to"                => $telefono,
-                "type"              => "text",
-                "text"              => [
-                    "body" => $mensaje
-                ]
-            ];
-
-            // Realizar la petición POST con Laravel HTTP Client
-            $response = Http::withToken($token)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($url, $data);
-
-            // Verificar la respuesta de la API de WhatsApp
-            if ($response->successful()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Mensaje enviado correctamente.',
-                    'data'    => $response->json(),
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error al enviar el mensaje.',
-                    'error'   => $response->body(),
-                ], $response->status());
-            }
-        } catch (\Exception $e) {
-            Log::error('Error al enviar mensaje: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'error'   => 'Error interno del servidor',
-            ], 500);
-        }
-    }
-
-    public function sendTemplateMessage3(Request $request)
-    {
-        try {
-            // Obtener datos del request o usar valores por defecto
-            $nombre = $request->input('nombre', 'Sebastian');
-            $telefono = $request->input('to', '573204627207');
-            $pedido = $request->input('pedido', 'asdfas');
-            $sitio_web = 'https://wa.link/722xb0';
-
-            // Obtener la URL y el token desde el archivo .env
-            $url = config('app.whatsapp_api_url');
-            $token = config('app.whatsapp_webhook_token');
-
-            if (!$url || !$token) {
-                return response()->json(['error' => 'Falta configuración en el archivo .env.'], 500);
-            }
-
-            // Mensaje a enviar
-            $mensaje = "¡Hola, $nombre! 🌴\n\n"
-                . "Tu pedido número *$pedido* ha sido entregado correctamente en la dirección confirmada.\n\n"
-                . "Gracias por elegir *Loto del Sur*. ¡Esperamos verte pronto! 💚\n\n"
-                . "Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos a través de nuestra línea de servicio al cliente: *$sitio_web*";
-
-            // Construir el array de datos para la API de WhatsApp
-            $data = [
-                "messaging_product" => "whatsapp",
-                "recipient_type"    => "individual",
-                "to"                => $telefono,
-                "type"              => "text",
-                "text"              => [
-                    "body" => $mensaje
-                ]
-            ];
-
-            // Realizar la petición POST con Laravel HTTP Client
-            $response = Http::withToken($token)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($url, $data);
-
-            // Verificar la respuesta de la API de WhatsApp
-            if ($response->successful()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Mensaje enviado correctamente.',
-                    'data'    => $response->json(),
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error al enviar el mensaje.',
-                    'error'   => $response->body(),
-                ], $response->status());
-            }
-        } catch (\Exception $e) {
-            Log::error('Error al enviar mensaje: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'error'   => 'Error interno del servidor',
@@ -381,9 +242,9 @@ class WhatsappController extends Controller
             if (!$url || !$token) {
                 return response()->json(['error' => 'Falta configuración en el archivo .env.'], 500);
             }
-            if($estado == 0){
+            if ($estado == 0) {
                 $estado = 'Inactivo';
-            }else{
+            } else {
                 $estado = 'Activo';
             }
             // Mensaje a enviar
@@ -391,7 +252,7 @@ class WhatsappController extends Controller
                 "Mensaje de prueba\n"
                 . "*URL:* $prueba->api_url\n"
                 . "*En estado:* $estado\n"
-                . "*Número de prueba:* $telefono\n" 
+                . "*Número de prueba:* $telefono\n"
                 . "*Ignore este mensaje si lo recibe*";
 
             // Construir el array de datos para la API de WhatsApp
@@ -435,5 +296,4 @@ class WhatsappController extends Controller
             ], 500);
         }
     }
-    
 }

@@ -6,7 +6,6 @@ import ApiUrl from '../../services/EditarMensajes/GestorEditorMensajes';
 import Toast from '../toastr/toast';
 import TextField from '@mui/material/TextField';
 
-
 const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
     const [open, setOpen] = useState(false);
     const [urlApi, setUrlApi] = useState([]);

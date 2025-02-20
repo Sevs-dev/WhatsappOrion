@@ -69,15 +69,13 @@ Route::prefix('drop')->group(function () {
     Route::post('/create', [StatusController::class, 'saveDropStatus']);
     Route::get('/data/{id_cliente}', [StatusController::class, 'getMessageStatus']);
 });
-
+ 
 Route::prefix('whatsapp')->group(function () {
     Route::post('/whatsapp-api', [WhatsappController::class, 'store']);
     Route::get('/whatsapp-api', [WhatsappController::class, 'getAll']);
     Route::get('/whatsapp-api-id/{id}', [WhatsappController::class, 'getwhatsappId']);
     Route::post('/send-prueba/{id}', [WhatsappController::class, 'sendPrueba']);
-    Route::post('/send-whatsapp-message1', [WhatsappController::class, 'sendTemplateMessage1']);
-    Route::post('/send-whatsapp-message2', [WhatsappController::class, 'sendTemplateMessage2']);
-    Route::post('/send-whatsapp-message3', [WhatsappController::class, 'sendTemplateMessage3']);
+    Route::post('/send-whatsapp-message', [WhatsappController::class, 'sendTemplateMessage']);
     Route::get('/webhook', [WhatsappController::class, 'handleWebhook']);
     Route::post('/webhook', [WhatsappController::class, 'handleWebhook']);
     Route::post('/config-whatsapp', [WhatsappController::class, 'enviarConfigWhatsApp']);
