@@ -83,11 +83,10 @@ class WhatsappController extends Controller
             ];
 
             // Enviar la petición POST con el HTTP Client de Laravel
-            $response = Http::withToken($token)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($url, $data);
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type'  => 'application/json',
+            ])->post($url, $data);
 
             if ($response->successful()) {
                 return response()->json([
