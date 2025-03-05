@@ -1,23 +1,14 @@
-'use client';
-import { useParams, useRouter } from 'next/navigation';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import withAuth from "../../../hooks/withAuth";
-import FlujoVentana from '../../../components/GestorFlujos/FlujoVentana';
+// flujo/[id]/page.jsx (componente de servidor)
+import FlujoVentanaClient from './FlujoVentanaClient';
+import GestorFlujosService from '../../../services/GestorFlujos/GestorFlujosServ';
 
-function FlujoVentanaPage() {
-    const { id } = useParams();
-    const router = useRouter();
-
-    if (!id) {
-        return <div>Cargando...</div>;
-    }
-
-    return (
-        <DndProvider backend={HTML5Backend}>
-            <FlujoVentana id={id} />
-        </DndProvider>
-    );
+export async function generateStaticParams() {
+    // Obtenemos todos los clientes
+    const clientes = await GestorFlujosService.getAllClients();
+    // Mapeamos cada cliente para retornar el objeto { id: 'valor' }
+    return clientes.map(cliente => ({ id: cliente.id.toString() }));
 }
 
-export default withAuth(FlujoVentanaPage);
+export default function FlujoVentanaPage({ params }) {
+    return <FlujoVentanaClient id={params.id} />;
+}

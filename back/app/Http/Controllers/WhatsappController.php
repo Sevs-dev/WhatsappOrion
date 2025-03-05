@@ -181,7 +181,7 @@ class WhatsappController extends Controller
                 "type"              => "text",
                 "text"              => [
                     "body" => "¡Hola, $nombre!\n\n"
-                        . "Si deseas comunicarte con nosotros, por favor escríbenos\na nuestra línea de atención al cliente en WhatsApp \n👉 https://wa.link/vgqpia.\n\nQuedo atenta."
+                        . "Si deseas comunicarte con nosotros, por favor escríbenos\na nuestra línea de atención al cliente en WhatsApp \n👉 https://wa.link/vgqpia.\n\n¡Estamos pendientes de ti!"
                 ]
             ];
 

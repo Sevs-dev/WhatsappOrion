@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api';  // Ajusta según el puerto de tu servidor
+const API_URL = 'https://whatsapp-orion.osinagazm.com/api';  // Ajusta según el puerto de tu servidor
 
 // Crear una instancia de axios con configuraciones globales
 const apiClient = axios.create({

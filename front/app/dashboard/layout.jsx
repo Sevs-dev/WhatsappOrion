@@ -18,17 +18,7 @@ export default function DashboardLayout({ children }) {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
-    } else {
-      // Mostrar el Toast de éxito cuando el usuario es redirigido al dashboard
-      // setToast({
-      //   show: true,
-      //   type: 'success',
-      //   message: 'Inicio de sesión correcto.',
-      // });
-      // setTimeout(() => {
-      //   setToast({ show: false, type: '', message: '' });
-      // }, 3000);
-    }
+    }  
   }, [router]);
 
   const toggleSidebar = () => {

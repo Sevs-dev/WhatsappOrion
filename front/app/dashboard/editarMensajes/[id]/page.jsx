@@ -1,16 +1,12 @@
-'use client';
-import { useParams } from 'next/navigation';
-import withAuth from "../../../hooks/withAuth";
-import EditarMensaje from '../../../components/EdicionMensaje/EdicionMensajeView';
+// flujo/[id]/page.jsx (componente de servidor)
+import EditMessageClient from './EditMessageClient'; 
+import GestorEditorMensajes from "../../../services/EditarMensajes/GestorEditorMensajes";
 
-function EditarMensajePage() {
-    const { id } = useParams(); // Obtenemos el id desde la URL
+export async function generateStaticParams() {
+    const clientes = await GestorEditorMensajes.getMessageAll(); 
+    return clientes.data.map(cliente => ({ id: cliente.id.toString() }));
+  }
 
-    if (!id) {
-        return <div>Cargando...</div>; // Si no hay id, espera
-    }
-
-    return <EditarMensaje id={id} />; // Pasa el id al componente hijo
+export default function FlujoVentanaPage({ params }) {
+    return <EditMessageClient id={params.id} />;
 }
-
-export default withAuth(EditarMensajePage);
