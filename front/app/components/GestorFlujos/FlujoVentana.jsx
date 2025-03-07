@@ -175,38 +175,47 @@ const FlujoVentana = ({ id }) => {
       type: "MESSAGE",
       item: { message },
     }));
-
+  
     return (
-      <li ref={drag} className="cursor-pointer">
-        <p><strong>{message.titulo}</strong></p>
-        <p>{message.descripcion}</p>
-        <p className="text-sm">Fecha: {message.fecha}</p>
+      <li 
+        ref={drag} 
+        className="cursor-pointer bg-white/10 p-2 rounded hover:bg-white/15 transition-all border border-transparent hover:border-blue-300/30"
+      >
+        <p className="font-medium text-sm">{message.titulo}</p>
+        <p className="text-xs text-gray-300 line-clamp-2">{message.descripcion}</p>
+        <p className="text-xs text-blue-300 mt-1">Fecha: {message.fecha}</p>
       </li>
     );
   };
-
+  
   const EstadoDrop = ({ estado, messages, onDrop, onRemoveMessage }) => {
     const [, drop] = useDrop(() => ({
       accept: "MESSAGE",
       drop: (item) => onDrop(estado, item.message),
     }));
-
+  
     return (
-      <div ref={drop} className="border-2 p-2 mb-2">
-        <h4>{estado}</h4>
-        <ul>
-          {messages.map((msg, index) => (
-            <li key={index} className="flex justify-between items-center">
-              <p><strong>{msg.titulo}</strong></p>
-              <button
-                className="text-red-500"
-                onClick={() => onRemoveMessage(estado, index)}
-              >
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div ref={drop} className="border border-blue-300/30 rounded-lg p-3 mb-2 bg-blue-900/30 backdrop-blur-sm hover:border-blue-300/50 transition-all duration-300">
+        <h4 className="text-base font-semibold text-blue-300 mb-2 pb-1 border-b border-blue-300/20">{estado}</h4>
+        {messages.length > 0 ? (
+          <ul className="space-y-2">
+            {messages.map((msg, index) => (
+              <li key={index} className="bg-white/10 rounded p-2 hover:bg-white/15 transition-all">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-medium text-white text-sm truncate">{msg.titulo}</p>
+                  <button
+                    className="px-2 py-1 rounded-md text-white bg-red-600 hover:bg-red-500 transition-all text-xs flex-shrink-0"
+                    onClick={() => onRemoveMessage(estado, index)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-400 italic text-center text-xs py-2">Arrastra mensajes aquí</p>
+        )}
       </div>
     );
   };
@@ -299,102 +308,121 @@ const FlujoVentana = ({ id }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="bg-[rgba(26,82,118,0.9)] p-4 sm:p-6 lg:p-8 rounded-2xl shadow-2xl text-white w-full min-h-screen flex flex-col font-sans">
-        {toast.show && (
-          <Toast type={toast.type} message={toast.message} />
-        )}
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 lg:mb-8 text-center text-blue-400 animate-pulse">
+      <div className="bg-gradient-to-br from-blue-900 to-blue-700/80 p-6 sm:p-8 rounded-3xl shadow-2xl text-white min-h-screen flex flex-col font-sans">
+        {toast.show && <Toast type={toast.type} message={toast.message} />}
+        
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-white drop-shadow-lg tracking-wide">
           🚀 Gestor de Flujos
         </h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 flex-grow">
-          <div className="bg-[rgba(26,82,118,0.9)] p-4 sm:p-6 rounded-lg shadow-lg border border-blue-700 hover:shadow-xl transition duration-300 flex flex-col">
+  
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
+          {/* Cliente */}
+          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col">
             {loading ? (
-              <p className="text-blue-400 text-center animate-pulse">Cargando datos...</p>
+              <p className="text-blue-300 text-center animate-pulse">Cargando datos...</p>
             ) : error ? (
-              <p className="text-red-500 text-center">{error}</p>
+              <p className="text-red-400 text-center">{error}</p>
             ) : client ? (
               <>
-                <h2 className="text-lg sm:text-xl font-semibold text-green-400 mb-3 sm:mb-4">✅ Cliente Encontrado</h2>
-                <p><strong className="text-gray-300">Código:</strong> {client.codigo || "No disponible"}</p>
-                <p><strong className="text-gray-300">Nombre Cliente:</strong> {client.nombre || "No disponible"}</p>
+                <h2 className="text-xl font-bold text-green-300 mb-4">✅ Cliente Encontrado</h2>
+                <p><strong className="text-gray-400">Código:</strong> {client.codigo || "No disponible"}</p>
+                <p><strong className="text-gray-400">Nombre:</strong> {client.nombre || "No disponible"}</p>
+  
+                <h3 className="text-lg font-semibold mt-6 text-blue-300">📌 Estados del Cliente</h3>
+                <div className="mt-3 space-y-3">
+                {estados.map((estadoOption) => (
+                  <div 
+                    key={estadoOption} 
+                    className="flex items-center space-x-3 group transition-transform duration-300 hover:-translate-y-1"
+                  >
+                    <input
+                      type="checkbox"
+                      id={estadoOption}
+                      name={estadoOption}
+                      checked={estado[estadoOption] || false}
+                      onChange={handleEstadoChange}
+                      className="w-5 h-5 text-blue-500 border-2 border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 transition"
+                    />
+                    <label 
+                      htmlFor={estadoOption} 
+                      className="text-gray-300 group-hover:text-blue-400 transition"
+                    >
+                      {estadoOption}
+                    </label>
+                  </div>
+                ))}
+              </div>
 
-                <h3 className="text-base sm:text-lg font-semibold mt-4 sm:mt-6 text-blue-300">📌 Estados del Cliente</h3>
-                <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-3">
-                  {estados.map((estadoOption) => (
-                    <div key={estadoOption} className="flex items-center space-x-2 sm:space-x-3 group hover:scale-105 transition-transform">
-                      <input
-                        type="checkbox"
-                        id={estadoOption}
-                        name={estadoOption}
-                        checked={estado[estadoOption] || false}
-                        onChange={handleEstadoChange}
-                        className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 border-2 border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-200"
+  
+                <button
+                  className="w-full bg-blue-500 hover:bg-blue-400 transition p-3 text-white rounded-xl shadow-md font-medium mt-6 hover:scale-105"
+                  onClick={handleSave}
+                >
+                  💾 Guardar Estado
+                </button>
+              </>
+            ) : (
+              <p className="text-yellow-400 text-center">⚠ No se encontró un cliente.</p>
+            )}
+          </div>
+  
+          {/* Estados seleccionados */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col overflow-hidden">
+            <h3 className="text-lg font-bold text-blue-300 mb-3 pb-1 border-b border-blue-300/30">
+              📍 Estados Seleccionados
+            </h3>
+            <div className="overflow-y-auto max-h-[calc(100vh-16rem)] pr-1">
+              {selectedEstados.size > 0 ? (
+                <div className="grid grid-cols-1 gap-2">
+                  {[...selectedEstados].map((estado, index) => (
+                    <div key={index}>
+                      <EstadoDrop
+                        estado={estado}
+                        messages={estadoMessages[estado] || []}
+                        onDrop={handleDropMessage}
+                        onRemoveMessage={handleRemoveMessage}
                       />
-                      <label htmlFor={estadoOption} className="cursor-pointer text-gray-200 group-hover:text-blue-300 transition duration-200">
-                        {estadoOption}
-                      </label>
                     </div>
                   ))}
                 </div>
-
-                <div className="mt-4 sm:mt-6">
-                  <button
-                    className="w-full bg-blue-600 hover:bg-blue-500 transition duration-300 p-2 sm:p-3 text-white rounded-lg shadow-md font-semibold transform hover:scale-105 hover:shadow-lg"
-                    onClick={handleSave}
-                  >
-                    💾 Guardar Estado
-                  </button>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-24 text-center">
+                  <p className="text-yellow-400 text-sm">⚠ No hay estados seleccionados</p>
+                  <p className="text-gray-400 text-xs mt-1">Selecciona estados para comenzar</p>
                 </div>
-              </>
-            ) : (
-              <p className="text-yellow-500 text-center">⚠ No se encontró un cliente con este código.</p>
-            )}
+              )}
+            </div>
           </div>
 
-          <div className="bg-[rgba(26,82,118,0.9)] p-4 sm:p-6 rounded-lg shadow-lg border border-blue-700 hover:shadow-xl transition duration-300 flex flex-col overflow-auto">
-            <h3 className="text-base sm:text-lg font-semibold text-blue-300 mb-2 sm:mb-3">📍 Estados Seleccionados</h3>
-            {selectedEstados.size > 0 ? (
-              <ul className="list-disc space-y-2 sm:space-y-3 ml-4 sm:ml-5">
-                {[...selectedEstados].map((estado, index) => (
-                  <li key={index} className="text-gray-300 hover:text-blue-300 transition duration-200">
-                    <EstadoDrop
-                      estado={estado}
-                      messages={estadoMessages[estado] || []}
-                      onDrop={handleDropMessage}
-                      onRemoveMessage={handleRemoveMessage}
-                    />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-yellow-500 text-center">⚠ No se han seleccionado estados.</p>
-            )}
-          </div>
-
-          <div className="bg-[rgba(26,82,118,0.9)] p-4 sm:p-6 rounded-lg shadow-lg border border-blue-700 hover:shadow-xl transition duration-300 flex flex-col overflow-auto">
-            <h3 className="text-base sm:text-lg font-semibold text-blue-300">📨 Mensajes</h3>
+          {/* Mensajes */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col overflow-hidden">
+          <h3 className="text-lg font-bold text-blue-300 mb-3 pb-1 border-b border-blue-300/30">📨 Mensajes</h3>
+          <div className="overflow-y-auto max-h-[calc(100vh-16rem)] pr-1">
             {messages.length > 0 ? (
-              <ul className="list-disc pl-4 sm:pl-5 border-l-4 border-blue-500 mt-2 sm:mt-3 space-y-2 sm:space-y-3">
+              <ul className="grid grid-cols-1 gap-2 mt-2">
                 {messages.map((msg) => (
                   <MessageItem key={msg.id} message={msg} />
                 ))}
               </ul>
             ) : (
-              <p className="text-yellow-500 text-center mt-2">📭 No hay mensajes.</p>
+              <div className="flex items-center justify-center h-24">
+                <p className="text-yellow-400 text-sm">📭 No hay mensajes disponibles</p>
+              </div>
             )}
           </div>
         </div>
-
+        </div>
+        
         <button
           onClick={handleSaveBlockStatus}
-          className="mt-4 sm:mt-6 w-full sm:w-auto bg-blue-600 hover:bg-blue-500 transition duration-300 p-2 sm:p-3 text-white rounded-lg shadow-md font-semibold transform hover:scale-105 hover:shadow-lg"
+          className="mt-8 w-full sm:w-auto bg-blue-500 hover:bg-blue-400 transition p-3 text-white rounded-xl shadow-md font-medium self-center hover:scale-105"
         >
           Guardar Mensaje 💬
         </button>
       </div>
     </DndProvider>
   );
+  
 };
 
 export default FlujoVentana;

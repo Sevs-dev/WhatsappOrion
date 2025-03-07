@@ -30,7 +30,7 @@ const ConfigDatos = () => {
   return (
     <div>
       <div className='header'>
-        <h1>Configuración de datos de la API de Whatsapp</h1>
+        <h1>Configuración API de Whatsapp</h1>
         <ModalVerificacionUsuario /> 
       </div>
       <div className='content'>

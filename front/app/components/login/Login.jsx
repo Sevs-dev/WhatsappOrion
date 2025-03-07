@@ -87,9 +87,9 @@ function Login() {
           {/* Logo en la parte superior */}
           <div className="flex justify-center mb-4 md:mb-6">
             <img
-              src="/logo.png" // Ruta de la imagen del logo
+              src="/PHAREX-01.png" // Ruta de la imagen del logo
               alt="Logo de la empresa"
-              className="w-16 h-16 md:w-24 md:h-24" // Ajusta el tamaño del logo
+              className="w-30 h-15 md:w-30 md:h-15" // Ajusta el tamaño del logo
             />
           </div>
 
