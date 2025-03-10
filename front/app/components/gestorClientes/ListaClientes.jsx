@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ModalAgregarNotificacion from "./ModalAgregarNotificacion";
 import ClientApiService from "../../services/GestorCliente/ClientApiService";
 import { useRouter } from "next/navigation";
+import Buttons from '../button/Button'
 
 // Styled components
 const StyledTableContainer = styled(Box)(({ theme }) => ({
@@ -157,7 +158,7 @@ const ListaClientes = ({ refresh }) => {
             </div>
           );
         },
-      }, 
+      },
       {
         accessorKey: "usuario",
         header: "Responsable",
@@ -172,19 +173,9 @@ const ListaClientes = ({ refresh }) => {
               id={row.original.id}
               onSuccess={() => setData((prevData) => [row.original, ...prevData])}
             />
-            <Tooltip title="Ver mensajes">
-              <IconButton
-                sx={{
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
-                }}
-                onClick={() =>
-                  router.push(`/dashboard/editarMensajes/${row.original.id}`)
-                }
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <Buttons onClick={() =>
+              router.push(`/dashboard/editarMensajes/${row.original.id}`)
+            } variant="edit" />
           </div>
         ),
       },

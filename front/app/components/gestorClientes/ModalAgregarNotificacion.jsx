@@ -232,7 +232,7 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
     return (
         <>
             {toast.show && <Toast type={toast.type} message={toast.message} />}
-            <Buttons onClick={handleOpen} variant="create" label="Agregar Mensaje" />
+            <Buttons onClick={handleOpen} variant="add"/>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -259,17 +259,13 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                         },
                     }}
                 >
-                    <Text type="title">
-                        Agregar Mensaje de Cliente
-                    </Text>
+                    <Text type="title">Agregar Mensaje de Cliente</Text>
 
                     {/* Sección principal: dos columnas (Mensaje y Parámetros) */}
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Columna izquierda: Datos del mensaje */}
                         <div className="flex-1">
-                            <Text type="subtitle">
-                                Título del Mensaje
-                            </Text>
+                            <Text type="subtitle">Título del Mensaje</Text>
                             <div className="mb-4">
                                 <input
                                     type="text"
@@ -303,7 +299,7 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
 
                         {/* Columna derecha: Parámetros (con scroll independiente) */}
                         <div className="w-full md:w-1/3 border-l pl-4 max-h-80 overflow-y-auto">
-                            <div className="mb-4 flex items-center">
+                            <div className="flex justify-center mb-2">
                                 <Buttons onClick={handleOpenParamModal} variant="create" label="Agregar Parámetro" />
                             </div>
 

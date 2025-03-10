@@ -1,23 +1,24 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { IconButton, Avatar } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
-
-import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
-import EmailIcon from '@mui/icons-material/Email';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import ListIcon from '@mui/icons-material/List';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { IconButton, Avatar, Tooltip } from '@mui/material';
+import { 
+  Menu as MenuIcon, 
+  Home, 
+  Email, 
+  Timeline, 
+  List, 
+  Logout, 
+  Settings,
+  ExpandMore
+} from '@mui/icons-material';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const [user, setUser] = useState(null);
   const [autoCollapsed, setAutoCollapsed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [openSubMenus, setOpenSubMenus] = useState({});
-
+  const [isHovered, setIsHovered] = useState(false);
+  const [submenuOpen, setSubmenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const collapsed = (isCollapsed || autoCollapsed) && !isHovered;
@@ -47,35 +48,25 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     router.push('/login');
   };
 
-  const menuItems = useMemo(() => {
-    const items = [
-      { path: '/dashboard/home', icon: <HomeIcon className="text-white" />, label: 'Inicio' },
-      { path: '/dashboard/gestorClientes', icon: <ListIcon className="text-white" />, label: 'Listado clientes' },
-      { path: '/dashboard/gestorFlujos', icon: <TimelineIcon className="text-white" />, label: 'Gestor de flujos' },
-      {
-        label: 'Mensajes',
-        icon: <EmailIcon className="text-white" />,
-        children: [
-          { path: '/dashboard/configDatos', icon: <EmailIcon className="text-white" />, label: 'Envío de Mensajes' },
-          ...(isAdmin ? [{ path: '/dashboard/configuracion', icon: <SettingsIcon className="text-white" />, label: 'Configuración' }] : []),
-        ],
-      },
-    ];
-    return items;
-  }, [isAdmin]);
+  // Elementos principales del menú (sin Mensajes y Configuración)
+  const menuItems = useMemo(() => [
+    { path: '/dashboard/home', icon: Home, label: 'Inicio' },
+    { path: '/dashboard/gestorClientes', icon: List, label: 'Clientes' },
+    { path: '/dashboard/gestorFlujos', icon: Timeline, label: 'Flujos' }
+  ], []);
 
-  const toggleSubMenu = (index) => {
-    setOpenSubMenus((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
+  // Submenú para Mensajes y Configuración
+  const submenuItems = useMemo(() => [
+    { path: '/dashboard/configDatos', icon: Email, label: 'Mensajes' },
+    ...(isAdmin ? [{ path: '/dashboard/configuracion', icon: Settings, label: 'Configuración' }] : [])
+  ], [isAdmin]);
 
   return (
     <nav 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
-        if (!autoCollapsed) setIsHovered(false)
+        if (!autoCollapsed) setIsHovered(false);
+        setSubmenuOpen(false);
       }}
       className={`h-screen flex flex-col bg-gradient-to-b from-[#1A5276]/90 to-[#1A5276]/70 
                   backdrop-blur-xl border-r border-white/10 transition-all duration-300 
@@ -88,10 +79,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <div className="flex items-center space-x-1 transition-transform duration-300 hover:scale-105">
-          {!collapsed && <img src="/logo.png" alt="Logo" className="w-8 h-8" />}
-          <span className={`text-white font-bold text-lg ${collapsed && 'hidden'}`}>
-            LogiSmart
-          </span>
+          {!collapsed && <img src="/PHAREX-01.png" alt="Logo" className="w-auto h-8" />} 
         </div>
         <IconButton 
           onClick={toggleSidebar} 
@@ -102,67 +90,61 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         </IconButton>
       </div>
 
-      <div className="sidebar-logo flex justify-center mb-8">
-        <img src="/PHAREX-01.png" alt="Logo" className={`transition-all duration-300 ${collapsed ? 'w-15 h-5' : 'w-40 h-15'}`} />
-      </div>
-
-      {!collapsed && <div className="flex items-center px-4"><div className="flex-grow border-t border-gray-400"></div><span className="mx-2 text-xs text-gray-400">Menú</span><div className="flex-grow border-t border-gray-400"></div></div>}
-      <div className="sidebar-menu flex-1 px-4 py-2">
-        {menuItems.map((item, index) =>
-          item.children ? (
-            <div key={index}>
-              <div
-                onClick={() => toggleSubMenu(index)}
-                className={`flex items-center ${collapsed ? 'justify-center' : 'justify-start'} gap-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all cursor-pointer`}
-              >
-                {item.icon}
-                {!collapsed && (
-                  <>
-                    <span className="whitespace-nowrap">{item.label}</span>
-                    <span className="ml-auto transition-transform duration-300 transform">
-                      <motion.span
-                        animate={{ rotate: openSubMenus[index] ? 180 : 0 }}
-                      >
-                        ▼
-                      </motion.span>
-                    </span>
-                  </>
-                )}
-              </div>
-              <AnimatePresence>
-                {openSubMenus[index] && !collapsed && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="ml-8 overflow-hidden"
-                  >
-                    {item.children.map((subItem, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        href={subItem.path}
-                        className={`flex items-center gap-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all ${pathname === subItem.path ? 'bg-[rgba(26,82,118,0.6)]' : ''}`}
-                      >
-                        {subItem.icon}
-                        <span className="whitespace-nowrap">{subItem.label}</span>
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <Link
-              key={index}
-              href={item.path}
-              className={`flex items-center ${collapsed ? 'justify-center' : 'justify-start'} gap-x-4 py-3 px-4 w-full hover:bg-[rgba(26,82,118,0.9)] rounded-lg transition-all ${pathname === item.path ? 'bg-[rgba(26,82,118,0.6)]' : ''}`}
+      {/* Menu Principal */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+        {menuItems.map((item) => (
+          <Tooltip 
+            key={item.path} 
+            title={item.label} 
+            placement="right" 
+            arrow 
+            disableHoverListener={!collapsed}
+            classes={{ tooltip: 'bg-[#1A5276] text-white' }}
+          >
+            <Link href={item.path} 
+                 className={`flex items-center gap-4 p-3 mx-3 my-2 rounded-lg transition-all 
+                            ${pathname === item.path 
+                              ? 'bg-white/10 backdrop-blur-md shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' 
+                              : 'hover:bg-white/5 hover:scale-[1.01] hover:shadow-md'}`}
             >
-              {item.icon}
-              {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
+              <item.icon className="text-white" />
+              <span className={`text-white ${collapsed ? 'hidden' : 'flex'}`}>
+                {item.label}
+              </span>
+              {!collapsed && pathname === item.path && (
+                <div className="ml-auto w-1 h-6 bg-white/70 rounded-full transition-all duration-500" />
+              )}
             </Link>
-          )
-        )}
+          </Tooltip>
+        ))}
+
+        {/* Submenú para "Mensajes" y "Configuración" */}
+        <div 
+          className="mx-3 my-2"
+          onMouseEnter={() => setSubmenuOpen(true)}
+          onMouseLeave={() => setSubmenuOpen(false)}
+        >
+          <div className={`flex items-center gap-4 p-3 rounded-lg transition-all cursor-pointer 
+                           hover:bg-white/5 hover:scale-[1.01] hover:shadow-md`}>
+            <Settings className="text-white" />
+            <span className={`text-white ${collapsed ? 'hidden' : 'flex'}`}>Más opciones</span>
+            {!collapsed && (
+              <ExpandMore className={`text-white transition-transform duration-300 ${submenuOpen ? 'rotate-180' : ''}`} />
+            )}
+          </div>
+          {/* Contenedor del submenú que se muestra debajo */}
+          <div className={`transition-all duration-300 overflow-hidden ${submenuOpen ? 'max-h-40' : 'max-h-0'}`}>
+            {submenuItems.map((item) => (
+              <Link key={item.path} href={item.path} 
+                className={`flex items-center gap-4 p-3 rounded-lg transition-all 
+                            hover:bg-white/5 hover:scale-[1.01] hover:shadow-md whitespace-nowrap`}
+              >
+                <item.icon className="text-white" />
+                <span className="text-white">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

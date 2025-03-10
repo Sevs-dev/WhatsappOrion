@@ -20,6 +20,7 @@ const Button = ({
   };
 
   const buttonStyles = {
+    add: "bg-green-500 hover:bg-green-600 focus:ring-green-400",
     save: "bg-green-600 hover:bg-green-700 focus:ring-green-400",
     cancel: "bg-red-500 hover:bg-red-600 focus:ring-red-400",
     edit: "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400 p-1",
@@ -28,6 +29,7 @@ const Button = ({
   };
 
   const icons = {
+    add: <FaPlus />,
     save: <FaCheck />,
     cancel: <FaTimes />,
     edit: <FaEdit />,
@@ -57,7 +59,7 @@ const Button = ({
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {icons[variant]}
-      {variant !== "edit" && variant !== "delete" && (
+      {variant !== "edit" && variant !== "delete" && variant !== "add" &&(
         customLabel || labels[variant]
       )}
 
@@ -81,7 +83,7 @@ const Button = ({
 
 Button.propTypes = {
   type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  variant: PropTypes.oneOf(['save', 'cancel', 'edit', 'delete', 'create']).isRequired,
+  variant: PropTypes.oneOf(['save', 'cancel', 'edit', 'delete', 'create', 'add']).isRequired,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   label: PropTypes.string

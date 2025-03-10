@@ -1,35 +1,32 @@
-"use client"; // Mark this component as a Client Component
+"use client";
 
-import { useMemo, useState, useEffect } from 'react'; // Import useState and useEffect
-import { useRouter } from 'next/navigation'; // Use Next.js's useRouter
-import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
-import { IconButton, Tooltip } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import BlockIcon from "@mui/icons-material/Block";
-import GestorFlujosServ from '../../services/GestorFlujos/GestorFlujosServ';
+import { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
+import { IconButton, Tooltip } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import GestorFlujosServ from "../../services/GestorFlujos/GestorFlujosServ";
 
 const ListaFlujos = () => {
   const router = useRouter();
-  const [clients, setClients] = useState([]); // Define the clients state
-  const [loading, setLoading] = useState(true); // Define the loading state
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Llamada a la API para obtener clientes
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const clientsData = await GestorFlujosServ.getAllClients(); // Llamada a la API
-        setClients(clientsData); // Guarda los datos en el estado
+        const clientsData = await GestorFlujosServ.getAllClients();
+        setClients(clientsData);
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error("Error fetching clients:", error);
       } finally {
-        setLoading(false); // Cambia el estado de loading
+        setLoading(false);
       }
     };
 
-    fetchClients(); // Ejecutar la función cuando se monte el componente
+    fetchClients();
   }, []);
 
-  // Define columns
   const columns = useMemo(
     () => [
       {
@@ -37,60 +34,90 @@ const ListaFlujos = () => {
         header: "Código Cliente",
         size: 150,
       },
-    
       {
-        accessorKey: 'nombre',
-        header: 'Nombre del cliente',
+        accessorKey: "nombre",
+        header: "Nombre del cliente",
         size: 200,
       },
       {
-        accessorKey: 'estado',
-        header: 'Estado',
+        accessorKey: "estado",
+        header: "Estado",
         size: 150,
-        Cell: ({ cell }) => (cell.getValue() === 1 ? 'Activo' : 'Inactivo'),
+        Cell: ({ cell }) =>
+          cell.getValue() === 1 ? "Activo" : "Inactivo",
       },
       {
-        accessorKey: 'fecha',
-        header: 'Fecha',
+        accessorKey: "fecha",
+        header: "Fecha",
         size: 150,
       },
       {
-        header: 'Acciones',
+        header: "Acciones",
         size: 150,
         Cell: ({ row }) => (
-          <div>
+          <div className="flex space-x-2">
             <Tooltip title="Ver">
               <IconButton
                 color="primary"
-                onClick={() => router.push(`/dashboard/flujo/${row.original.id}`)}
+                onClick={() =>
+                  router.push(`/dashboard/flujo/${row.original.id}`)
+                }
               >
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
-
-            {/* <Tooltip title="Deshabilitar">
-              <IconButton color="primary">
-                <BlockIcon />
-              </IconButton>
-            </Tooltip> */}
           </div>
         ),
       },
     ],
-    [router] // Add router to the dependency array
+    [router]
   );
 
-  // Create the table instance
   const table = useMaterialReactTable({
     columns,
-    data: clients, // Use the clients state here
+    data: clients,
   });
 
   if (loading) {
-    return <div>Loading...</div>; // Display loading text or spinner while fetching data
+    return (
+      <div className="flex items-center justify-center h-screen text-xl font-semibold">
+        Loading...
+      </div>
+    );
   }
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <div>
+      {/* Header */}
+      <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-white">Listado de Flujos</h1>
+      </div>
+
+      {/* Tabla */}
+      <div className="w-[98%] mx-auto">
+        <MaterialReactTable
+          table={table}
+          muiTableContainerProps={{
+            className: "rounded shadow-lg border border-gray-200",
+          }}
+          muiTableHeadCellProps={{
+            sx: { backgroundColor: "#20415e", fontWeight: "bold" },
+            className: "text-sm text-white uppercase",
+          }}
+          muiTableBodyRowProps={{
+            sx: {
+              "&:nth-of-type(odd)": { backgroundColor: "rgba(0, 0, 0, 0.04)" },
+              "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
+            },
+            className: "text-sm",
+          }}
+          muiPaginationProps={{
+            className: "mt-4",
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default ListaFlujos;

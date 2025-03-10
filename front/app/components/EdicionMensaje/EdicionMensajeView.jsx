@@ -8,22 +8,20 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import GestorEditorMensajes from "../../services/EditarMensajes/GestorEditorMensajes";
 import ModalEdicionMensaje from "./ModalEdicionMensaje";
-import ModalAgregarNotificacion from '../gestorClientes/ModalAgregarNotificacion';
-import { useRouter } from 'next/navigation'; // Importa useRouter de Next.js
-
+import ModalAgregarNotificacion from "../gestorClientes/ModalAgregarNotificacion";
+import { useRouter } from "next/navigation";
 
 function EdicionMensajeView({ id }) {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const router = useRouter(); // Usa useRouter de Next.js
+  const router = useRouter();
 
   const fetchMessages = async () => {
     try {
       const response = await GestorEditorMensajes.getMessagesByClientId(id);
       console.log("Mensajes obtenidos:", response);
-
       if (Array.isArray(response.data)) {
         const sortedData = response.data.sort(
           (a, b) => new Date(b.fecha) - new Date(a.fecha)
@@ -49,11 +47,6 @@ function EdicionMensajeView({ id }) {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "ID",
-        size: 100,
-      },
-      {
         accessorKey: "titulo",
         header: "Título",
         size: 200,
@@ -74,12 +67,6 @@ function EdicionMensajeView({ id }) {
             {cell.getValue() === 1 ? "Activado" : "Desactivado"}
           </span>
         ),
-      },
-      {
-        accessorKey: "fecha",
-        header: "Fecha",
-        size: 200,
-        Cell: ({ cell }) => new Date(cell.getValue()).toLocaleString(),
       },
       {
         header: "Acciones",
@@ -109,29 +96,28 @@ function EdicionMensajeView({ id }) {
 
   return (
     <Box>
+      {/* Header */}
       <div className="grid grid-cols-3 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
-        {/* Columna Izquierda: Botón de Regresar */}
         <div className="flex justify-start">
           <Button
-            onClick={() => router.push('/dashboard/gestorClientes')}
+            onClick={() => router.push("/dashboard/gestorClientes")}
             className="flex items-center gap-2 bg-[#155E75] text-white font-bold py-2 px-5 rounded-lg shadow-md hover:bg-[#1565c0]"
           >
             <ArrowBackIcon />
             Regresar
           </Button>
         </div>
-
-        {/* Columna Central: Título */}
         <div className="flex justify-center">
-          <h1 className="text-2xl font-semibold text-white">Mensajes del Cliente</h1>
+          <h1 className="text-2xl font-semibold text-white">
+            Mensajes del Cliente
+          </h1>
         </div>
-
-        {/* Columna Derecha: Botón para Agregar Mensaje */}
         <div className="flex justify-end">
           <ModalAgregarNotificacion id={id} onSaveSuccess={fetchMessages} />
         </div>
       </div>
 
+      {/* Error Snackbar */}
       {error && (
         <Snackbar
           open={openSnackbar}
@@ -142,10 +128,48 @@ function EdicionMensajeView({ id }) {
         </Snackbar>
       )}
 
+      {/* Tabla con estilos mejorados */}
       <div className="w-[98%] mx-auto">
-        <MaterialReactTable table={table} />
+        <MaterialReactTable
+          table={table}
+          muiTableContainerProps={{
+            sx: {
+              border: "none",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+              borderRadius: "8px",
+            },
+          }}
+          muiTablePaperProps={{
+            elevation: 0,
+            sx: { borderRadius: "8px" },
+          }}
+          muiTableHeadCellProps={{
+            sx: {
+              backgroundColor: "#20415e",
+              color: "white",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              fontSize: "0.875rem",
+              py: 1,
+            },
+          }}
+          muiTableBodyRowProps={({ row }) => ({
+            sx: {
+              "&:nth-of-type(odd)": { backgroundColor: "rgba(0, 0, 0, 0.04)" },
+              transition: "all 0.2s ease",
+              "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
+            },
+          })}
+          muiPaginationProps={{
+            sx: {
+              backgroundColor: "#f9f9f9",
+              borderTop: "1px solid #e0e0e0",
+            },
+          }}
+        />
       </div>
 
+      {/* Modal de edición de mensaje */}
       {selectedMessage && (
         <ModalEdicionMensaje
           mensaje={selectedMessage}

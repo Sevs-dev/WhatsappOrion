@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Toast from '../toastr/toast';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Text from '../text/Text'
+import Buttons from '../button/Button'
 
 const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
   const [open, setOpen] = useState(true); // El modal se abre automáticamente cuando se monta
@@ -164,169 +166,175 @@ const ModalEdicionMensaje = ({ mensaje, onClose, onUpdate }) => {
     <div>
       {toast.show && <Toast type={toast.type} message={toast.message} />}
 
-      <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Modal
+        open={open}
+        onClose={onClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box
-          className="modal-container"
+          className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-10"
           sx={{
-            maxWidth: '600px',
-            width: '50%',
-            padding: 3,
-            backgroundColor: 'white',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            '&::-webkit-scrollbar': {
-              width: '8px',
+            maxHeight: "90vh",
+            overflowY: "auto",
+            "&::-webkit-scrollbar": { width: "8px" },
+            "&::-webkit-scrollbar-track": {
+              background: "rgba(0, 0, 0, 0.1)",
+              borderRadius: "12px",
             },
-            '&::-webkit-scrollbar-track': {
-              background: 'rgba(0, 0, 0, 0.1)',
-              borderRadius: '12px',
+            "&::-webkit-scrollbar-thumb": {
+              background: "rgba(15, 63, 120, 0.9)",
+              borderRadius: "12px",
+              border: "2px solid rgba(0, 0, 0, 0.2)",
             },
-            '&::-webkit-scrollbar-thumb': {
-              background: 'rgba(15, 63, 120, 0.9)',
-              borderRadius: '12px',
-              border: '2px solid rgba(0, 0, 0, 0.2)',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: 'rgba(10, 50, 100, 1)',
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "rgba(10, 50, 100, 1)",
             },
           }}
         >
-          <h1>Editar Mensaje</h1>
-          <div className="options">
-            <label>Título</label>
-            <div className="input-group">
-              <input
-                type="text"
-                name="titulo"
-                value={formData.titulo}
-                onChange={handleChange}
-                placeholder="Escribe el título"
-              />
-              {formErrors.titulo && (
-                <span className="error-message" style={{ color: 'red' }}>
-                  * Este campo es obligatorio
-                </span>
-              )}
-            </div>
+          <Text type="title">Editar Mensaje de Cliente</Text>
 
-            <label>Descripción</label>
-            <div className="input-group">
-              <textarea
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                placeholder="Escribe la descripción"
-                rows={4}
-                className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Estado de Flujo de Activación */}
-            <label>Estado de Flujo de Activación</label>
-            <div className="input-group">
-              <select
-                name="estado_flujo_activacion"
-                value={formData.estado_flujo_activacion ? 1 : 0}
-                onChange={(e) => {
-                  const value = e.target.value === '1'; // Convertir a booleano
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    estado_flujo_activacion: value,
-                  }));
-                }}
-              >
-                <option value={1}>Activado</option>
-                <option value={0}>Desactivado</option>
-              </select>
-            </div>
-
-            {/* Check URL */}
-            <label>Check URL</label>
-            <div className="input-group">
-              <select
-                name="api_url"
-                value={formData.api_url}
-                onChange={handleChange}
-              >
-                <option value={true}>Sí</option>
-                <option value={false}>No</option>
-              </select>
-            </div>
-
-            {/* Botón para abrir el modal de creación de parámetros */}
-            <Tooltip title="Agregar Parámetro">
-              <IconButton color="primary" onClick={() => setParamModalOpen(true)}>
-                <AddCircleIcon />
-              </IconButton>
-            </Tooltip>
-
-            {/* Modal para crear un parámetro */}
-            <Modal open={paramModalOpen} onClose={() => setParamModalOpen(false)}>
-              <Box className="modal-container">
-                <h2>Crear Parámetro</h2>
-                <TextField
-                  label="Nombre del Parámetro"
-                  value={newParamName}
-                  onChange={(e) => setNewParamName(e.target.value)}
-                  fullWidth
+          <div className="space-y-4">
+            {/* Título */}
+            <div>
+              <Text type="subtitle">Título del Mensaje</Text>
+              <div>
+                <input
+                  type="text"
+                  name="titulo"
+                  value={formData.titulo}
+                  onChange={handleChange}
+                  placeholder="Escribe el título"
+                  className="w-full text-center border border-gray-300 rounded p-2"
                 />
-                <TextField
-                  label="Label del Parámetro"
-                  value={newParamLabel}
-                  onChange={(e) => setNewParamLabel(e.target.value)}
-                  fullWidth
-                />
-                <Button variant="contained" color="primary" onClick={handleSaveParam}>
-                  Guardar Parámetro
-                </Button>
-                <Button variant="outlined" color="error" onClick={() => setParamModalOpen(false)}>
-                  Cancelar
-                </Button>
-              </Box>
-            </Modal>
-
-            {/* Mostrar las variables disponibles */}
-            <div style={{ marginTop: '20px' }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Variables Disponibles</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-                {availableVariables.map((param, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleInsertVariable(param.name)}
-                    variant="outlined"
-                    color="primary"
-                    sx={{
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      textTransform: 'capitalize',
-                      fontWeight: '400',
-                      fontSize: '0.7rem',
-                      boxShadow: 'none',
-                      border: '1px solid #1976d2',
-                      '&:hover': {
-                        backgroundColor: '#1976d2',
-                        color: '#fff',
-                        borderColor: '#1565c0',
-                      },
-                    }}
-                  >
-                    {param.label}
-                  </Button>
-                ))}
+                {formErrors.titulo && (
+                  <span className="text-red-500 text-sm">
+                    * Este campo es obligatorio
+                  </span>
+                )}
               </div>
             </div>
 
-            <div className="buttons">
-              <Button variant="contained" color="error" onClick={onClose}>
-                Cerrar
-              </Button>
-              <Button variant="contained" color="success" onClick={handleSave}>
-                Guardar
-              </Button>
+            {/* Sección principal: dos columnas (Mensaje y Parámetros) */}
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Columna izquierda: Datos del mensaje */}
+              <div className="flex-1">
+                <Text type="subtitle">Mensaje</Text>
+                <div>
+                  <textarea
+                    name="descripcion"
+                    value={formData.descripcion}
+                    onChange={handleChange}
+                    placeholder="Escribe la descripción"
+                    rows={4}
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              {/* Columna derecha: Parámetros (con scroll independiente) */}
+              <div className="w-full md:w-1/3 border-l pl-4 max-h-80 overflow-y-auto">
+                {/* Botón para abrir el modal de creación de parámetros */}
+                <div className="flex justify-center mb-2">
+                  <Buttons onClick={() => setParamModalOpen(true)} variant="create" label="Agregar Parámetro" />
+                </div>
+
+                {/* Modal para crear un parámetro */}
+                <Modal open={paramModalOpen} onClose={() => setParamModalOpen(false)}>
+                  <Box className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20">
+                    <Text type="title" className="mb-4">Crear Parámetro</Text>
+                    <input
+                      type="text"
+                      name="titulo"
+                      value={newParamName}
+                      onChange={(e) => setNewParamName(e.target.value)}
+                      placeholder="Parámetro requerido"
+                      className="mt-1 text-center block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                    <input
+                      type="text"
+                      name="titulo"
+                      value={newParamLabel}
+                      onChange={(e) => setNewParamLabel(e.target.value)}
+                      placeholder="Nombre del Parámetro"
+                      className="mt-1 text-center block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                    <div className="flex justify-center gap-2 mt-4">
+                      <Buttons onClick={() => setParamModalOpen(false)} variant="cancel" />
+                      <Buttons onClick={handleSaveParam} variant="save" />
+                    </div>
+                  </Box>
+                </Modal>
+
+                {/* Variables Disponibles */}
+                <div className="mt-5">
+                  <Text type="subtitle">Variables Disponibles</Text>
+                  <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "8px" }}>
+                    {availableVariables.map((param, index) => (
+                      <Button
+                        key={index}
+                        onClick={() => handleInsertVariable(param.name)}
+                        variant="outlined"
+                        color="primary"
+                        className="px-3 py-1 border border-blue-500 text-blue-600 rounded text-xs font-normal hover:bg-blue-500 hover:text-white transition"
+                      >
+                        {param.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Estado de Flujo de Activación */}
+            <div>
+              <Text type="subtitle">Estado de Flujo</Text>
+              <div>
+                <select
+                  name="estado_flujo_activacion"
+                  value={formData.estado_flujo_activacion ? 1 : 0}
+                  onChange={(e) => {
+                    const value = e.target.value === '1';
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      estado_flujo_activacion: value,
+                    }));
+                  }}
+                  className="w-full text-center border border-gray-300 rounded p-2"
+                >
+                  <option value={1}>Activado</option>
+                  <option value={0}>Desactivado</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Check URL */}
+            <div>
+              <Text type="subtitle">URL</Text>
+              <div>
+                <select
+                  name="api_url"
+                  value={formData.api_url}
+                  onChange={handleChange}
+                  className="w-full border text-center border-gray-300 rounded p-2"
+                >
+                  <option value={true}>Sí</option>
+                  <option value={false}>No</option>
+                </select>
+              </div>
+            </div>
+
+
+
+            {/* Botones de Cerrar y Guardar */}
+
+            <div className="flex justify-center gap-2">
+              <Buttons onClick={onClose} variant="cancel" />
+              <Buttons onClick={handleSave} variant="save" />
             </div>
           </div>
         </Box>
       </Modal>
+
     </div>
   );
 };
