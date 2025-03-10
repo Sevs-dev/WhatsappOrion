@@ -1,16 +1,13 @@
 import axios from 'axios';
-
-const API_URL = 'https://whatsapp-orion.osinagazm.com/api';  // Ajusta según el puerto de tu servidor
+import {API_URL} from '../../config/api' 
 
 // Crear una instancia de axios con configuraciones globales
 const apiClient = axios.create({
-    baseURL: API_URL,  // Usamos la URL base
+    baseURL: API_URL, 
     headers: {
         'Content-Type': 'application/json',
     }
 });
-
-
 
 // 🔴 Eliminar un usuario
 export const deleteUser = async (id) => {

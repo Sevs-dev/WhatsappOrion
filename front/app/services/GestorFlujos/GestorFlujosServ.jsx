@@ -1,9 +1,8 @@
 import axios from 'axios';
-
-const BASE_URL = 'https://whatsapp-orion.osinagazm.com/api';
+import { API_URL } from '../../config/api'
 
 const apiClient = axios.create({
-    baseURL: BASE_URL,
+    baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -139,7 +138,7 @@ const GestorFlujosServ = {
         }
     },
 
-    saveDropStatus: async (data) => { 
+    saveDropStatus: async (data) => {
         try {
             const response = await apiClient.post(`/drop/create`, data);
             return response.data;
