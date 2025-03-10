@@ -75,10 +75,10 @@ function Login() {
         {/* Formulario */}
         <div className="w-full md:w-1/2 p-4 md:p-8 flex flex-col justify-center">
           <div className="flex justify-center mb-4 md:mb-6">
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              className="w-12 h-12 md:w-24 md:h-24 object-contain" 
+            <img
+              src="/PHAREX-01.png" // Ruta de la imagen del logo
+              alt="Logo de la empresa"
+              className="w-30 h-15 md:w-30 md:h-15" // Ajusta el tamaño del logo
             />
           </div>
 
