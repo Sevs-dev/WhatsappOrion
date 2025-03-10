@@ -109,42 +109,40 @@ function EdicionMensajeView({ id }) {
 
   return (
     <Box>
-     
-      
-      <div className="header mb-4">
-      <Button
-      variant="contained"
-      color="primary"
-      onClick={() => router.push('/dashboard/gestorClientes')}
-      style={{
-        marginBottom: '16px',
-        backgroundColor: '#155E75',
-        color: 'white',
-        fontWeight: 'bold',
-        padding: '10px 20px',
-        borderRadius: '8px',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        '&:hover': {
-          backgroundColor: '#1565c0',
-        },
-      }}
-    >
-      <ArrowBackIcon />
-      Regresar
-    </Button>
-        <h1>Mensajes del Cliente</h1>
-        <ModalAgregarNotificacion id={id} onSaveSuccess={fetchMessages} />
+      <div className="grid grid-cols-3 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
+        {/* Columna Izquierda: Botón de Regresar */}
+        <div className="flex justify-start">
+          <Button
+            onClick={() => router.push('/dashboard/gestorClientes')}
+            className="flex items-center gap-2 bg-[#155E75] text-white font-bold py-2 px-5 rounded-lg shadow-md hover:bg-[#1565c0]"
+          >
+            <ArrowBackIcon />
+            Regresar
+          </Button>
+        </div>
+
+        {/* Columna Central: Título */}
+        <div className="flex justify-center">
+          <h1 className="text-2xl font-semibold text-white">Mensajes del Cliente</h1>
+        </div>
+
+        {/* Columna Derecha: Botón para Agregar Mensaje */}
+        <div className="flex justify-end">
+          <ModalAgregarNotificacion id={id} onSaveSuccess={fetchMessages} />
+        </div>
       </div>
-      
+
       {error && (
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setOpenSnackbar(false)}
+        >
           <Alert severity="error">{error}</Alert>
         </Snackbar>
       )}
-      <div style={{ width: '98%', margin: '0 auto' }}>
+
+      <div className="w-[98%] mx-auto">
         <MaterialReactTable table={table} />
       </div>
 

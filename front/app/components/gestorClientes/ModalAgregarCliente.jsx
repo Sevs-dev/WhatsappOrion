@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Modal } from '@mui/material';
 import ClientApiService from '../../services/GestorCliente/ClientApiService';
 import Toast from '../toastr/toast';
-import debounce from 'lodash.debounce'; // Usamos lodash.debounce para retrasar la búsqueda
+import debounce from 'lodash.debounce';
+import Text from '../text/Text'
+import Buttons from '../button/Button'
 import '../toastr/toast.css';
 
 const ModalCrearCliente = ({ onClientCreated }) => {
@@ -13,87 +15,58 @@ const ModalCrearCliente = ({ onClientCreated }) => {
         nombre: '',
         estado: 1,
     });
-    const [clients, setClients] = useState([]); // Nuevo estado para los clientes
-    const [loading, setLoading] = useState(true); // Estado de carga
+    const [clients, setClients] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const data = await ClientApiService.getClients(); // Obtener clientes
-                
-                setClients(data); // Establecer los clientes en el estado
-                setLoading(false); // Cambiar el estado de carga a false
+                const data = await ClientApiService.getClients();
+                setClients(data);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching clients:', error);
-                setLoading(false); // Cambiar el estado de carga a false si hay error
+                setLoading(false);
             }
         };
 
         fetchClients();
     }, []);
 
-    // Función de búsqueda con debounce
     const handleClientSearch = debounce((inputValue) => {
-        // Si el campo está vacío, limpiamos los datos en el formulario y no hacemos la búsqueda
         if (!inputValue) {
-            setFormData((prevState) => ({
-                ...prevState,
+            setFormData(prev => ({
+                ...prev,
                 codigo: '',
                 nombre: '',
             }));
             return;
         }
 
-        // Realizamos la búsqueda solo si hay texto
         const matchedClient = clients.find(client =>
-            client.codigo_cliente.includes(inputValue) || 
+            client.codigo_cliente.includes(inputValue) ||
             client.descripcion_cliente.toLowerCase().includes(inputValue.toLowerCase())
         );
 
-        if (matchedClient) {
-            // Si se encuentra un cliente, actualizar el formulario con los datos del cliente
-            setFormData((prevState) => ({
-                ...prevState,
-                codigo: matchedClient.codigo_cliente, // Actualiza el código del cliente
-                nombre: matchedClient.descripcion_cliente, // Actualiza el nombre del cliente
-            }));
-        } else {
-            // Si no se encuentra ningún cliente, limpiamos el nombre y código
-            setFormData((prevState) => ({
-                ...prevState,
-                codigo: '',
-                nombre: '',
-            }));
-        }
-    }, 500); // Esperar 500ms después de que se deja de escribir
+        setFormData(prev => ({
+            ...prev,
+            codigo: matchedClient ? matchedClient.codigo_cliente : inputValue,
+            nombre: matchedClient ? matchedClient.descripcion_cliente : prev.nombre,
+        }));
+    }, 500);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
+        setFormData(prev => ({
+            ...prev,
             [name]: value,
         }));
 
-        // Ejecutar la búsqueda al escribir en el input
         if (name === 'codigo') {
-            handleClientSearch(value); // Pasamos el valor actual del input
-        }
-    };
-
-    // Función para manejar la selección de un cliente en el select
-    const handleSelectChange = (e) => {
-        const selectedClientName = e.target.value;
-        const selectedClient = clients.find(client => client.descripcion_cliente === selectedClientName);
-
-        if (selectedClient) {
-            setFormData({
-                codigo: selectedClient.codigo_cliente, // Actualiza el código del cliente
-                nombre: selectedClientName, // Actualiza el nombre del cliente
-                estado: formData.estado,
-            });
+            handleClientSearch(value);
         }
     };
 
@@ -107,12 +80,9 @@ const ModalCrearCliente = ({ onClientCreated }) => {
                 type: 'success',
                 message: `El cliente "${formData.nombre}" se ha creado con éxito.`,
             });
-            if (onClientCreated) {
-                onClientCreated(); // Actualiza la lista de clientes
-            }
+            if (onClientCreated) onClientCreated();
         } catch (error) {
             console.error('Error creando cliente:', error);
-            handleClose();
             setToast({
                 show: true,
                 type: 'failure',
@@ -125,64 +95,72 @@ const ModalCrearCliente = ({ onClientCreated }) => {
 
     return (
         <div>
-            {toast.show && (
-                <Toast type={toast.type} message={toast.message} />
-            )}
-            <button onClick={handleOpen} className='btn btn-primary'>Crear cliente</button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box className="modal-container">
-                    <Box className="modal-content">
-                        <div>
-                            <h1>Agregar cliente</h1>
-                        </div>
-                        <div className='options'>
-                            <label>Codigo Cliente</label>
-                            <div className='input-group'>
-                                <input
-                                    type="text"
-                                    className='form-control'
-                                    placeholder='Escriba el código o nombre del cliente'
-                                    name='codigo'
-                                    value={formData.codigo}
-                                    onChange={handleChange} // Ahora solo actualiza el valor
-                                />
+            {toast.show && <Toast type={toast.type} message={toast.message} />}
+            <Buttons onClick={handleOpen} variant="create" label="Crear Cliente" />
+            <Modal open={open} onClose={handleClose}>
+                <Box className="flex items-center justify-center min-h-screen p-4">
+                    <Box className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+                        <Text type="title">
+                            Agregar Cliente
+                        </Text>
+                        <div className="space-y-4">
+                            {/* Código del Cliente */}
+                            <div>
+                                <Text type="subtitle">
+                                    Código del Cliente
+                                </Text>
+                                <div>
+                                    <input
+                                        type="text"
+                                        className="border border-gray-300 p-2 rounded w-full"
+                                        placeholder="Escriba el código del cliente"
+                                        name="codigo"
+                                        value={formData.codigo}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
-                            <label className='form-label-2'>Cliente</label>
-                            <div className='input-group'>
-                                <select
-                                    className="form-select"
-                                    name="nombre"
-                                    value={formData.nombre}
-                                    onChange={handleSelectChange} // Ahora manejamos el cambio de select
-                                    disabled={loading} // Deshabilitar mientras carga
-                                >
-                                    <option>Seleccione una opción</option>
-                                    {clients && clients.map((client) => (
-                                        <option key={client.codigo_cliente} value={client.descripcion_cliente}>
-                                            {client.descripcion_cliente}
-                                        </option>
-                                    ))}
-                                </select>
+
+                            {/* Nombre del Cliente */}
+                            <div>
+                                <Text type="subtitle">
+                                    Nombre del Cliente
+                                </Text>
+                                <div>
+                                    <input
+                                        type="text"
+                                        className="border border-gray-300 p-2 rounded w-full"
+                                        placeholder="Nombre del cliente"
+                                        name="nombre"
+                                        value={formData.nombre}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
-                            <label className="form-label-2">Estado</label>
-                            <div className="input-group">
-                                <select
-                                    name="estado"
-                                    value={formData.estado}
-                                    onChange={handleChange}
-                                >
-                                    <option value={1}>Activo</option>
-                                    <option value={0}>Inactivo</option>
-                                </select>
+
+                            {/* Estado */}
+                            <div>
+                                <Text type="subtitle">
+                                    Estado
+                                </Text>
+                                <div>
+                                    <select
+                                        name="estado"
+                                        value={formData.estado}
+                                        onChange={handleChange}
+                                        className="border border-gray-300 p-2 rounded w-full"
+                                    >
+                                        <option value={1}>Activo</option>
+                                        <option value={0}>Inactivo</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div className='buttons'>
-                                <Button variant="contained" color='error' onClick={handleClose}>Cerrar</Button>
-                                <Button variant="contained" color='success' onClick={handleSave}>Guardar</Button>
+
+                            {/* Botones */}
+
+                            <div className="flex justify-center gap-2">
+                                <Buttons onClick={handleClose} variant="cancel" />
+                                <Buttons onClick={handleSave} variant="save" />
                             </div>
                         </div>
                     </Box>

@@ -5,6 +5,8 @@ import ClientApiService from '../../services/GestorCliente/ClientApiService';
 import ApiUrl from '../../services/EditarMensajes/GestorEditorMensajes';
 import Toast from '../toastr/toast';
 import TextField from '@mui/material/TextField';
+import Text from '../text/Text'
+import Buttons from '../button/Button'
 
 const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
     const [open, setOpen] = useState(false);
@@ -230,164 +232,174 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
     return (
         <>
             {toast.show && <Toast type={toast.type} message={toast.message} />}
-
-            <Tooltip title="Agregar Notificación">
-                <IconButton color="primary" onClick={handleOpen} className="btn btn-primary">
-                    <AddCircleIcon />
-                </IconButton>
-            </Tooltip>
-
+            <Buttons onClick={handleOpen} variant="create" label="Agregar Mensaje" />
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="modal-container"
+                <Box
+                    className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-10"
                     sx={{
-                        maxWidth: '600px',
-                        maxHeight: '90vh',
-                        padding: 3,
-                        overflowY: 'auto',
-                        '&::-webkit-scrollbar': {
-                            width: '8px'
+                        maxHeight: "90vh",
+                        overflowY: "auto",
+                        "&::-webkit-scrollbar": { width: "8px" },
+                        "&::-webkit-scrollbar-track": {
+                            background: "rgba(0, 0, 0, 0.1)",
+                            borderRadius: "12px",
                         },
-                        '&::-webkit-scrollbar-track': {
-                            background: 'rgba(0, 0, 0, 0.1)',
-                            borderRadius: '12px'
+                        "&::-webkit-scrollbar-thumb": {
+                            background: "rgba(15, 63, 120, 0.9)",
+                            borderRadius: "12px",
+                            border: "2px solid rgba(0, 0, 0, 0.2)",
                         },
-                        '&::-webkit-scrollbar-thumb': {
-                            background: 'rgba(15, 63, 120, 0.9)',
-                            borderRadius: '12px',
-                            border: '2px solid rgba(0, 0, 0, 0.2)'
-                        },
-                        '&::-webkit-scrollbar-thumb:hover': {
-                            background: 'rgba(10, 50, 100, 1)'
+                        "&::-webkit-scrollbar-thumb:hover": {
+                            background: "rgba(10, 50, 100, 1)",
                         },
                     }}
                 >
-                    <h1>Agregar Notificación</h1>
-                    <div className="options">
-                        <label>Título</label>
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                name="titulo"
-                                value={formData.titulo}
-                                onChange={handleChange}
-                                placeholder="Escribe el título"
-                            />
-                            {formErrors.titulo && (
-                                <span className="error-message" style={{ color: 'red' }}>
-                                    * Este campo es obligatorio
-                                </span>
-                            )}
-                        </div>
+                    <Text type="title">
+                        Agregar Mensaje de Cliente
+                    </Text>
 
-                        <label>Descripción</label>
-                        <div className="input-group">
-                            <textarea
-                                name="descripcion"
-                                value={formData.descripcion}
-                                onChange={handleChange}
-                                placeholder="Escribe la descripción"
-                                rows={4}
-                                className="resize-y p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        {/* Botón para abrir el modal de creación de parámetros */}
-                        <Button variant="outlined" color="primary" onClick={handleOpenParamModal}>
-                            Agregar Parámetro
-                        </Button>
-
-                        {/* Modal para crear un parámetro */}
-                        <Modal open={paramModalOpen} onClose={handleCloseParamModal}>
-                            <Box className="modal-container">
-                                <h2>Crear Parámetro</h2>
-                                <TextField
-                                    label="Parámetro requerido"
-                                    value={newParamName}
-                                    onChange={(e) => setNewParamName(e.target.value)}
-                                    fullWidth
+                    {/* Sección principal: dos columnas (Mensaje y Parámetros) */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Columna izquierda: Datos del mensaje */}
+                        <div className="flex-1">
+                            <Text type="subtitle">
+                                Título del Mensaje
+                            </Text>
+                            <div className="mb-4">
+                                <input
+                                    type="text"
+                                    name="titulo"
+                                    value={formData.titulo}
+                                    onChange={handleChange}
+                                    placeholder="Ingrese el Título del Cliente"
+                                    className="mt-1 text-center block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
-                                <TextField
-                                    label="Nombre del Parámetro"
-                                    value={newParamLabel}
-                                    onChange={(e) => setNewParamLabel(e.target.value)}
-                                    fullWidth
+                                {formErrors.titulo && (
+                                    <span className="text-red-500 text-sm">
+                                        * Este campo es obligatorio
+                                    </span>
+                                )}
+                            </div>
+
+                            <Text type="subtitle">Mensaje</Text>
+
+                            <div className="mb-4">
+                                <textarea
+                                    name="descripcion"
+                                    value={formData.descripcion}
+                                    onChange={handleChange}
+                                    placeholder="Escribe el mensaje"
+                                    rows={4}
+                                    className="mt-1 block w-full rounded-md border border-gray-300 p-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                <Button variant="contained" color="primary" onClick={handleSaveParam}>
-                                    Guardar Parámetro
-                                </Button>
-                                <Button variant="outlined" color="error" onClick={handleCloseParamModal}>
-                                    Cancelar
-                                </Button>
-                            </Box>
-                        </Modal>
-
-                        <div style={{ marginTop: '20px' }}>
-                            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Seleccionar Variables</h4>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-                                {Array.isArray(availableVariables) && availableVariables.map((param, index) => (
-                                    <Button
-                                        key={param.name}  // Usar param.name aquí para el key
-                                        onClick={() => handleInsertVariable(param.name)}  // Usar param.name aquí también
-                                        variant="outlined"
-                                        color="primary"
-                                        sx={{
-                                            padding: '6px 12px',   // Reducción de padding
-                                            borderRadius: '6px',
-                                            textTransform: 'capitalize',
-                                            fontWeight: '400',
-                                            fontSize: '0.7rem',  // Tamaño de fuente reducido
-                                            boxShadow: 'none',
-                                            border: '1px solid #1976d2', // Añadir un borde sutil
-                                            '&:hover': {
-                                                backgroundColor: '#1976d2',
-                                                color: '#fff',
-                                                borderColor: '#1565c0',
-                                            },
-                                        }}
-                                    >
-                                        {param.label} {/* Mostrar los datos del parámetro */}
-                                    </Button>
-                                ))}
                             </div>
 
                         </div>
 
-                        <label className="form-label-2">Nombre del Cliente</label>
-                        <div className="input-group">
+                        {/* Columna derecha: Parámetros (con scroll independiente) */}
+                        <div className="w-full md:w-1/3 border-l pl-4 max-h-80 overflow-y-auto">
+                            <div className="mb-4 flex items-center">
+                                <Buttons onClick={handleOpenParamModal} variant="create" label="Agregar Parámetro" />
+                            </div>
+
+                            {/* Modal anidado para crear un parámetro */}
+                            <Modal open={paramModalOpen} onClose={handleCloseParamModal}>
+                                <Box className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20">
+                                    <Text type="title">
+                                        Crear Parámetro
+                                    </Text>
+                                    <input
+                                        type="text"
+                                        name="titulo"
+                                        value={newParamName}
+                                        onChange={(e) => setNewParamName(e.target.value)}
+                                        placeholder="Parámetro requerido"
+                                        className="mt-1 text-center block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="titulo"
+                                        value={newParamLabel}
+                                        onChange={(e) => setNewParamLabel(e.target.value)}
+                                        placeholder="Nombre del Parámetro"
+                                        className="mt-1 text-center block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    />
+                                    <div className="flex justify-center gap-2">
+                                        <Buttons onClick={handleCloseParamModal} variant="cancel" />
+                                        <Buttons onClick={handleSaveParam} variant="save" />
+                                    </div>
+                                </Box>
+                            </Modal>
+
+                            <div className="mt-5">
+                                <Text type="subtitle">
+                                    Seleccionar Variables
+                                </Text>
+                                <div
+                                    className="grid"
+                                    style={{
+                                        gridTemplateColumns:
+                                            "repeat(auto-fill, minmax(100px, 1fr))",
+                                        gap: "8px",
+                                    }}
+                                >
+                                    {Array.isArray(availableVariables) &&
+                                        availableVariables.map((param) => (
+                                            <button
+                                                key={param.name}
+                                                onClick={() => handleInsertVariable(param.name)}
+                                                className="px-3 py-2 border border-blue-500 text-blue-600 rounded-md text-sm font-medium hover:bg-blue-500 hover:text-white transition"
+                                            >
+                                                {param.label}
+                                            </button>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sección inferior: Otros campos y acciones */}
+                    <div className="mt-6">
+                        <Text type="subtitle">
+                            Nombre del Cliente
+                        </Text>
+                        <div className="mb-4">
                             <input
                                 type="text"
-                                className="form-control"
                                 name="nombre"
                                 value={formData.nombre}
                                 onChange={handleChange}
                                 disabled
+                                className="mt-1 text-center block w-full rounded-md border-gray-300 shadow-sm"
                             />
                         </div>
-
-                        <label className="form-label-2">Código Cliente</label>
-                        <div className="input-group">
+                        <Text type="subtitle">
+                            Código Cliente
+                        </Text>
+                        <div className="mb-4">
                             <input
                                 type="text"
-                                className="form-control"
                                 name="codigo"
                                 value={formData.codigo}
                                 onChange={handleChange}
                                 disabled
+                                className="mt-1 text-center block w-full rounded-md border-gray-300 shadow-sm"
                             />
                         </div>
-
-                        <label>URL</label>
-                        <div className="input-group">
+                        <Text type="subtitle">
+                            URL
+                        </Text>
+                        <div className="mb-4">
                             <select
                                 name="api_url"
                                 value={formData.api_url}
                                 onChange={handleChange}
+                                className="mt-1 text-center block w-full rounded-md border-gray-300 p-2"
                             >
                                 <option value="">Seleccionar</option>
                                 {urlApi.map((url, index) => (
@@ -398,38 +410,29 @@ const ModalAgregarNotificacion = ({ id, onSaveSuccess }) => {
                             </select>
                         </div>
 
-                        <label>Estado</label>
-                        <div className="input-group">
+                        <Text type="subtitle">
+                            Estado del Cliente
+                        </Text>
+                        <div className="mb-4">
                             <select
                                 name="estado"
                                 value={formData.estado}
                                 onChange={handleChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 p-2 text-center"
                             >
                                 <option value="">Seleccionar</option>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
                         </div>
-
-                        <div className="buttons">
-                            <Button
-                                variant="outlined"
-                                color="error"
-                                onClick={handleClose}
-                            >
-                                Cancelar
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSave}
-                            >
-                                Guardar
-                            </Button>
+                        <div className="flex justify-center gap-2">
+                            <Buttons onClick={handleClose} variant="cancel" />
+                            <Buttons onClick={handleSave} variant="save" />
                         </div>
                     </div>
                 </Box>
             </Modal>
+
         </>
     );
 };

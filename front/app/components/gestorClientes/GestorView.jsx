@@ -3,24 +3,21 @@ import ModalCrearCliente from './ModalAgregarCliente';
 import ListaClientes from './ListaClientes';
 
 const GestorClienteView = () => {
-  const [refresh, setRefresh] = useState(false); // Estado para controlar la actualización
+  const [refresh, setRefresh] = useState(false);
 
-  // Función que actualiza la lista de clientes
-  const handleRefreshClientes = () => {
-    setRefresh(prev => !prev); // Cambiar el estado de refresh para disparar el re-fetch en ListaClientes
-  };
+  const handleRefreshClientes = () => setRefresh(prev => !prev);
 
   return (
-    <div>
-      <div className='header'>
-        <h1>Listado de clientes</h1>
-        <div className='buttons-container'>
-          <ModalCrearCliente onClientCreated={handleRefreshClientes} /> {/* Pasa la función como prop */}
+    <div className="p-4">
+      <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-white">Listado de clientes</h1>
+        <div className="flex justify-end">
+          <button>
+            <ModalCrearCliente onClientCreated={handleRefreshClientes} />
+          </button>
         </div>
       </div>
-      <div className='content'>
-        <ListaClientes refresh={refresh} /> {/* Pasa el estado de refresh */}
-      </div>
+      <ListaClientes refresh={refresh} />
     </div>
   );
 };

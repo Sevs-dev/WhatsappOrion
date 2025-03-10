@@ -93,27 +93,14 @@ class ClientController extends Controller
     /**
      * Consultar un cliente específico con sus mensajes relacionados.
      */
-    public function consultById($id)
+    public function getClientId($id)
     {
         $cliente = ClientsWhatsapp::with('mensajes')->find($id);
         if (!$cliente) {
             return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
         return response()->json(['data' => $cliente]);
-    }
+    } 
 
-    //Estados
-    public function getStates()
-    {
-        $states = [
-            'activo',
-            'inactivo',
-            'pendiente',
-            'en_proceso',
-            'entregado',
-            'cancelado',
-        ];
-
-        return response()->json($states);
-    }
+     
 }
