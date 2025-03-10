@@ -23,7 +23,7 @@ function Header({ column, label, onSort, sortOrder, sortColumn }) {
     );
 }
 
-function Table({ rows, columns, columnLabels = {}, onEdit, onDelete }) {
+function Table({ rows, columns, columnLabels = {}, onEdit, onDelete, onAdd }) {
     const [sortColumn, setSortColumn] = useState(columns[0]);
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchTerm, setSearchTerm] = useState("");
@@ -137,6 +137,10 @@ function Table({ rows, columns, columnLabels = {}, onEdit, onDelete }) {
                                 })}
                                 <td className="px-6 py-3 flex justify-center gap-3">
                                     <Button
+                                        onClick={() => onAdd(row.id)}
+                                        variant="add"
+                                    />
+                                    <Button
                                         onClick={() => onEdit(row.id)}
                                         variant="edit"
                                     />
@@ -161,6 +165,10 @@ function Table({ rows, columns, columnLabels = {}, onEdit, onDelete }) {
                             </div>
                         ))}
                         <div className="flex justify-end gap-3 mt-3">
+                            <Button
+                                onClick={() => onAdd(row.id)}
+                                variant="add"
+                            />
                             <Button
                                 onClick={() => onEdit(row.id)}
                                 variant="edit"

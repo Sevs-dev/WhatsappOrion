@@ -23,19 +23,17 @@ const ConfigDatos = () => {
   }, [router]);
 
   if (loading) {
-    return <Loader />; // Muestra el componente Loader mientras se valida el token
+    return <Loader />;
   }
-
-  //Retorna el ModalVerificacionUsuario y el HistoricoConfig
   return (
-    <div>
-      <div className='header'>
-        <h1>Configuración API de Whatsapp</h1>
-        <ModalVerificacionUsuario /> 
+    <div className="p-4">
+      <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-white">Configuración API de Whatsapp</h1>
+        <div className="flex justify-end">
+          <ModalVerificacionUsuario />
+        </div>
       </div>
-      <div className='content'>
-        <HistoricoConfig />
-      </div>
+      <HistoricoConfig />
     </div>
   );
 };

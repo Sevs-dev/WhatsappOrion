@@ -67,11 +67,11 @@ function Home() {
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="bg-gradient-to-tr from-blue-400 to-cyan-400 p-4 sm:p-6 rounded-full shadow-lg hover:scale-110 transition-transform duration-300">
+            <div className="bg-[#11ffff9a] p-4 sm:p-6 rounded-full shadow-lg hover:scale-110 transition-transform duration-300">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
+                src="/orion.png"
                 alt="WhatsApp Icon"
-                className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                className="w-28 h-28 sm:w-40 sm:h-40 object-contain"
               />
             </div>
           </motion.div>

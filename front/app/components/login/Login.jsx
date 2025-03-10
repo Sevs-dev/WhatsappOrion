@@ -60,11 +60,11 @@ function Login() {
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-         style={{ backgroundImage: "url('/FondoLogin.jpg')" }}>
-         
+      style={{ backgroundImage: "url('/FondoLogin.jpg')" }}>
+
       {loading && <Loader />}
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -130,26 +130,37 @@ function Login() {
             </button>
 
             <div className="mt-4 text-center">
-              <span onClick={() => router.push('/register')} 
+              {/* <span onClick={() => router.push('/register')} 
                     className="text-xs md:text-sm text-white/80 hover:text-white cursor-pointer 
                                hover:underline transition-all">
                 ¿No tienes cuenta? Regístrate
+              </span> */}
+              <span className="text-xs md:text-sm text-white/80 hover:text-white cursor-pointer hover:underline transition-all">
+                Si no cuentas con un usuario, comunicate con un administrador
               </span>
             </div>
 
             <div className="text-center">
-              <a href="#" className="text-xs md:text-sm text-white/80 hover:text-white 
+              {/* <a href="#" className="text-xs md:text-sm text-white/80 hover:text-white 
                                     transition-all duration-200">
                 ¿Olvidaste tu contraseña?
-              </a>
+              </a> */}
             </div>
           </form>
         </div>
 
         {/* Imagen derecha */}
-        <div className="hidden md:block md:w-1/2 bg-cover bg-center bg-no-repeat"
-             style={{ backgroundImage: "url('/PharexFondo.png')" }}>
+        <div
+          className="hidden md:block md:w-1/2 relative bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/PharexFondo.png')" }}
+        >
+          <img
+            src="/orion.png"
+            alt="Imagen pequeña"
+            className="absolute top-0 right-0 w-24 h-14 m-2"
+          />
         </div>
+
       </motion.div>
 
       {toast.show && <Toast type={toast.type} message={toast.message} />}

@@ -12,9 +12,7 @@ const GestorClienteView = () => {
       <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
         <h1 className="text-2xl font-bold text-white">Listado de clientes</h1>
         <div className="flex justify-end">
-          <button>
-            <ModalCrearCliente onClientCreated={handleRefreshClientes} />
-          </button>
+          <ModalCrearCliente onClientCreated={handleRefreshClientes} />
         </div>
       </div>
       <ListaClientes refresh={refresh} />
