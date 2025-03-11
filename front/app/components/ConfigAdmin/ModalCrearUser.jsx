@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Box, Button, Modal } from "@mui/material";
-import Toast from "../toastr/toast"; // Importa el componente Toast
+import Toast from "../toastr/toast";
+import Text from '../text/Text'
+import Buttons from '../button/Button'
 
 const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
   const [newUser, setNewUser] = useState({ name: "", email: "", password: "" });
@@ -13,7 +15,7 @@ const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
     setNewUser((prev) => ({ ...prev, [name]: value }));
     setError(false);
   };
-  
+
 
 
   const handleSubmit = async () => {
@@ -45,57 +47,45 @@ const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
     <>
       {toast} {/* Renderiza el toast */}
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
-        <Box className="modal-container">
-          <Box className="modal-content">
-            <div>
-              <h1>Agregar Nuevo Usuario</h1>
-            </div>
-            <div className="options">
-              <label>Nombre</label>
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  name="name"
-                  value={newUser.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <label>Correo</label>
-              <div className="input-group">
-                <input
-                  type="email"
-                  className="form-control"
-                  name="email"
-                  value={newUser.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <label>Contraseña</label>
-              <div className="input-group">
-                <input
-                  type="password"
-                  className="form-control"
-                  name="password"
-                  value={newUser.password}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              {error && <p className="error-text">* Todos los campos son obligatorios</p>}
-              <div className="buttons">
-                <Button variant="contained" color="error" onClick={handleClose}>
-                  Cerrar
-                </Button>
-                <Button variant="contained" color="success" onClick={handleSubmit} disabled={loading}>
-                  {loading ? "Guardando..." : "Guardar"}
-                </Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <Text type="title">Agregar Nuevo Usuario</Text>
+            <div className="space-y-3">
+              <Text type="subtitle">Nombre</Text>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                name="name"
+                value={newUser.name}
+                onChange={handleChange}
+                required
+              />
+              <Text type="subtitle">Correo</Text>
+              <input
+                type="email"
+                className="w-full p-2 border rounded"
+                name="email"
+                value={newUser.email}
+                onChange={handleChange}
+                required
+              />
+              <Text type="subtitle">Contraseña</Text>
+              <input
+                type="password"
+                className="w-full p-2 border rounded"
+                name="password"
+                value={newUser.password}
+                onChange={handleChange}
+                required
+              />
+              {error && <p className="text-red-500 text-sm">* Todos los campos son obligatorios</p>}
+              <div className="flex justify-center gap-2">
+                <Buttons onClick={handleClose} variant="cancel" />
+                <Buttons onClick={handleSubmit} variant="save" />
               </div>
             </div>
-          </Box>
-        </Box>
+          </div>
+        </div>
       </Modal>
     </>
   );

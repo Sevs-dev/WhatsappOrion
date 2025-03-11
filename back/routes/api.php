@@ -56,7 +56,7 @@ Route::prefix('client')->group(function () {
     Route::put('/update/{id}', [ClientController::class, 'update']);
     Route::delete('/delete/{id}', [ClientController::class, 'delete']);
     Route::get('/info', [ClientController::class, 'index']);
-    Route::get('/search/{id}', [ClientController::class, 'consultById']);
+    Route::get('/search/{id}', [ClientController::class, 'getClientId']);
     Route::get('/states', [ClientController::class, 'getStates']);
 });
 

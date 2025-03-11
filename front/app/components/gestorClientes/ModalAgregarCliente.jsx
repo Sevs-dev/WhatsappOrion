@@ -157,7 +157,6 @@ const ModalCrearCliente = ({ onClientCreated }) => {
                             </div>
 
                             {/* Botones */}
-
                             <div className="flex justify-center gap-2">
                                 <Buttons onClick={handleClose} variant="cancel" />
                                 <Buttons onClick={handleSave} variant="save" />

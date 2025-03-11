@@ -6,7 +6,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { getUsers, updateUser, deleteUser, addUser, refreshToken } from "../../services/authService/authService";
 import ModalCrearUser from "./ModalCrearUser";
-import ModalEditUser from "./ModalEditUser";
+import ModalEditUser from "./ModalEditUser"; 
+import Buttons from '../button/Button'
 
 const ConfigAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -110,18 +111,20 @@ const ConfigAdmin = () => {
   const table = useMaterialReactTable({ columns, data: users });
 
   return (
+
     <div>
       {/* 🔹 Header con título y botón */}
-      <div className="header">
-        <h1>Panel de Configuracion</h1>
-        <div className="buttons-container">
-          <Button onClick={() => setOpenModal(true)} variant="contained"  color="primary" startIcon={<AddIcon/> }>
-            Agregar Usuario
-          </Button>
+      <div className="p-4">
+        <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
+          <h1 className="text-2xl font-bold text-white">Panel de Configuración</h1>
+          <div className="flex justify-end">
+           <Buttons onClick={() => setOpenModal(true)} variant="create" label="Agregar Usario" /> 
+          </div>
         </div>
       </div>
 
-     {/* 🔹 Separación entre el header y la tabla */}
+
+      {/* 🔹 Separación entre el header y la tabla */}
       <div className="content">
         <MaterialReactTable table={table} columns={columns} data={users} />
       </div>

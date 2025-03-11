@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Modal, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import Services from "../../services/EditarMensajes/GestorEditorMensajes";
+import Text from '../text/Text'
+import Buttons from '../button/Button'
 
 const ModalAgregarApi = () => {
     const [open, setOpen] = useState(false);
@@ -26,7 +28,7 @@ const ModalAgregarApi = () => {
             setError(true);
             return;
         }
-    
+
         try {
             const response = await Services.saveWhatsappApi({
                 api_url: apiUrl,
@@ -34,25 +36,23 @@ const ModalAgregarApi = () => {
                 number_test: number,
             });
             alert('API URL guardada correctamente');
-            setOpen(false); 
+            setOpen(false);
         } catch (err) {
             console.error('Error al guardar el estado del whatsapp Api:', err);
         }
     };
-    
-    
+
+
 
     return (
         <div>
-            <Button onClick={handleOpen}>Agregar API URL</Button>
+            <Buttons onClick={handleOpen} variant="create" label="Agregar API URL" />
 
             {/* Modal para agregar nueva URL de la API */}
             <Modal open={open} onClose={handleClose}>
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
-                        <Typography variant="h6" component="h2">
-                            Agregar Nueva API URL
-                        </Typography>
+                        <Text type="title">Agregar Nueva API URL</Text>
                         <TextField
                             label="API URL"
                             value={apiUrl}
@@ -83,13 +83,9 @@ const ModalAgregarApi = () => {
                             error={error}
                             helperText={error && "Este campo es obligatorio"}
                         />
-                        <div className="flex justify-end space-x-2 mt-4">
-                            <Button onClick={handleClose} className="bg-gray-300 text-black hover:bg-gray-400">
-                                Cancelar
-                            </Button>
-                            <Button onClick={handleGuardar} className="bg-blue-500 text-white hover:bg-blue-600">
-                                Guardar
-                            </Button>
+                        <div className="flex justify-center gap-2">
+                            <Buttons onClick={handleClose} variant="cancel" />
+                            <Buttons onClick={handleGuardar} variant="save" />
                         </div>
                     </div>
                 </div>

@@ -9,8 +9,10 @@ import {
   Timeline, 
   List, 
   Logout, 
-  Settings,
-  ExpandMore
+  Settings, 
+  ExpandMore, 
+  Api, 
+  Person 
 } from '@mui/icons-material';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
@@ -57,8 +59,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
   // Submenú para Mensajes y Configuración
   const submenuItems = useMemo(() => [
-    { path: '/dashboard/configDatos', icon: Email, label: 'Mensajes' },
-    ...(isAdmin ? [{ path: '/dashboard/configuracion', icon: Settings, label: 'Configuración' }] : [])
+    { path: '/dashboard/configDatos', icon: Api, label: 'API' },
+    ...(isAdmin ? [{ path: '/dashboard/configuracion', icon: Person, label: 'Usuarios' }] : [])
   ], [isAdmin]);
 
   return (
