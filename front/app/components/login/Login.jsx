@@ -9,8 +9,12 @@ import Loader from '../loader/Loader';
 import { login } from '../../services/authService/authService';
 
 function Login() {
-  const [email, setEmail] = useState('admin@logismart.com.co');
-  const [password, setPassword] = useState('Logismart25*');
+  const [email, setEmail] = useState('admin@cosmetika.com');
+  const [password, setPassword] = useState('Cosmetika25*');
+  // const [email, setEmail] = useState('admin@logismart.com.co');
+  // const [password, setPassword] = useState('Logismart25*');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
   const [loading, setLoading] = useState(false);
@@ -43,10 +47,11 @@ function Login() {
       if (response.success) {
         const data = response.data;
         localStorage.setItem('token', data.autorización.token);
-        localStorage.setItem('userName', data.usuario.name);
-        const isAdmin = email === "admin@logismart.com.co";
+        localStorage.setItem('userName', data.usuario.name); 
+        const isAdmin = Boolean(data.usuario.admin);
         handleLogin(email, isAdmin);
-      } else {
+      }
+       else {
         setError(response.message || 'Error de inicio de sesión');
         showToast('failure', response.message || 'Error de inicio de sesión');
       }

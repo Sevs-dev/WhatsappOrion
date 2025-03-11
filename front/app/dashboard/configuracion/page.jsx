@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ConfigAdmin from "./../../components/ConfigAdmin/ConfigAdmin";
 
 const ConfiguracionPage = () => {
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const userEmail = localStorage.getItem("userEmail");
-    console.log("User Email:", userEmail); // Depuración
-    
-    // Si no es el admin, redirigir a Home
-    if (userEmail !== "admin@logismart.com.co") {
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(adminStatus);
+
+    // Si no es admin, redirigir a /dashboard/home
+    if (!adminStatus) {
       router.push("/dashboard/home");
     }
-  }, []);
+  }, [router]);
 
   return (
-    <div >
+    <div>
       <ConfigAdmin />
     </div>
   );

@@ -1,11 +1,14 @@
+"use client";
+
 import { useState } from "react";
-import { Box, Button, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 import Toast from "../toastr/toast";
-import Text from '../text/Text'
-import Buttons from '../button/Button'
+import Text from "../text/Text";
+import Buttons from "../button/Button";
 
 const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
-  const [newUser, setNewUser] = useState({ name: "", email: "", password: "" });
+  // Se inicializa 'admin' como 0 (no es admin)
+  const [newUser, setNewUser] = useState({ name: "", email: "", password: "", admin: 0 });
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null); // Estado para manejar el toast
@@ -15,8 +18,6 @@ const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
     setNewUser((prev) => ({ ...prev, [name]: value }));
     setError(false);
   };
-
-
 
   const handleSubmit = async () => {
     if (!newUser.name || !newUser.email || !newUser.password) {
@@ -28,16 +29,16 @@ const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
 
     try {
       await handleAddUser(newUser);
-      setNewUser({ name: "", email: "", password: "" });
+      setNewUser({ name: "", email: "", password: "", admin: 0 });
       handleClose();
 
-      // 🔹 Mostrar el toast de éxito
+      // Mostrar toast de éxito
       setToast(<Toast type="success" message="Los datos se han guardado correctamente." />);
-      setTimeout(() => setToast(null), 3000); // 🔹 Oculta el toast después de 3 segundos
+      setTimeout(() => setToast(null), 3000);
     } catch (error) {
       console.error("Error al agregar usuario:", error);
       setToast(<Toast type="error" message="Error al guardar los datos." />);
-      setTimeout(() => setToast(null), 3000); // 🔹 Oculta el toast después de 3 segundos
+      setTimeout(() => setToast(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,23 @@ const ModalCrearUser = ({ open, handleClose, handleAddUser }) => {
                 onChange={handleChange}
                 required
               />
-              {error && <p className="text-red-500 text-sm">* Todos los campos son obligatorios</p>}
+              <Text type="subtitle">¿Es administrador?</Text>
+              <select
+                name="admin"
+                value={newUser.admin}
+                onChange={(e) =>
+                  setNewUser((prev) => ({ ...prev, admin: Number(e.target.value) }))
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value={0}>No</option>
+                <option value={1}>Sí</option>
+              </select>
+              {error && (
+                <p className="text-red-500 text-sm">
+                  * Todos los campos son obligatorios
+                </p>
+              )}
               <div className="flex justify-center gap-2">
                 <Buttons onClick={handleClose} variant="cancel" />
                 <Buttons onClick={handleSubmit} variant="save" />

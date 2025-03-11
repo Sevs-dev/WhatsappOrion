@@ -8,6 +8,7 @@ import { getUsers, updateUser, deleteUser, addUser, refreshToken } from "../../s
 import ModalCrearUser from "./ModalCrearUser";
 import ModalEditUser from "./ModalEditUser"; 
 import Buttons from '../button/Button'
+import Toast from "../toastr/toast";
 
 const ConfigAdmin = () => {
   const [users, setUsers] = useState([]);

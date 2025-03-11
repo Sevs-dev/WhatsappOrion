@@ -19,9 +19,21 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('admin');
             $table->rememberToken();
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'email' => 'admin@cosmetika.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('Cosmetika25*'),
+            'remember_token' => null,
+            'admin' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -37,16 +49,6 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
-
-        DB::table('users')->insert([
-            'name' => 'Admin Logismart',
-            'email' => 'admin@logismart.com.co',
-            'email_verified_at' => now(),
-            'password' => Hash::make('Logismart25*'),
-            'remember_token' => "",
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 
     /**
