@@ -8,7 +8,7 @@ export async function generateStaticParams() {
   // console.log("Clientes recibidos:", clientes); // Para depurar
 
   if (!clientes || !Array.isArray(clientes.data)) {
-    console.error("Error: La API no devuelve un array válido.");
+    // console.error("Error: La API no devuelve un array válido.");
     return [];
   }
 
