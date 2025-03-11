@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
-import { IconButton, Tooltip, Button } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import { getUsers, updateUser, deleteUser, addUser, refreshToken } from "../../services/authService/authService";
 import ModalCrearUser from "./ModalCrearUser";
-import ModalEditUser from "./ModalEditUser"; 
-import Buttons from '../button/Button'
+import ModalEditUser from "./ModalEditUser";
+import Buttons from "../button/Button";
 import Toast from "../toastr/toast";
 
 const ConfigAdmin = () => {
@@ -15,15 +14,14 @@ const ConfigAdmin = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [toast, setToast] = useState(null); // Estado para el toast
 
-  // 🔹 Función para obtener los usuarios con manejo de token expirado
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
       setUsers(data.usuarios);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
-
       if (error.response && error.response.status === 401) {
         try {
           await refreshToken();
@@ -57,15 +55,29 @@ const ConfigAdmin = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Seguro que quieres eliminar este usuario?")) {
-      try {
-        await deleteUser(id);
-        setUsers((prev) => prev.filter((user) => user.id !== id));
-      } catch (error) {
-        console.error("Error al eliminar usuario", error);
-      }
-    }
+  // Usamos el Toast de confirmación en lugar de window.confirm
+  const handleDelete = (id) => {
+    setToast(
+      <Toast
+        message="¿Seguro que quieres eliminar este usuario?"
+        onConfirm={async () => {
+          try {
+            await deleteUser(id);
+            setUsers((prev) => prev.filter((user) => user.id !== id));
+            setToast(<Toast type="success" message="Usuario eliminado correctamente." />);
+            setTimeout(() => setToast(null), 3000);
+          } catch (error) {
+            console.error("Error al eliminar usuario", error);
+            setToast(<Toast type="failure" message="Error al eliminar usuario." />);
+            setTimeout(() => setToast(null), 3000);
+          }
+        }}
+        onCancel={() => {
+          setToast(<Toast type="warning" message="Eliminación cancelada." />);
+          setTimeout(() => setToast(null), 3000);
+        }}
+      />
+    );
   };
 
   const handleAddUser = async (newUser) => {
@@ -112,28 +124,24 @@ const ConfigAdmin = () => {
   const table = useMaterialReactTable({ columns, data: users });
 
   return (
-
     <div>
-      {/* 🔹 Header con título y botón */}
+      {/* Renderizamos el toast si existe */}
+      {toast}
       <div className="p-4">
         <div className="grid grid-cols-2 items-center mb-4 bg-[#20415e] p-4 rounded shadow">
           <h1 className="text-2xl font-bold text-white">Panel de Configuración</h1>
           <div className="flex justify-end">
-           <Buttons onClick={() => setOpenModal(true)} variant="create" label="Agregar Usario" /> 
+            <Buttons onClick={() => setOpenModal(true)} variant="create" label="Agregar Usuario" />
           </div>
         </div>
       </div>
 
-
-      {/* 🔹 Separación entre el header y la tabla */}
       <div className="content">
         <MaterialReactTable table={table} columns={columns} data={users} />
       </div>
 
-      {/* 🔹 Modal para agregar usuario */}
       <ModalCrearUser open={openModal} handleClose={() => setOpenModal(false)} handleAddUser={handleAddUser} />
 
-      {/* 🔹 Modal para editar usuario */}
       <ModalEditUser open={openEditModal} handleClose={() => setOpenEditModal(false)} user={selectedUser} handleSave={handleSave} />
     </div>
   );
