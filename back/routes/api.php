@@ -68,6 +68,7 @@ Route::prefix('status')->group(function () {
 Route::prefix('drop')->group(function () {
     Route::post('/create', [StatusController::class, 'saveDropStatus']);
     Route::get('/data/{id_cliente}', [StatusController::class, 'getMessageStatus']);
+    Route::get('/list', [StatusController::class, 'getAllStatus']);
 });
  
 Route::prefix('whatsapp')->group(function () {

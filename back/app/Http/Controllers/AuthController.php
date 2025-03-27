@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
-{
-    //Crear usuario administrador
+{ 
     public function addUser(Request $request)
     {
         try {
@@ -44,6 +43,7 @@ class AuthController extends Controller
             ], 500); // Código de estado 500 (Internal Server Error)
         }
     }
+    
     public function login(Request $request)
     {
         $request->validate([
@@ -82,7 +82,6 @@ class AuthController extends Controller
             ]
         ]);
     }
-
 
     public function register(Request $request)
     {
@@ -130,6 +129,7 @@ class AuthController extends Controller
             ]
         ]);
     }
+    
     public function updateUser(Request $request, $id)
     {
         try {
@@ -184,6 +184,7 @@ class AuthController extends Controller
             'usuarios' => $usuarios,
         ]);
     }
+    
     public function getUser($id)
     {
         $usuario = User::findOrFail($id);
@@ -193,7 +194,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // Función para eliminar un usuario
     public function deleteUser($id)
     {
         $usuario = User::findOrFail($id);

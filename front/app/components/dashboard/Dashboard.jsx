@@ -1,19 +1,17 @@
-// app/dashboard/layout.js
 'use client';
 
 import React from 'react';
-import Sidebard from '../sidebar/Sidebard';
+import Sidebar from '../sidebar/Sidebar';
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="flex h-screen">
-      {/* Sidebar siempre a la izquierda */}
-      <Sidebard />
-
-      {/* Contenido principal a la derecha */}
-      <div className="flex-grow overflow-y-auto bg-gray-100 p-6">
-        {children} {/* Render the nested route content here */}
-      </div>
+    <div className="min-h-screen flex bg-gray-900 text-white">
+      {/* Sidebar fijo a la izquierda */}
+      <Sidebar />
+      {/* Contenido principal */}
+      <main className="flex-1 p-6 bg-gray-800 overflow-auto">
+        {children}
+      </main>
     </div>
   );
 }

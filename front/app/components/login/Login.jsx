@@ -43,9 +43,9 @@ function Login() {
     }
 
     try {
-      const response = await login(email, password);
+      const response = await login(email, password); 
       if (response.success) {
-        const data = response.data;
+        const data = response.data; 
         localStorage.setItem('token', data.autorización.token);
         localStorage.setItem('userName', data.usuario.name); 
         const isAdmin = Boolean(data.usuario.admin);

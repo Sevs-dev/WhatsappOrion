@@ -27,7 +27,7 @@ const FlujoVentana = ({ id }) => {
     const fetchDataClient = async () => {
       try {
         setLoading(true);
-        const datosCliente = await GestorFlujosServ.getClientById(id); 
+        const datosCliente = await GestorFlujosServ.getClientById(id);
         if (datosCliente?.data) {
           setClient(datosCliente.data);
           setClientId(datosCliente.data.id);
@@ -115,7 +115,7 @@ const FlujoVentana = ({ id }) => {
         type: 'failure',
         message: 'No se puede guardar sin un ID de cliente.',
       });
-      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000); // Ocultar después de 3 segundos
+      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
       return;
     }
     if (selectedEstados.size === 0) {
@@ -124,8 +124,18 @@ const FlujoVentana = ({ id }) => {
         type: 'failure',
         message: 'Debe seleccionar al menos un estado.',
       });
-      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000); // Ocultar después de 3 segundos
+      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
+      return;
+    }
 
+    // Verifica si no hay mensajes creados y muestra una alerta
+    if (!messageId) {
+      setToast({
+        show: true,
+        type: 'warning',
+        message: 'No hay mensajes creados para el cliente.',
+      });
+      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
       return;
     }
 
@@ -155,6 +165,7 @@ const FlujoVentana = ({ id }) => {
     }
   };
 
+
   useEffect(() => {
     if (!messageId) return;
     const fetchMessages = async () => {
@@ -175,10 +186,10 @@ const FlujoVentana = ({ id }) => {
       type: "MESSAGE",
       item: { message },
     }));
-  
+
     return (
-      <li 
-        ref={drag} 
+      <li
+        ref={drag}
         className="cursor-pointer bg-white/10 p-2 rounded hover:bg-white/15 transition-all border border-transparent hover:border-blue-300/30"
       >
         <p className="font-medium text-sm">{message.titulo}</p>
@@ -187,13 +198,13 @@ const FlujoVentana = ({ id }) => {
       </li>
     );
   };
-  
+
   const EstadoDrop = ({ estado, messages, onDrop, onRemoveMessage }) => {
     const [, drop] = useDrop(() => ({
       accept: "MESSAGE",
       drop: (item) => onDrop(estado, item.message),
     }));
-  
+
     return (
       <div ref={drop} className="border border-blue-300/30 rounded-lg p-3 mb-2 bg-blue-900/30 backdrop-blur-sm hover:border-blue-300/50 transition-all duration-300">
         <h4 className="text-base font-semibold text-blue-300 mb-2 pb-1 border-b border-blue-300/20">{estado}</h4>
@@ -250,7 +261,7 @@ const FlujoVentana = ({ id }) => {
       });
       return;
     }
-  
+
     const estadoValores = {
       "Inicio": 0,
       "Recibido": 3500,
@@ -260,32 +271,32 @@ const FlujoVentana = ({ id }) => {
       "Entregado": 15000,
       "Con novedad": 17000
     };
-  
+
     const data = {
       id_cliente: clientId,
       codigo: client.codigo,
-      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) => 
+      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) =>
         messages.map(msg => ({
           estado: estadoValores[estado] ?? null,
           titulo: msg.titulo,
           descripcion: msg.descripcion,
-          api_url: msg.api_url, 
-        }))
-      )
-    }; 
-    
-    const dataConfig = {
-      codigo: client.codigo,
-      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) => 
-        messages.map(msg => ({
-          estado: estadoValores[estado] ?? null,
-          titulo: msg.titulo,
-          descripcion: msg.descripcion,
-          url: msg.api_url, 
+          api_url: msg.api_url,
         }))
       )
     };
-  
+
+    const dataConfig = {
+      codigo: client.codigo,
+      estados: Object.entries(estadoMessages).flatMap(([estado, messages]) =>
+        messages.map(msg => ({
+          estado: estadoValores[estado] ?? null,
+          titulo: msg.titulo,
+          descripcion: msg.descripcion,
+          url: msg.api_url,
+        }))
+      )
+    };
+
     try {
       await GestorFlujosServ.saveDropStatus(data);
       await WhatsappConfig.sendWhatsappConfig(dataConfig);
@@ -293,7 +304,7 @@ const FlujoVentana = ({ id }) => {
         show: true,
         type: 'success',
         message: 'Estados y mensajes guardados correctamente.',
-      });                                        
+      });
     } catch (error) {
       console.error("Error guardando el estado del flujo:", error);
       setToast({
@@ -310,11 +321,11 @@ const FlujoVentana = ({ id }) => {
     <DndProvider backend={HTML5Backend}>
       <div className="bg-gradient-to-br from-blue-900 to-blue-700/80 p-6 sm:p-8 rounded-3xl shadow-2xl text-white min-h-screen flex flex-col font-sans">
         {toast.show && <Toast type={toast.type} message={toast.message} />}
-        
+
         <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-white drop-shadow-lg tracking-wide">
           🚀 Gestor de Flujos
         </h1>
-  
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
           {/* Cliente */}
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col">
@@ -327,33 +338,33 @@ const FlujoVentana = ({ id }) => {
                 <h2 className="text-xl font-bold text-green-300 mb-4">✅ Cliente Encontrado</h2>
                 <p><strong className="text-gray-400">Código:</strong> {client.codigo || "No disponible"}</p>
                 <p><strong className="text-gray-400">Nombre:</strong> {client.nombre || "No disponible"}</p>
-  
+
                 <h3 className="text-lg font-semibold mt-6 text-blue-300">📌 Estados del Cliente</h3>
                 <div className="mt-3 space-y-3">
-                {estados.map((estadoOption) => (
-                  <div 
-                    key={estadoOption} 
-                    className="flex items-center space-x-3 group transition-transform duration-300 hover:-translate-y-1"
-                  >
-                    <input
-                      type="checkbox"
-                      id={estadoOption}
-                      name={estadoOption}
-                      checked={estado[estadoOption] || false}
-                      onChange={handleEstadoChange}
-                      className="w-5 h-5 text-blue-500 border-2 border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 transition"
-                    />
-                    <label 
-                      htmlFor={estadoOption} 
-                      className="text-gray-300 group-hover:text-blue-400 transition"
+                  {estados.map((estadoOption) => (
+                    <div
+                      key={estadoOption}
+                      className="flex items-center space-x-3 group transition-transform duration-300 hover:-translate-y-1"
                     >
-                      {estadoOption}
-                    </label>
-                  </div>
-                ))}
-              </div>
+                      <input
+                        type="checkbox"
+                        id={estadoOption}
+                        name={estadoOption}
+                        checked={estado[estadoOption] || false}
+                        onChange={handleEstadoChange}
+                        className="w-5 h-5 text-blue-500 border-2 border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 transition"
+                      />
+                      <label
+                        htmlFor={estadoOption}
+                        className="text-gray-300 group-hover:text-blue-400 transition"
+                      >
+                        {estadoOption}
+                      </label>
+                    </div>
+                  ))}
+                </div>
 
-  
+
                 <button
                   className="w-full bg-blue-500 hover:bg-blue-400 transition p-3 text-white rounded-xl shadow-md font-medium mt-6 hover:scale-105"
                   onClick={handleSave}
@@ -365,7 +376,7 @@ const FlujoVentana = ({ id }) => {
               <p className="text-yellow-400 text-center">⚠ No se encontró un cliente.</p>
             )}
           </div>
-  
+
           {/* Estados seleccionados */}
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col overflow-hidden">
             <h3 className="text-lg font-bold text-blue-300 mb-3 pb-1 border-b border-blue-300/30">
@@ -396,23 +407,23 @@ const FlujoVentana = ({ id }) => {
 
           {/* Mensajes */}
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl transition-transform duration-300 hover:scale-[1.02] flex flex-col overflow-hidden">
-          <h3 className="text-lg font-bold text-blue-300 mb-3 pb-1 border-b border-blue-300/30">📨 Mensajes</h3>
-          <div className="overflow-y-auto max-h-[calc(100vh-16rem)] pr-1">
-            {messages.length > 0 ? (
-              <ul className="grid grid-cols-1 gap-2 mt-2">
-                {messages.map((msg) => (
-                  <MessageItem key={msg.id} message={msg} />
-                ))}
-              </ul>
-            ) : (
-              <div className="flex items-center justify-center h-24">
-                <p className="text-yellow-400 text-sm">📭 No hay mensajes disponibles</p>
-              </div>
-            )}
+            <h3 className="text-lg font-bold text-blue-300 mb-3 pb-1 border-b border-blue-300/30">📨 Mensajes</h3>
+            <div className="overflow-y-auto max-h-[calc(100vh-16rem)] pr-1">
+              {messages.length > 0 ? (
+                <ul className="grid grid-cols-1 gap-2 mt-2">
+                  {messages.map((msg) => (
+                    <MessageItem key={msg.id} message={msg} />
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex items-center justify-center h-24">
+                  <p className="text-yellow-400 text-sm">📭 No hay mensajes disponibles</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        </div>
-        
+
         <button
           onClick={handleSaveBlockStatus}
           className="mt-8 w-full sm:w-auto bg-blue-500 hover:bg-blue-400 transition p-3 text-white rounded-xl shadow-md font-medium self-center hover:scale-105"
@@ -422,7 +433,7 @@ const FlujoVentana = ({ id }) => {
       </div>
     </DndProvider>
   );
-  
+
 };
 
 export default FlujoVentana;

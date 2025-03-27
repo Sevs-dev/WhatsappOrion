@@ -12,7 +12,7 @@ const GestorEditorMensajes = {
   getMessagesByClientId: async (id) => {
     try {
       const response = await apiClient.get(`/message/search/${id}`); // Cambia esta ruta si es necesario
-      console.log("Respuesta completa de la API:", response);  // Imprime toda la respuesta de la API
+      // console.log("Respuesta completa de la API:", response);  // Imprime toda la respuesta de la API
       return response.data;
     } catch (error) {
       console.error(`Error al obtener los mensajes para el cliente ${id}:`, error.message);

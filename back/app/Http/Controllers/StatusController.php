@@ -165,8 +165,6 @@ class StatusController extends Controller
         }
     }
 
-
-
     // En el controlador
     public function getMessageStatus($id_cliente)
     {
@@ -184,5 +182,22 @@ class StatusController extends Controller
         }
 
         return response()->json(['datos' => $messagesByState])->header('Content-Type', 'application/json');
+    }
+
+    public function getAllStatus(){
+        try {
+            // Obtener todos los registros de StatusClient
+            $statusClients = StatusClient::all();
+    
+            return response()->json([
+                'message' => 'Estados de flujo obtenidos con éxito.',
+                'data' => $statusClients,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los estados.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

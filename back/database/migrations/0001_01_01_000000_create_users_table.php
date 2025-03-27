@@ -25,6 +25,17 @@ return new class extends Migration
         });
 
         DB::table('users')->insert([
+            'name' => 'Admin Logismart',
+            'email' => 'admin@logismart.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('Logismart25*'),
+            'remember_token' => null,
+            'admin' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'admin@cosmetika.com',
             'email_verified_at' => now(),
